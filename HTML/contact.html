@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us | Joseph's Pot</title>
+     <link rel="icon" href="../images/logo3.png">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../CSS/contact.css" />
+    <link
+      rel="stylesheet"
+      href="../fontawesome-free-6.7.2-web/css/all.min.css"
+    />
+    <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"
+    ></script>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <header class="navbar" id="navbar">
+      <div class="containerr">
+        <div class="logo">
+         <a href=""><img src="../images/logo3.png" alt="logo"></a>
+        </div>
+        <nav class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="menu.html">Menu</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="contact.html" class="active">Contact</a>
+          <a href="order online.html">Order Online</a>
+        </nav>
+        <div class="social">
+          <a href="https://www.facebook.com/@cruisewithjoe"><i class="fa-brands fa-facebook"></i></a>
+          <a href="https://www.x.com/@cruisewithjoe"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="https://www.youtube.com/@cruisewithjoe"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.instagram.com/@cruisewithjoe"><i class="fab fa-instagram"></i></a>
+        </div>
+        <span class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-utensils"></i></span>
+      </div>
+    </header>
+
+    <main>
+     <div class="container">
+        <h1>Contact Us</h1>
+        <p>We'd love to hear from you</p>
+      </div>
+    </main>
+
+    <div class="container">
+      <div class="contact-container">
+        <div class="contact-info">
+          <h2>Get In Touch</h2>
+          <div class="info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div class="info-text">
+              <h3>Our Restaurant</h3>
+              <p>
+                120,<br />
+                Ikenegbu Layout  By <br> Cherobim Junction, Owerri<br />
+                Imo State, Nigeria<br />
+              </p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-phone-alt"></i>
+            <div class="info-text">
+              <h3>Call Us</h3>
+              <p>08104344994</p>
+              <p>Mon-Sun: 8:30am - 9pm</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-envelope"></i>
+            <div class="info-text">
+              <h3>Email Us</h3>
+              <p>info@josephspot.com</p>
+              <p>orders@josephspot.com</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-share-alt"></i>
+            <div class="info-text">
+              <h3>Follow Us</h3>
+              <div class="social-links">
+                <a href="https://www.facebook.com/@cruisewithjoe"
+                  ><i class="fa-brands fa-facebook"></i
+                ></a>
+                <a href="https://www.x.com/@cruisewithjoe"
+                  ><i class="fa-brands fa-x-twitter"></i
+                ></a>
+                <a href="https://www.youtube.com/@cruisewithjoe"
+                  ><i class="fab fa-youtube"></i
+                ></a>
+                <a href="https://www.instagram.com/@cruisewithjoe"
+                  ><i class="fab fa-instagram"></i
+                ></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form">
+          <h2>Send Us a Message</h2>
+          <div id="status-message" class="status-message"></div>
+          <form id="contactForm">
+            <div class="form-group">
+              <label for="name">Your Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number (optional)</label>
+              <input type="tel" id="phone" name="phone" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <select id="subject" name="subject" class="form-control" required>
+                <option value="">Select a subject</option>
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Custom Order">Custom Order</option>
+                <option value="Wholesale Inquiry">Wholesale Inquiry</option>
+                <option value="Workshop Inquiry">Events Inquiry</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Your Message</label>
+              <textarea
+                id="message"
+                name="message"
+                class="form-control"
+                required
+              ></textarea>
+            </div>
+            <div
+              class="g-recaptcha"
+              data-sitekey="YOUR_RECAPTCHA_SITE_KEY"
+            ></div>
+            <button type="submit" class="submit-btn" id="submit-btn">
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Footer Section -->
+    <footer class="footer">
+      <div class="footer-glass">
+        <div class="footer-glass-inner">
+          <div class="footer-content">
+            <div class="footer-column">
+              <img src="../images/logo.jpg" alt="" width="80px"/>
+              <p>
+                Authentic taste, unforgettable experience.<br />Serving
+                happiness from Owerri, Nigeria.
+              </p>
+              <div class="social-links">
+                <a href="https://facebook.com" target="_blank"
+                  ><i class="fab fa-facebook-f"></i
+                ></a>
+                <a href="https://instagram.com" target="_blank"
+                  ><i class="fab fa-instagram"></i
+                ></a>
+                <a href="https://twitter.com" target="_blank"
+                  ><i class="fab fa-twitter"></i
+                ></a>
+                <a href="https://tiktok.com" target="_blank"
+                  ><i class="fab fa-tiktok"></i
+                ></a>
+              </div>
+            </div>
+
+            <div class="footer-column">
+              <h4>Quick Links</h4>
+              <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="order online.html">Order Online</a></li>
+              </ul>
+            </div>
+
+            <div class="footer-column">
+              <h4><i class="fas fa-clock"></i> Opening Hours</h4>
+              <p>
+                Monday – Friday: 08:30 AM – 9:00 PM<br />
+                Saturday: 08:00 AM – 09:00 PM<br />
+                Sunday: 12:00 PM – 09:00 PM
+              </p>
+            </div>
+
+            <div class="footer-column">
+              <h4><i class="fas fa-map-marker-alt"></i> Visit Us</h4>
+              <p>
+                120,<br />
+                Ikenegbu Layout By <br> Cherobim Junction, Owerri<br />
+                Imo State, Nigeria<br />
+                <a
+                  href="https://maps.google.com?q=Joseph's Pot Owerri"
+                  target="_blank"
+                  >📍 <span> Get Directions</span></a
+                >
+              </p>
+            </div>
+          </div>
+
+          <div class="footer-bottom">
+            <p>
+              &copy; <span id="year"></span> Joseph's Pot. All rights reserved | Developed by Eribs Tech & Blog
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <button id="scrollTopBtn" aria-label="Scroll to Top">
+      ↑</i>
+    </button>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init();
+    </script>
+
+    <script defer src="../JAVASCRIPT/contact.js"></script>
+  </body>
+</html>

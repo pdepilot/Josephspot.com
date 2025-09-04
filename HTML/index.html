@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../images/logo3.png">
+    <title>Joseph's Pot</title>
+    <link rel="stylesheet" href="../CSS/index.css">
+    <link rel="stylesheet" href="../fontawesome-free-6.7.2-web/css/all.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body>
+    <div class="preloader">
+      <div class="ingredients">
+        <div class="ingredient">
+          <img
+            src="https://pngimg.com/uploads/tomato/tomato_PNG12563.png"
+            alt="Tomato"
+          />
+        </div>
+        <div class="ingredient">
+          <img src="../images/chilli1-removebg-preview.png" alt="Chili" />
+        </div>
+        <div class="ingredient">
+          <img src="../images/basil-removebg-preview.png" alt="Basil" />
+        </div>
+        <div class="ingredient">
+          <img src="../images/garlic-removebg-preview.png" alt="Garlic" />
+        </div>
+        <div class="ingredient">
+          <img src="../images/onioins-removebg-preview.png" alt="Onion" />
+        </div>
+
+        <div class="knife-container">
+          <div class="knife">
+            <div class="knife-edge"></div>
+            <div class="knife-blade"></div>
+            <div class="knife-handle"></div>
+          </div>
+        </div>
+        <div class="chopping-board"></div>
+      </div>
+
+      <div class="loading-text">Preparing Your Joseph's Pot Experience</div>
+      <div class="loading-subtext">
+        Fresh ingredients are being chopped just for you
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="percentage" id="percentage">0%</div>
+    </div>
+
+
+
+    <!-- Navbar -->
+    <header class="navbar" id="navbar">
+        <div class="containerr">
+          <div class="logo">
+           <a href=""><img src="../images/logo3.png" alt="logo" loading="lazy"></a>
+          </div>
+          <nav class="nav-links">
+            <a href="#home" class="active">Home</a>
+            <a href="about.html">About</a>
+            <a href="menu.html">Menu</a>
+            <a href="contact.html">Contact</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="#eventContainer">Events</a>
+            <a href="order online.html">Order Online</a>
+          </nav>
+          <div class="social">
+            <a href="https://www.facebook.com/@cruisewithjoe"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.x.com/@cruisewithjoe"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://www.youtube.com/@cruisewithjoe"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/@cruisewithjoe"><i class="fab fa-instagram"></i></a>
+          </div>
+          <span class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-utensils"></i></span>
+        </div>
+      </header>  
+    <section class="welcome-hero">
+         <div class="hero-content">
+        <h2 class="hero-subtitle">Welcome to</h2>
+        <h1 class="hero-title">JOSEPH'S POT</h1>
+        <h3 class="hero-tagline">Where Taste Meets Irresistibility</h3>
+        <div class="hero-cta">
+            <a href="#reservationContainer" class="cta-button-primary">Reserve Your Table</a>
+            <a href="menu.html" class="cta-button-secondary">Explore Our Menu</a>
+        </div>
+    </div>
+    </section>
+    </header>
+    </div>
+    <!-- ABOUT US SECTION OF HOW WE STARTED -->
+   <section class="welcome-about" id="about">
+    <div class="animated-border">
+        <div class="about-content">
+            <div class="about-text1">
+                <span class="about-text2">Joseph's Pot Restaurant</span>
+                <h2 class="about-text3">
+                    <span id="typing-text" class="typing-animation"></span>
+                </h2>
+                <p class="about-text4">
+                    It all began in a small shop with a crazy idea: what if Joseph's Pot 
+                    didn't have to follow the rules? Our founder, <span>@Cruisewithjoe</span>, 
+                    experimented with wild combinations that would make 
+                    traditional Igbo foods faint.
+                </p>
+                <p class="about1">
+                    Today, we proudly serve the most bizarre, unconventional, and 
+                    surprisingly delicious Ofe Owerri in the universe. 
+                    Our motto: "If it fits in a culture, it's at Joseph's Pot."
+                </p>
+                <a href="about.html" class="Story-text5">
+                    <span>Our Story</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="about-video">
+                <video autoplay loop muted playsinline>
+                    <source src="../videos/video12.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+</section>
+    <!-- INTRODUCTORY SECTION -->
+    <section class="intro-section">
+        <div class="intro">
+            <span class="intro-text" data-aos="zoom-forward" data-aos-duration="2700">
+                Discover
+            </span>
+            <h2 class="intro-text2" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2700">
+                <span>Jos</span>eph's <span>Pot</span>
+            </h2>
+
+        </div>
+    </section>
+    <!-- ABOUT OUR FOOD SECTION -->
+<div class="restaurant-cards">
+  <article class="food-card">
+    <div class="card-image">
+      <a href="#" aria-label="View Egusi Soup details">
+        <img src="../images/egusi.jpg" loading="lazy" alt="Assorted meats in egusi soup with stockfish and snails">
+      </a>
+    </div>
+    <div class="card-content">
+      <a href="#">
+        <h3 class="card-title">Romantic Restaurant</h3>
+      </a>
+        Assorted meats in tender grace, Stockfish, snails and a smoky embrace full of fresh melon seeds.
+        Okazi leaves, with Ugu's green, A blend of flavors with bold serene.
+      </p>
+      <a href="menu.html" class="card-link">
+        Learn More
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </article>
+
+  <article class="food-card">
+    <div class="card-image">
+      <a href="#" aria-label="View Ofe Owerri details">
+        <img src="../images/ofe owerri1.jpg" loading="lazy" alt="Traditional Ofe Owerri soup">
+      </a>
+    </div>
+    <div class="card-content">
+      <a href="#">
+        <h3 class="card-title">Romantic Restaurant</h3>
+      </a>
+        In Owerri's heart, a treasure brews, A soup of legends rich and true.
+        Ofe Owerri, the king's delight, A feast that warms the soul each night.
+      </p>
+      <a href="menu.html" class="card-link">
+        Learn More
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </article>
+
+  <article class="food-card">
+    <div class="card-image">
+      <a href="#" aria-label="View Palm Wine details">
+        <img src="../images/palm wine.jpg" loading="lazy" alt="Traditional palm wine in calabash">
+      </a>
+    </div>
+    <div class="card-content">
+      <a href="#">
+        <h3 class="card-title">Romantic Restaurant</h3>
+      </a>
+        From Ikenegbu to far and near, Joseph's Pot brings friends so dear, to calabash and share,
+        A taste of earth, a taste of home, In every drop, of palm wine no need to roam.
+      </p>
+      <a href="menu.html" class="card-link">
+        Learn More
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </article>
+</div>
+    <!-- Our Menu Section -->
+    <div class="menu1">
+        <h2>Discover</h2>
+        <h1>Our Menu</h1>
+    </div>
+
+    <div class="flip-gallery">
+        <div class="flip-card" onclick="location.href='breakfast.html';">
+            <div class="tap-hint">Tap image to explore</div>
+            <div class="flip-inner" data-direction="left">
+                <div class="flip-front" style="background-image: url('../images/brakefast1.jpg');">
+                    <a href="breakfast.html" class="flip-btn">Breakfast</a>
+                </div>
+                <div class="flip-back" style="background-image: url('../images/ChatGPT\ breakfast.png');">
+                    <div class="back-text">Start your day fresh with our gourmet breakfast menu!</div>
+                    <a href="breakfast.html" class="flip-btn">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card" onclick="location.href='lunch.html';">
+            <div class="tap-hint">Tap image to explore</div>
+            <div class="flip-inner" data-direction="right">
+                <div class="flip-front" style="background-image: url('../images/lunch1.jpg');">
+                    <a href="lunch.html" class="flip-btn">Lunch</a>
+                </div>
+                <div class="flip-back" style="background-image: url('../images/image8.jpg');">
+                    <div class="back-text">Midday meals made magical—discover our special lunch offers.</div>
+                    <a href="lunch.html" class="flip-btn">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card" onclick="location.href='dinner.html';">
+            <div class="tap-hint">Tap image to explore</div>
+            <div class="flip-inner" data-direction="top">
+                <div class="flip-front" style="background-image: url('../images/ofe\ owerri1.jpg');">
+                    <a href="dinner.html" class="flip-btn">Dinner</a>
+                </div>
+                <div class="flip-back" style="background-image: url('../images/spaghetti.jpg');">
+                    <div class="back-text">An elegant end to your day—taste the best of our dinner dishes.</div>
+                    <a href="dinner.html" class="flip-btn">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card" onclick="location.href='drink.html';">
+            <div class="tap-hint">Tap image to explore</div>
+            <div class="flip-inner" data-direction="bottom">
+                <div class="flip-front" style="background-image: url('../images/malts.png');">
+                    <a href="drink.html" class="flip-btn">Drinks</a>
+                </div>
+                <div class="flip-back" style="background-image: url('../images/images\ \(11\).jpeg');">
+                    <div class="back-text">Quench your thirst with our exotic and refreshing drink range.</div>
+                    <a href="drink.html" class="flip-btn">Explore</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UPCOMING EVENTS SECTION -->
+    <div class="events-section">
+    <div class="events-container" id="eventContainer">
+        <div class="section-header">
+            <h2 class="section-title">Upcoming Events</h2>
+            <p class="section-subtitle">Exclusive culinary experiences</p>
+        </div>
+
+        <div class="event-card">
+            <div class="event-media">
+                <img src="../images/image53.jpg" loading="lazy" alt="Event Image" id="eventImage" class="event-image" loading="lazy" />
+                <div class="event-date-badge">
+                    <span id="eventDay" class="event-day">Friday</span>
+                    <span id="eventDate" class="event-date">15 Aug</span>
+                </div>
+            </div>
+
+            <div class="event-details">
+                <h3 id="eventTitle" class="event-title">Event Title</h3>
+                <p id="eventDesc" class="event-description">Event description here...</p>
+                
+                <div class="countdown-container">
+                    <div class="countdown-title">Time Remaining:</div>
+                    <div id="countdown" class="countdown">
+                        <div class="countdown-item">
+                            <span class="days countdown-value">00</span>
+                            <span class="countdown-label">Days</span>
+                        </div>
+                        <div class="countdown-separator">:</div>
+                        <div class="countdown-item">
+                            <span class="hours countdown-value">00</span>
+                            <span class="countdown-label">Hours</span>
+                        </div>
+                        <div class="countdown-separator">:</div>
+                        <div class="countdown-item">
+                            <span class="minutes countdown-value">00</span>
+                            <span class="countdown-label">Min</span>
+                        </div>
+                        <div class="countdown-separator">:</div>
+                        <div class="countdown-item">
+                            <span class="seconds countdown-value">00</span>
+                            <span class="countdown-label">Sec</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="event-controls">
+            <button id="nextEventBtn" class="event-nav-button" aria-label="Next event">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+    <!-- Modern Reservation Form Section -->
+<div class="reservation-container" id="reservationContainer">
+    <div class="form-card">
+        <div class="form-header">
+            <h2 class="form-title">Reserve Your Table</h2>
+            <p class="form-subtitle">Experience culinary excellence</p>
+        </div>
+        
+        <form id="reservationForm" class="modern-form" action="https://formspree.io/f/your-form-id" method="POST">
+            <div class="form-grid">
+                <div class="form-group floating">
+                    <div class="input-wrapper">
+                        <input type="text" id="name" name="name" placeholder=" " required />
+                        <label for="name">Full Name</label>
+                        <i class="fas fa-user icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group floating">
+                    <div class="input-wrapper">
+                        <input type="email" id="email" name="email" placeholder=" " required />
+                        <label for="email">Email Address</label>
+                        <i class="fas fa-envelope icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group floating">
+                    <div class="input-wrapper">
+                        <input type="tel" id="phone" name="phone" placeholder=" " />
+                        <label for="phone">Phone Number</label>
+                        <i class="fas fa-phone icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group floating">
+                    <div class="input-wrapper">
+                        <input type="date" id="date" name="date" placeholder=" " />
+                        <label for="date">Reservation Date</label>
+                        <i class="fas fa-calendar-day icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group floating">
+                    <div class="input-wrapper">
+                        <select id="time" name="time" required>
+                            <option value="" disabled selected></option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="12:00">12:00 PM</option>
+                            <option value="13:00">1:00 PM</option>
+                            <option value="14:00">2:00 PM</option>
+                            <option value="18:00">6:00 PM</option>
+                            <option value="19:00">7:00 PM</option>
+                            <option value="20:00">8:00 PM</option>
+                            <option value="21:00">9:00 PM</option>
+                        </select>
+                        <label for="time">Reservation Time</label>
+                        <i class="fas fa-clock icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group floating">
+                    <div class="input-wrapper">
+                        <select id="guests" name="guests" required>
+                            <option value="" disabled selected></option>
+                            <option value="1">1 person</option>
+                            <option value="2">2 people</option>
+                            <option value="3">3 people</option>
+                            <option value="4">4 people</option>
+                            <option value="5">5 people</option>
+                            <option value="6">6 people</option>
+                            <option value="7">7 people</option>
+                            <option value="8+">8+ people</option>
+                        </select>
+                        <label for="guests">Number of Guests</label>
+                        <i class="fas fa-users icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group floating full-width">
+                <div class="input-wrapper">
+                    <textarea id="message" name="message" placeholder=" " rows="3"></textarea>
+                    <label for="message">Special Requests</label>
+                    <i class="fas fa-comment icon"></i>
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">Confirm Reservation</span>
+                    <span class="btn-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="currentColor" d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"></path>
+                        </svg>
+                    </span>
+                </button>
+                
+                <div class="form-meta">
+                    <p>We'll confirm your reservation within 24 hours</p>
+                </div>
+            </div>
+
+            <div class="form-notification">
+                <div id="successMessage" class="notification success">
+                    <div class="notification-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="currentColor" d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"></path>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <h4>Reservation Confirmed!</h4>
+                        <p>Thank you! We've received your booking request.</p>
+                    </div>
+                </div>
+                
+                <div id="errorMessage" class="notification error">
+                    <div class="notification-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="currentColor" d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"></path>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <h4>Error Submitting</h4>
+                        <p>Please try again or contact us directly.</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="form-image">
+        <div class="image-overlay"></div>
+        <img src="../images/image52.jpg" loading="lazy" alt="Elegant restaurant interior" loading="lazy" />
+        <div class="image-content">
+            <h3>Fine Dining Experience</h3>
+            <p>Book your table for an unforgettable culinary journey</p>
+        </div>
+    </div>
+</div>
+<!-- CUSTOMERS REVIEW SECTION -->
+<div class="review-section">
+        <div class="review-slider">
+            <div id="header-sequence">
+                <h2 class="review-heading from-left">What customers say about us</h2>
+                <h2 class="review-heading from-top">Why clients love us</h2>
+                <h2 class="review-heading from-right">Our reputation speaks</h2>
+            </div>
+
+            <button id="addReviewBtn" class="add-review-btn">+ Add Your Review</button>
+            <!-- Review Form (initially hidden) -->
+            <div id="reviewForm" class="review-form-container">
+                <form id="submitReviewForm" class="review-form">
+                    <h3>Share Your Experience</h3>
+                    <div class="form-group">
+                        <label for="reviewName">Your Name:</label>
+                        <input type="text" id="reviewName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewText">Your Review:</label>
+                        <textarea id="reviewText" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Rating:</label>
+                        <div class="star-rating">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                        <input type="hidden" id="reviewRating" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewImage">Profile Image (optional):</label>
+                        <input type="file" id="reviewImage" accept="image/*">
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="submit-btn">Submit Review</button>
+                        <button type="button" id="cancelReviewBtn" class="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+            <div class="review-container">
+                <!-- Sample reviews will be loaded here -->
+            </div>
+            <div class="slider-controls">
+                <button class="slider-btn" id="prevBtn">&#8592;</button>
+                <button class="slider-btn" id="nextBtn">&#8594;</button>
+            </div>
+
+            <div class="slider-dots" id="sliderDots"></div>
+        </div>
+
+        <!-- ADMIN SECTION FOR REVIEW APPROVALS -->
+        <div id="adminPanel">
+            <h3>Review Moderation</h3>
+            
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="pending">Pending Reviews</button>
+                <button class="admin-tab" data-tab="approved">Approved Reviews</button>
+            </div>
+            
+            <div id="pendingReviews" class="admin-tab-content active" data-tab-content="pending"></div>
+            <div id="approvedReviews" class="admin-tab-content" data-tab-content="approved"></div>
+        </div>
+    </div>
+    <button id="adminToggle">Admin Mode</button>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-glass">
+            <div class="footer-glass-inner">
+                <div class="footer-content">
+                    <div class="footer-column">
+                        <img src="../images/logo.jpg" loading="lazy" alt="Logo" height="80px">
+                        <p>Authentic taste, unforgettable experience.<br>Serving happiness from Owerri, Nigeria.</p>
+                        <div class="social-links">
+                            <a href="https://www.facebook.com/@cruisewithjoe" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://www.instagram.com/@cruisewithjoe"><i class="fab fa-instagram"></i></a>
+                            <a href="https://www.x.com/@cruisewithjoe" target="_blank"><i class="fab fa-twitter"></i></a>
+                            <a href="https://tiktok.com" target="_blank"><i class="fab fa-tiktok"></i></a>
+                            <a href="https://www.youtube.com/@cruisewithjoe"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="about.html">About</a></li>
+                            <li><a href="menu.html">Menu</a></li>
+                            <li><a href="gallery.html">Gallery</a></li>
+                            <li><a href="#eventContainer">Events</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                            <li><a href="order online.html">Order Online</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4><i class="fas fa-clock"></i> Opening Hours</h4>
+                        <p>
+                            Monday – Friday: 08:30 AM – 9:00 PM<br>
+                            Saturday: 08:00 AM – 09:00 PM<br>
+                            Sunday: 12:00 PM – 09:00 PM
+                        </p>
+                    </div>
+                    <div class="footer-column">
+                        <h4><i class="fas fa-map-marker-alt"></i>Visit Us</h4>
+                        <p>
+                            123 Food Street,<br>
+                            Ikenegbu Layout, Owerri<br>
+                            Imo State, Nigeria<br>
+                            <a href="https://maps.google.com?q=Joseph's Pot Owerri" target="_blank">📍 <span>
+                                    Get Directions</span></a>
+
+                        </p>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <p>&copy; 2025 Joseph's Pot. All Rights Reserved | Developed by Eribs Tech & Blog</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+   <!-- === AI Chatbot (Chef Joseph / Robot Avatar) HTML === -->
+<div id="aiChat-container">
+    <div id="aiChat-header">
+      <img src="../images/criuse.jpg" class="aiChat-avatar" alt="Chat Avatar">
+      <span class="aiChat-title">Chef Joseph (Joseph's Pot)</span>
+      <span id="aiChat-close">&times;</span>
+    </div>
+    <div id="aiChat-messages"></div>
+   
+    <div id="aiChat-input-area" style="display:none;">
+      <input type="text" id="aiChat-user-input" placeholder="Type your message...">
+      <button id="aiChat-voice-btn"><i class="fas fa-microphone"></i></button>
+      <button id="aiChat-send-btn">Send</button>
+    </div>
+    
+    <div id="aiChat-welcome-options">
+      <p class="welcome-text">How would you like to chat with us?</p>
+      <button id="ai-start-live">Ai Chat</button>
+      <button id="ai-start-whatsapp">WhatsApp Chat</button>
+    </div>
+  </div>
+  
+  <div id="aiChat-open-btn">
+    <img src="../images/robot-removebg-preview.png" alt="Chat Icon">
+  </div>
+    <button id="scrollTopBtn" aria-label="Scroll to Top">
+      ↑</i>
+    </button>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+    <!-- Preloader -->
+    <!-- <script>
+        window.addEventListener("load", function () {
+            setTimeout(function () {
+                document.body.classList.add("loaded");
+            }, 500);
+        });
+    </script> -->
+    <script defer src="../JAVASCRIPT/index.js"></script>
+</body>
+</html>

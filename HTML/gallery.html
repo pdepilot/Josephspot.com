@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gallery</title>
+    <link rel="stylesheet" href="../CSS/gallery.css" />
+    <link rel="icon" href="../images/logo3.png">
+    <link rel="stylesheet" href="../fontawesome-free-6.7.2-web/css/all.min.css">
+    <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+
+<body>
+     <!-- Navbar -->
+     <header class="navbar" id="navbar">
+        <div class="container">
+          <div class="logo">
+           <a href=""><img src="../images/logo3.png" alt="logo"></a>
+          </div>
+          <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="menu.html">Menu</a>
+            <a href="gallery.html" class="active">Gallery</a>
+            <a href="contact.html">Contact</a>
+            <a href="order online.html">Order Online</a>
+          </nav>
+          <div class="social">
+            <a href="https://www.facebook.com/@cruisewithjoe"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.x.com/@cruisewithjoe"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://www.youtube.com/@cruisewithjoe"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/@cruisewithjoe"><i class="fab fa-instagram"></i></a>
+          </div>
+          <span class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-utensils"></i></span>
+        </div>
+      </header>
+      
+    <!-- Gallery Header -->
+    <section class="gallery-header">
+        <h1>Our Delicious Moments</h1>
+        <p>Browse through our most mouthwatering dishes and exciting events.</p>
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="food">Food</button>
+            <button class="filter-btn" data-filter="event">Events</button>
+            <button class="filter-btn" data-filter="videos">Videos</button>
+        </div>
+    </section>
+
+    <!-- Gallery Grid -->
+    <section class="gallery-grid" id="gallery">
+
+        <div class="gallery-item food">
+            <img src="../images/indomie-with egg.jpg" loading="lazy" alt="Food 1">
+        </div>
+        <div class="gallery-item food">
+            <img src="../images/egusi.jpg" loading="lazy" alt="Food 2">
+        </div>
+
+        <div class="gallery-item food">
+            <img src="../images/2021-09-06.webp" loading="lazy" alt="Food 1">
+        </div>
+        <div class="gallery-item food">
+            <img src="../images/2021-10-15.png" loading="lazy" alt="Food 2">
+        </div>
+
+        <div class="gallery-item food">
+            <img src="../images/2023-06-14 (1).webp" loading="lazy" alt="Food 1">
+        </div>
+        <div class="gallery-item food">
+            <img src="../images/2023-06-14.webp" loading="lazy" alt="Food 2">
+        </div>
+
+        <div class="gallery-item food">
+            <img src="../images/unnamed (1).webp" loading="lazy" alt="Food 1">
+        </div>
+        <div class="gallery-item food">
+            <img src="../images/unnamed (2).webp" loading="lazy" alt="Food 2">
+        </div>
+
+        <div class="gallery-item food">
+            <img src="../images/unnamed.webp" loading="lazy" alt="Food 1">
+        </div>
+        <div class="gallery-item food">
+            <img src="../images/WhatsApp Image 2025-08-06 at 07.06.50_abebcfe8.jpg" alt="Food 2">
+        </div>
+
+        <!-- Event Images -->
+        <div class="gallery-item event">
+            <img src="../images/instagram image3.jpg" loading="lazy" alt="Event 1">
+        </div>
+        <div class="gallery-item event">
+            <img src="../images/instagram image4.jpg"  loading="lazy" alt="Event 2">
+        </div>
+
+        <!-- Videos -->
+        <div class="gallery-item videos">
+            <video src="../videos/instagram video1.mp4" muted autoplay loop playsinline></video>
+        </div>
+        <div class="gallery-item videos">
+            <video src="../videos/instagram video2.mp4" muted autoplay loop playsinline></video>
+        </div>
+        <div class="gallery-item videos">
+            <video src="../videos/instagram video3.mp4" muted autoplay loop playsinline></video>
+        </div>
+        <div class="gallery-item videos">
+            <video src="../videos/instagram video4.mp4" muted autoplay loop playsinline></video>
+        </div>
+
+        <div class="gallery-item videos">
+            <video src="../videos/videoplayback (7).mp4" muted autoplay loop playsinline></video>
+        </div>
+        <div class="gallery-item videos">
+            <video src="../videos/videoplayback (6).mp4" muted autoplay loop playsinline></video>
+        </div>
+        <div class="gallery-item videos">
+            <video src="../videos/videoplayback (4).mp4" muted autoplay loop playsinline></video>
+        </div>
+        <div class="gallery-item videos">
+            <video src="../videos/video12.mp4" muted autoplay loop playsinline></video>
+        </div>
+        <div class="gallery-item videos">
+            <video src="../videos/WhatsApp Video 2025-08-06 at 06.58.52_aad006e3.mp4" muted autoplay loop playsinline></video>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <span class="close-btn" onclick="closeLightbox()">&times;</span>
+        <img id="lightbox-img" src="" alt="Full Image" />
+        <video id="lightbox-video" controls autoplay muted loop></video>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-glass">
+            <div class="footer-glass-inner">
+                <div class="footer-content">
+                    <div class="footer-column">
+                         <img src="../images/logo.jpg" alt="" width="80px"/>
+                        <p>Authentic taste, unforgettable experience.<br>Serving happiness from Owerri, Nigeria.</p>
+                        <div class="social-links">
+                            <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                            <a href="https://tiktok.com" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="about.html">About</a></li>
+                            <li><a href="menu.html">Menu</a></li>
+                            <li><a href="contact.html">Contact us</a></li>
+                            <li><a href="order online.html">Order Online</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4><i class="fas fa-clock"></i> Opening Hours</h4>
+                        <p>
+                            Monday – Friday: 08:30 AM – 9:00 PM<br>
+                            Saturday: 08:00 AM – 09:00 PM<br>
+                            Sunday: 12:00 PM – 09:00 PM
+                        </p>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4><i class="fas fa-map-marker-alt"></i> Visit Us</h4>
+                        <p>
+                            123 Food Street,<br>
+                            Ikenegbu Layout, Owerri<br>
+                            Imo State, Nigeria<br>
+                            <a href="https://maps.google.com?q=Joseph's Pot Owerri" target="_blank">📍 <span>
+                                    Get Directions</span></a>
+
+                        </p>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <p>&copy; 2025 Joseph's Pot. All Rights Reserved | Developed by Eribs Tech & Blog</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button id="scrollTopBtn" aria-label="Scroll to Top">
+      ↑</i>
+    </button>
+
+    <!-- WhatsApp Chat Bubble -->
+    <a href="https://wa.me/2349064296917" class="whatsapp-chat" target="_blank">
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/124/124034.png"
+        alt="WhatsApp"
+      />
+    </a>
+
+
+    <script defer src="../JAVASCRIPT/gallery.js"></script>
+</body>
+
+</html>

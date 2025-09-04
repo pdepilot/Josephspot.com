@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Joseph's Pot</title>
+    <link rel="stylesheet" href="../CSS/menu.css" />
+    <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
+     <link rel="icon" href="../images/logo3.png">
+    <link
+      rel="stylesheet"
+      href="../fontawesome-free-6.7.2-web/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <header class="navbar" id="navbar">
+      <div class="containerr">
+        <div class="logo">
+          <a href=""><img src="../images/logo3.png" alt="logo"></a>
+        </div>
+        <nav class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="menu.html" class="active">Menu</a>
+          <a href="about.html">About</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="contact.html">Contact</a>
+          <a href="order online.html">Order Online</a>
+        </nav>
+
+        <div class="social">
+          <a href="https://www.facebook.com/@cruisewithjoe"><i class="fa-brands fa-facebook"></i></a>
+          <a href="https://www.x.com/@cruisewithjoe"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="https://www.youtube.com/@cruisewithjoe"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.instagram.com/@cruisewithjoe"><i class="fab fa-instagram"></i></a>
+        </div>
+        <span class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-utensils"></i></span>
+      </div>
+    </header>
+
+
+
+
+
+
+
+
+    <div class="menu-wrapper">
+      <!-- Header with Logo -->
+      <header class="menu-header">
+        <div class="logo-container">
+          <h1>Joseph's Pot Restaurant</h1>
+          <p class="tagline">Taste the Igbo Flavors</p>
+        </div>
+      </header>
+
+      <!-- Menu Sections -->
+      <main class="menu-container">
+        <!-- Main Course -->
+        <section class="menu-section">
+          <div class="section-header">
+            <h2><i class="fas fa-utensils"></i> MAIN COURSE</h2>
+            <img
+              src="../images/nsala.jpeg"
+              alt="Main Course"
+              class="section-image"
+            />
+          </div>
+          <div class="menu-items">
+            <div class="menu-item">
+              <div class="item-info">
+                <h3>Jollof Rice & Turkey</h3>
+                <p class="item-description">
+                  Aromatic rice cooked in rich tomato sauce with grilled turkey
+                </p>
+              </div>
+              <span class="item-price">₦4,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Jollof rice & turkey</span>
+              <span class="item-price">₦4,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Pasta & turkey</span>
+              <span class="item-price">₦4,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Fried Rice</span>
+              <span class="item-price">₦4,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Native Rice With Fish & egg</span>
+              <span class="item-price">₦3,500</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Porridge</span>
+              <span class="item-price">₦4,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Noodles & turkey/chicken</span>
+              <span class="item-price">₦3,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Goat Meat Nkwobi</span>
+              <span class="item-price">₦3,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Cowtail Nkwobi</span>
+              <span class="item-price">₦5,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Roasted Plantain/Ugba</span>
+              <span class="item-price">₦4,500</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Stir-fry Pasta</span>
+              <span class="item-price">₦1,500</span>
+            </div>
+             <div class="menu-item">
+              <span class="item-name">Goat Meat Jollof Rice</span>
+              <span class="item-price">₦6,500</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Proteins -->
+        <section class="menu-section">
+          <div class="section-header">
+            <h2><i class="fas fa-drumstick-bite"></i> PROTEINS</h2>
+            <img
+              src="../images/nkwobi.jpeg"
+              alt="Protein Dishes"
+              class="section-image"
+            />
+          </div>
+          <div class="menu-items">
+            <div class="menu-item">
+              <span class="item-name">Chicken</span>
+              <span class="item-price">₦2,500</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Turkey</span>
+              <span class="item-price">₦2,500</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Beef</span>
+              <span class="item-price">₦2,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Croacker Fish</span>
+              <span class="item-price">₦3,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Goat Meat</span>
+              <span class="item-price">₦3,000</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Swallow -->
+        <section class="menu-section">
+          <div class="section-header">
+            <h2><i class="fas fa-bread-slice"></i> SWALLOW</h2>
+            <img
+              src="../images/fufu.jpg"
+              alt="Swallow Dishes"
+              class="section-image"
+            />
+          </div>
+          <div class="menu-items">
+            <div class="menu-item">
+              <span class="item-name">Egusi with protein</span>
+              <span class="item-price">₦5,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Efo Riro with protein</span>
+              <span class="item-price">₦5,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Ogbono with protein</span>
+              <span class="item-price">₦5,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">Ewedu with protein</span>
+              <span class="item-price">₦4,000</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bulk Orders -->
+        <section class="menu-section">
+          <div class="section-header">
+            <h2><i class="fas fa-people-carry"></i> BULK ORDERS</h2>
+            <img
+              src="../images/owerri.jpg.png"
+              alt="Bulk Orders"
+              class="section-image"
+            />
+          </div>
+          <div class="menu-items">
+            <div class="menu-item">
+              <span class="item-name">1 liter seafood boil</span>
+              <span class="item-price">₦8,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">2 liters seafood boil</span>
+              <span class="item-price">₦17,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">3 liters seafood boil</span>
+              <span class="item-price">₦35,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">1 liter seafood okro</span>
+              <span class="item-price">₦9,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">2 liters seafood okro</span>
+              <span class="item-price">₦17,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">5 liters seafood okro</span>
+              <span class="item-price">₦34,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">2 liters Efo riro</span>
+              <span class="item-price">₦18,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">5 liters Efo riro</span>
+              <span class="item-price">₦35,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">2 liters Egusi</span>
+              <span class="item-price">₦18,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">5 liters Egusi</span>
+              <span class="item-price">₦37,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">2 liters ogbono</span>
+              <span class="item-price">₦15,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">5 liters ogbono</span>
+              <span class="item-price">₦32,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">2 liters stew</span>
+              <span class="item-price">₦13,000</span>
+            </div>
+            <div class="menu-item">
+              <span class="item-name">5 liters stew</span>
+              <span class="item-price">₦25,000</span>
+            </div>
+          </div>
+
+          <h2>Joseph's POT</h2>
+          <div class="menu-item">
+            <span class="item-name">1000 Menus</span>
+            <span class="item-price">(Price on request)</span>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer with QR and Contact -->
+      <footer class="menu-footer">
+        <div class="qr-container">
+          <div class="qr-code">
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://savorybites.com/menu"
+              alt="Menu QR Code"
+            />
+          </div>
+          <p>Scan for Digital Menu</p>
+        </div>
+        <div class="contact-info">
+          <h3><i class="fas fa-phone-alt"></i> PLACE YOUR ORDER</h3>
+          <p class="phone">08104344994</p>
+          <p class="address">
+            123 Food Street,<br />
+            Ikenegbu Layout, Owerri<br />
+            Imo State, Nigeria<br />
+          </p>
+          <div class="social-icons">
+            <a href="https://facebook.com" target="_blank"
+              ><i class="fab fa-facebook-f"></i
+            ></a>
+            <a href="https://instagram.com" target="_blank"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a href="https://twitter.com" target="_blank"
+              ><i class="fab fa-twitter"></i
+            ></a>
+            <a href="https://tiktok.com" target="_blank"
+              ><i class="fab fa-tiktok"></i
+            ></a>
+          </div>
+        </div>
+      </footer>
+
+      <button id="scrollTopBtn" aria-label="Scroll to Top">
+      ↑</i>
+    </button>
+
+    <!-- WhatsApp Chat Bubble -->
+    <a href="https://wa.me/2349064296917" class="whatsapp-chat" target="_blank">
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/124/124034.png"
+        alt="WhatsApp"
+      />
+    </a>
+
+    <script defer src="../JAVASCRIPT/menu.js"></script>
+    </div>
+  </body>
+</html>

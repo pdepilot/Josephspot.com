@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us | Joseph's Pot Owerri</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+     <link rel="icon" href="../images/logo3.png">
+    <link rel="stylesheet" href="../CSS/about.css" />
+    <link rel="stylesheet" href="../fontawesome-free-6.7.2-web/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+
+    <header class="navbar">
+      <div class="container">
+        <div class="logo">
+          <a href=""><img src="../images/logo3.png" alt="logo"></a>
+        </div>
+        
+        <nav class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="about.html" class="active">About</a>
+          <a href="menu.html">Menu</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="contact.html">Contact</a>
+          <a href="order online.html">Order Online</a>
+          
+          <div class="social">
+            <a href="#"><i class="fa-brands fa-facebook"></i></a>
+            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </nav>
+        
+        <span class="menu-toggle" onclick="toggleMenu()">
+          <i class="fa-solid fa-utensils"></i>
+          <i class="fa-solid fa-xmark" style="display: none;"></i>
+        </span>
+      </div>
+    </header>
+
+    <!-- Header Section -->
+    <header class="header">
+      <div class="containerr">
+        <h1>Joseph's Pot Owerri</h1>
+        <p>Where Taste Meets Excellence - A Culinary Journey Like No Other</p>
+      </div>
+    </header>
+
+    <!-- About Section -->
+    <section class="about-section">
+      <div class="container">
+        <h2 class="section-title">Our Story</h2>
+        <div class="about-content">
+          <p>
+            At <strong>Joseph's Pot Owerri</strong>, we don't just serve food—we
+            craft unforgettable dining experiences. Nestled in the heart of
+            Owerri, our restaurant is a celebration of rich flavors, warm
+            hospitality, and culinary artistry. Every dish tells a story, every
+            bite ignites passion, and every visit feels like coming home.
+          </p>
+          <p>
+            Founded with a vision to redefine Nigerian cuisine, Joseph's Pot
+            blends tradition with innovation. Our menu is a tribute to the
+            vibrant tastes of Nigeria, prepared with the freshest ingredients
+            and a touch of modern flair. From our signature
+            <strong>Ofe Owerri</strong> to succulent grilled delicacies, every
+            meal is a masterpiece.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CEO Section -->
+    <section class="ceo-section">
+      <div class="container">
+        <div class="ceo-container">
+          <img
+            src="../images/criuse.jpg" loading="lazy"
+            alt="CEO of Joseph's Pot Owerri"
+            class="ceo-image"
+            id="ceoImage"
+          />
+          <h3 class="ceo-name">Chief Joseph Okafor</h3>
+          <p class="ceo-quote">
+            "Great food is an emotion—a memory that lingers. At Joseph's Pot, we
+            don't just feed the body; we nourish the soul."
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal for CEO Image -->
+    <div id="ceoModal" class="modal">
+      <span class="close">&times;</span>
+      <img class="modal-content" id="modalImage" />
+    </div>
+
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="container">
+        <h2 class="section-title2">Why Choose Joseph's Pot?</h2>
+        <div class="features-grid">
+          <div class="feature-item">
+            <div class="feature-icon">🍽️</div>
+            <h3 class="feature-title">Exquisite Cuisine</h3>
+            <p>
+              A symphony of Nigerian and continental flavors in every dish,
+              prepared by our master chefs.
+            </p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🏛️</div>
+            <h3 class="feature-title">Elegant Ambiance</h3>
+            <p>
+              Perfect for family dinners, romantic dates, and corporate
+              gatherings in luxurious comfort.
+            </p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">👑</div>
+            <h3 class="feature-title">World-Class Service</h3>
+            <p>
+              Where every guest is treated like royalty with impeccable
+              attention to detail.
+            </p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🌱</div>
+            <h3 class="feature-title">Premium Ingredients</h3>
+            <p>
+              Only the freshest, locally sourced produce in every carefully
+              crafted dish.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+      <div class="container">
+        <h2 class="section-title" style="color: #fa2626">Visit Us Today</h2>
+        <div class="contact-info">
+          <p>
+            <strong>Address: </strong>123 Food Street,<br />
+            Ikenegbu Layout, Owerri<br />
+            Imo State, Nigeria<br />
+          </p>
+          <p><strong>Reservations:</strong> 08104344994</p>
+          <p><strong>Email:</strong> bookcruisewithjoe@gmail.com</p>
+
+          <div class="social-links">
+            <a href="https://www.facebook.com/@cruisewithjoe"
+              ><i class="fa-brands fa-facebook"></i
+            ></a>
+            <a href="https://www.x.com/@cruisewithjoe"
+              ><i class="fa-brands fa-x-twitter"></i
+            ></a>
+            <a href="https://www.youtube.com/@cruisewithjoe"
+              ><i class="fab fa-youtube"></i
+            ></a>
+            <a href="https://tiktok.com" target="_blank"
+              ><i class="fab fa-tiktok"></i
+            ></a>
+            <a href="https://www.instagram.com/@cruisewithjoe"
+              ><i class="fab fa-instagram"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<button id="scrollTopBtn" aria-label="Scroll to Top">
+      ↑</i>
+    </button>
+
+    <!-- WhatsApp Chat Bubble -->
+    <a href="https://wa.me/2349064296917" class="whatsapp-chat" target="_blank">
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/124/124034.png"
+        alt="WhatsApp"
+      />
+    </a>
+
+    <script defer src="../JAVASCRIPT/about.js"></script>
+  </body>
+</html>

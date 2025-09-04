@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Joseph's Pot - Ultimate Lunch</title>
+    <link rel="stylesheet" href="../CSS/lunch.css" />
+    <link rel="icon" href="../images/logo3.png" />
+    <link rel="stylesheet" href="../fontawesome-free-6.7.2-web/css/all.min.css">
+    <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@700&family=Montserrat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <header class="navbar" id="navbar">
+      <div class="container">
+        <div class="logo">
+          <a href=""><img src="../images/logo3.png" alt="logo"></a>
+        </div>
+        <nav class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="menu.html" class="active">Menu</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="contact.html">Contact</a>
+          <a href="order online.html">Order Online</a>
+        </nav>
+        <div class="social">
+          <a href="https://www.facebook.com/@cruisewithjoe"
+            ><i class="fa-brands fa-facebook"></i
+          ></a>
+          <a href="https://www.x.com/@cruisewithjoe"
+            ><i class="fa-brands fa-x-twitter"></i
+          ></a>
+          <a href="https://www.youtube.com/@cruisewithjoe"
+            ><i class="fab fa-youtube"></i
+          ></a>
+          <a href="https://www.instagram.com/@cruisewithjoe"
+            ><i class="fab fa-instagram"></i
+          ></a>
+        </div>
+        <span class="menu-toggle" onclick="toggleMenu()"
+          ><i class="fa-solid fa-utensils"></i
+        ></span>
+      </div>
+    </header>
+
+    <div class="menu-container">
+      <h1>JOSEPH'S POT OWERRI</h1>
+      <div class="subtitle">A Royal Celebration of Igbo Gastronomy</div>
+
+      <h2 class="section-title">The Ultimate Lunch Experience</h2>
+
+      <!-- COURSE 1 -->
+      <h3 class="course-title">ROYAL STARTERS</h3>
+
+      <div class="menu-item">
+        <div class="item-name">
+          Golden Nkwobi Tartare
+          <span class="signature-badge">Signature Dish</span>
+        </div>
+        <div class="item-description">
+          Succulent cow foot delicately diced, mixed with palm oil cream, and
+          served in crispy plantain cups with a side of fermented ugba relish.
+        </div>
+
+        <div class="story-card fishermans-story">
+          <h3>The Art of Nkwobi</h3>
+          <p>
+            Our cow feet are sourced from
+            <strong>Orie Awka market</strong> where butchers use traditional
+            cleavers. The palm oil comes from
+            <strong>Chief Nwankwo's grove</strong> in Abagana, cold-pressed
+            within 24 hours of harvest. The plantain cups are made by
+            <strong>Mrs. Obi's cooperative</strong> using unripe plantains from
+            Nnewi farms.
+          </p>
+          <div class="supplier-signature">
+            <img src="../images/nkwobi.jpeg" alt="Butcher portrait" />
+            <p>
+              "We select only the freshest cow legs - you can hear the cartilage
+              sing when we cut it!"<br />- <em>Mazi Emeka, Master Butcher</em>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAIRING GUIDE -->
+      <h3 class="course-title">LIQUID HERITAGE PAIRINGS</h3>
+
+      <table class="pairing-guide">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Dish</th>
+            <th>Pairing</th>
+            <th>Synergy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Starters</td>
+            <td>Nkwobi Tartare</td>
+            <td><strong>Palm Wine Mojito</strong> (Fresh Nkwelle style)</td>
+            <td>
+              Citrus cuts through richness while effervescence cleanses the
+              palate
+            </td>
+          </tr>
+
+          <tr>
+            <td>Soup Course</td>
+            <td>Ofe Nsala</td>
+            <td><strong>Ginger-Infused Palm Wine</strong> (Aba Style)</td>
+            <td>
+              Ginger's warmth complements subtle pepper heat in white soup
+            </td>
+          </tr>
+
+          <td>Main Course</td>
+          <td>
+            <strong>Ofe-Owerri Platter</strong><br />
+            <em>(Slow-cooked with 7 sacred meats + cocoyam silk)</em>
+          </td>
+          <td>
+            <strong>"Ogene Heritage Blend"</strong><br />
+            - Double-distilled palm wine<br />
+            - Infused with uziza seeds & garden egg bitters<br />
+            - Served in bronze cup
+          </td>
+          <td>
+            The cocktail's <strong>earthy bitterness</strong> cuts through the
+            soup's richness, while the <strong>metallic cup</strong> enhances
+            the iron notes from ugwu leaves.
+            <span style="font-style: italic"
+              >(Pairing wisdom from Eze Nri priests)</span
+            >
+          </td>
+          <tr>
+            <td>Dessert</td>
+            <td>Ukwa Bread Pudding</td>
+            <td><strong>Zobo Sangria</strong> (Chilled 48hrs)</td>
+            <td>Hibiscus tartness balances coconut sweetness</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="menu-item signature-dish">
+        <div class="item-name">
+          Ofe Owerri Royale <span class="signature-badge">Chef's Legacy</span>
+        </div>
+        <div class="item-description">
+          A luxurious deconstruction of the classic:
+          <strong>slow-cooked assorted meats</strong> (goat, tripe, and bush
+          meat) in an <strong>ultra-smooth cocoyam base</strong>, topped with
+          <strong>crispy uziza flower tempura</strong>. Served with
+          <strong>three-texture pounded yam</strong> (foam, crisp, and
+          traditional).
+        </div>
+
+        <!-- Story Card -->
+        <div class="story-card ofe-story">
+          <h3>Sacred Soup of the Ancestors</h3>
+          <p>
+            Our cocoyam comes from
+            <strong>sacred plots in Owerri Nkworji</strong>, cultivated with the
+            same methods used by <strong>King Eze Njemanze's cooks</strong>. The
+            uziza flowers are hand-picked at dawn by
+            <strong>Mgboto women's collective</strong>, while the bush meat is
+            ethically sourced from <strong>Okigwe forest reserves</strong>.
+          </p>
+
+          <div class="supplier-signature">
+            <img src="../images/ofe owerri.jpg" alt="Elder soup vendor" />
+            <p>
+              "This recipe came to me in a dream when I was 12 - the spirits of
+              my grandmother taught me the secret of the perfect draw!"<br />-
+              <em>Madam Chioma, Soup Oracle</em>
+            </p>
+          </div>
+
+          <div class="eco-badge">
+            <img
+              src="../images/drinking-horn-viking-decorated-scandinavian-260nw-596315381.webp"
+              alt="Heritage seal"
+            />
+            <p>
+              Certified Traditional Specialty Guaranteed (TSG) by Igbo Culinary
+              Society
+            </p>
+          </div>
+        </div>
+
+        <!-- Pairing Recommendation -->
+        <div class="pairing-recommendation">
+          <span class="pairing-icon">🍷</span>
+          <strong>Perfect Pair:</strong> "Ogene Bitters" - A blend of native
+          herbs, gin, and fermented garden egg (served in a calabash shot)
+        </div>
+      </div>
+
+      <!-- QR CODE -->
+      <div class="qr-section">
+        <div class="qr-code">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://josephspotowerri.com/liquid-heritage"
+            alt="Scan for Pairing Guide"
+            width="150"
+            height="150"
+          />
+        </div>
+        <p>Scan to explore our beverage cellar</p>
+      </div>
+
+      <footer>
+        <p>
+          Ingredients sourced within local market radius | Seasonal menu changes
+          daily
+        </p>
+        <p>© Joseph's Pot Owerri 2023 | #TasteTheHeritage</p>
+      </footer>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-glass">
+          <div class="footer-glass-inner">
+              <div class="footer-content">
+                  <div class="footer-column">
+                       <img src="../images/logo.jpg" alt="" width="80px"/>
+                      <p>Authentic taste, unforgettable experience.<br>Serving happiness from Owerri, Nigeria.</p>
+                      <div class="social-links">
+                          <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                          <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                          <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                          <a href="https://tiktok.com" target="_blank"><i class="fab fa-tiktok"></i></a>
+                      </div>
+                  </div>
+
+                  <div class="footer-column">
+                      <h4>Quick Links</h4>
+                      <ul>
+                          <li><a href="index.html">Home</a></li>
+                          <li><a href="about.html">About</a></li>
+                          <li><a href="menu.html">Menu</a></li>
+                          <li><a href="contact.html">Contact us</a></li>
+                          <li><a href="order online.html">Order Online</a></li>
+                      </ul>
+                  </div>
+
+                  <div class="footer-column">
+                      <h4><i class="fas fa-clock"></i> Opening Hours</h4>
+                      <p>
+                          Monday – Friday: 08:30 AM – 9:00 PM<br>
+                          Saturday: 08:00 AM – 09:00 PM<br>
+                          Sunday: 12:00 PM – 09:00 PM
+                      </p>
+                  </div>
+
+                  <div class="footer-column">
+                      <h4><i class="fas fa-map-marker-alt"></i> Visit Us</h4>
+                      <p>
+                          123 Food Street,<br>
+                          Ikenegbu Layout, Owerri<br>
+                          Imo State, Nigeria<br>
+                          <a href="https://maps.google.com?q=Joseph's Pot Owerri" target="_blank">📍 <span>
+                                  Get Directions</span></a>
+
+                      </p>
+                  </div>
+              </div>
+
+              <div class="footer-bottom">
+                  <p>&copy; 2025 Joseph's Pot. All Rights Reserved | Developed by Eribs Tech & Blog</p>
+              </div>
+          </div>
+      </div>
+  </footer>
+
+  <button id="scrollTopBtn" aria-label="Scroll to Top">
+    ↑</i>
+  </button>
+
+  <!-- WhatsApp Chat Bubble -->
+  <a href="https://wa.me/2349064296917" class="whatsapp-chat" target="_blank">
+    <img
+      src="https://cdn-icons-png.flaticon.com/512/124/124034.png"
+      alt="WhatsApp"
+    />
+  </a>
+    <script defer src="../JAVASCRIPT/lunch.js"></script>
+  </body>
+</html>
