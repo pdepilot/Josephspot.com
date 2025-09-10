@@ -1,4 +1,6 @@
 :root {
+  --deep-space: #0a0a0a;
+  --cosmic-gold: #ffd700;
   --gold: #ffffff;
   --ivory: #f5f0e5;
   --earth: #3a2e26;
@@ -24,6 +26,7 @@ body {
   width: 100%;
   padding: 15px 0;
   background-color: rgba(255, 255, 255, 0.9);
+  border-bottom: 2px solid var(--cosmic-gold);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   z-index: 1000;

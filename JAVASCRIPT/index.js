@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // ultra-fast progress simulation
   let progress = 0;
   const interval = setInterval(() => {
-    progress += Math.random() * 20 + 10; // jump faster (10–30% per tick)
+    progress += Math.random() * 20 + 10; 
     if (progress >= 100) {
       progress = 100;
       clearInterval(interval);
@@ -19,13 +19,12 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
           preloader.style.display = "none";
           content.style.display = "block";
-        }, 2000); // faster fade
+        }, 2000); 
       }, 2000);
     }
     progressBar.style.width = progress + "%";
     percentage.textContent = Math.round(progress) + "%";
-  }, 80); // ultra fast tick speed
-  
+  }, 80); 
 
   // Chop effect simulation (unchanged)
   setInterval(() => {
@@ -322,6 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 });
+
 // UPCOMING EVENTS SECTION - MODERN VERSION
 const events = [
   {
@@ -581,6 +581,7 @@ style.textContent = `
 document.head.appendChild(style);
 
 // REVIEW SECTION
+// ================ MAIN SLIDER CODE ================
 document.addEventListener("DOMContentLoaded", () => {
   let slides = [];
   const dotsContainer = document.getElementById("sliderDots");
@@ -598,13 +599,17 @@ document.addEventListener("DOMContentLoaded", () => {
     "slide-in-bottom",
   ];
 
+  // New review functionality
   const addReviewBtn = document.getElementById("addReviewBtn");
-  const reviewForm = document.getElementById("reviewForm");
+  const reviewFormOverlay = document.getElementById("reviewFormOverlay");
+  const closeReviewForm = document.getElementById("closeReviewForm");
   const submitReviewForm = document.getElementById("submitReviewForm");
   const cancelReviewBtn = document.getElementById("cancelReviewBtn");
   const stars = document.querySelectorAll(".star");
   const reviewRatingInput = document.getElementById("reviewRating");
+
   // Admin elements
+  const adminLoginBtn = document.getElementById("adminLoginBtn");
   const adminToggle = document.getElementById("adminToggle");
   const adminPanel = document.getElementById("adminPanel");
   const adminTabs = document.querySelectorAll(".admin-tab");
@@ -656,6 +661,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("userReviews", JSON.stringify(sampleReviews));
     }
   }
+
   // Load saved reviews from localStorage
   function loadSavedReviews() {
     initializeSampleReviews();
@@ -710,23 +716,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateDots();
   }
+
   // Call this when page loads
   loadSavedReviews();
 
   // Toggle review form visibility
   addReviewBtn.addEventListener("click", () => {
-    reviewForm.style.display = "block";
-    addReviewBtn.style.display = "none";
+    reviewFormOverlay.style.display = "flex";
     stopSlideShow();
   });
 
+  closeReviewForm.addEventListener("click", () => {
+    closeReviewFormHandler();
+  });
+
   cancelReviewBtn.addEventListener("click", () => {
-    reviewForm.style.display = "none";
-    addReviewBtn.style.display = "block";
+    closeReviewFormHandler();
+  });
+
+  function closeReviewFormHandler() {
+    reviewFormOverlay.style.display = "none";
     submitReviewForm.reset();
     reviewRatingInput.value = "5";
     updateStars(5);
     startSlideShow();
+  }
+
+  // Close form when clicking outside
+  reviewFormOverlay.addEventListener("click", (e) => {
+    if (e.target === reviewFormOverlay) {
+      closeReviewFormHandler();
+    }
   });
 
   // Star rating functionality
@@ -758,6 +778,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showActionMessage("Please fill in all required fields", "#f44336");
       return;
     }
+
     // Handle image upload
     let imageUrl = "https://randomuser.me/api/portraits/neutral/default.jpg";
     if (imageInput.files.length > 0) {
@@ -777,7 +798,7 @@ document.addEventListener("DOMContentLoaded", () => {
       text,
       rating,
       imageUrl,
-      approved: false,
+      approved: false, // New reviews need admin approval
       date: new Date().toISOString(),
     };
 
@@ -788,8 +809,7 @@ document.addEventListener("DOMContentLoaded", () => {
     submitReviewForm.reset();
     reviewRatingInput.value = "5";
     updateStars(5);
-    reviewForm.style.display = "none";
-    addReviewBtn.style.display = "block";
+    reviewFormOverlay.style.display = "none";
 
     // Show success message
     showActionMessage("Review submitted for approval", "#4CAF50");
@@ -801,12 +821,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     startSlideShow();
   });
+
   // Save review to localStorage
   function saveReviewToStorage(review) {
     const savedReviews = JSON.parse(localStorage.getItem("userReviews")) || [];
-    savedReviews.unshift(review);
+    savedReviews.unshift(review); // Add new review at beginning
     localStorage.setItem("userReviews", JSON.stringify(savedReviews));
   }
+
   // Image upload simulation (in a real app, you'd upload to a server)
   function uploadImage(file) {
     return new Promise((resolve) => {
@@ -817,6 +839,7 @@ document.addEventListener("DOMContentLoaded", () => {
       reader.readAsDataURL(file);
     });
   }
+
   // Slider functions
   function updateDots() {
     dotsContainer.innerHTML = "";
@@ -832,6 +855,7 @@ document.addEventListener("DOMContentLoaded", () => {
       dotsContainer.appendChild(dot);
     });
   }
+
   function showSlide(index) {
     // Wrap around if at ends
     if (index >= slides.length) index = 0;
@@ -844,7 +868,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Show the selected slide with animation
     slides[index].classList.add("active");
+
+    // Update current index
     currentIndex = index;
+
     // Update dots
     document
       .querySelectorAll(".dot")
@@ -909,6 +936,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (e.key === "ArrowRight") {
       nextSlide();
       resetSlideShow();
+    } else if (
+      e.key === "Escape" &&
+      reviewFormOverlay.style.display === "flex"
+    ) {
+      closeReviewFormHandler();
     }
   });
 
@@ -921,23 +953,18 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(message);
     setTimeout(() => message.remove(), 3000);
   }
+
   // ================ ADMIN FUNCTIONALITY ================
-  if (
-    window.location.search.includes("admin") ||
-    window.location.hash.includes("admin")
-  ) {
-    adminToggle.style.display = "block";
-  }
-  adminToggle.addEventListener("click", () => {
+
+  // Admin login button functionality
+  adminLoginBtn.addEventListener("click", () => {
     const password = prompt("Enter admin password:");
     if (password === "admin1982") {
-      // Change this to a more secure password in production
       adminMode = !adminMode;
       adminPanel.style.display = adminMode ? "block" : "none";
-      adminToggle.textContent = adminMode ? "ADMIN MODE ON" : "Admin Mode";
+      adminToggle.style.display = adminMode ? "block" : "none";
       if (adminMode) {
         loadPendingReviews();
-        // Load approved reviews if that tab is active
         const activeTab = document.querySelector(".admin-tab.active");
         if (activeTab.dataset.tab === "approved") {
           loadApprovedReviews();
@@ -974,45 +1001,56 @@ document.addEventListener("DOMContentLoaded", () => {
   function loadPendingReviews() {
     const pendingContainer = document.getElementById("pendingReviews");
     pendingContainer.innerHTML = "";
+
     const pending = getPendingReviews();
+
     if (pending.length === 0) {
       pendingContainer.innerHTML = "<p>No pending reviews</p>";
       return;
     }
+
     pending.forEach((review) => {
       const reviewElement = createAdminReviewElement(review, true);
       pendingContainer.appendChild(reviewElement);
     });
   }
+
   // Load approved reviews
   function loadApprovedReviews() {
     const approvedContainer = document.getElementById("approvedReviews");
     approvedContainer.innerHTML = "";
+
     const approved = getApprovedReviews();
+
     if (approved.length === 0) {
       approvedContainer.innerHTML = "<p>No approved reviews</p>";
       return;
     }
+
     approved.forEach((review) => {
       const reviewElement = createAdminReviewElement(review, false);
       approvedContainer.appendChild(reviewElement);
     });
   }
+
   // Get pending reviews
   function getPendingReviews() {
     const allReviews = JSON.parse(localStorage.getItem("userReviews")) || [];
     return allReviews.filter((review) => !review.approved);
   }
+
   // Get approved reviews
   function getApprovedReviews() {
     const allReviews = JSON.parse(localStorage.getItem("userReviews")) || [];
     return allReviews.filter((review) => review.approved);
   }
+
   // Create admin review element (for both pending and approved)
   function createAdminReviewElement(review, isPending = true) {
     const element = document.createElement("div");
     element.className = isPending ? "pending-review" : "approved-review";
     element.dataset.id = review.id;
+
     element.innerHTML = `
                     <div class="review-edit-fields" style="display:none">
                         <textarea class="edit-text">${review.text}</textarea>
@@ -1069,6 +1107,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     </div>
                 `;
+
     // Add event listeners
     const editBtn = element.querySelector(".edit-btn");
     const approveBtn = element.querySelector(".approve-btn");
@@ -1109,7 +1148,7 @@ document.addEventListener("DOMContentLoaded", () => {
         rating: Array.from(element.querySelectorAll(".edit-star")).filter(
           (star) => star.textContent === "★"
         ).length,
-        approved: isPending ? true : review.approved,
+        approved: isPending ? true : review.approved, // Keep approved status if already approved
       };
       updateReview(updatedReview);
     });
@@ -1128,6 +1167,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return element;
   }
+
   // Update review
   function updateReview(updatedReview) {
     const allReviews = JSON.parse(localStorage.getItem("userReviews")) || [];
@@ -1141,6 +1181,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "#4CAF50"
     );
   }
+
   // Delete review
   function deleteReview(id) {
     const allReviews = JSON.parse(localStorage.getItem("userReviews")) || [];
@@ -1149,6 +1190,7 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshUI();
     showActionMessage("✓ Review deleted", "#f44336");
   }
+
   // Refresh UI
   function refreshUI() {
     if (adminMode) {
@@ -1159,7 +1201,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loadPendingReviews();
       }
     }
-    loadSavedReviews();
+    loadSavedReviews(); // Refresh the main display
   }
 });
 // WhatsApp link

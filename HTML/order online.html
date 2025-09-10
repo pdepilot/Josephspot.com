@@ -20,11 +20,11 @@
   </head>
   <body>
 
-    <!-- Navbar -->
+   <!-- Navbar -->
     <header class="navbar" id="navbar">
       <div class="containerr">
         <div class="logo">
-         <a href=""><img src="../images/logo3.png" alt="logo"></a>
+          <a href=""><img src="../images/logo3.png" alt="logo" /></a>
         </div>
         <nav class="nav-links">
           <a href="index.html">Home</a>
@@ -41,22 +41,46 @@
           <span class="cart-count">0</span>
         </div>
         <div class="social">
-          <a href="https://www.facebook.com/@cruisewithjoe"><i class="fa-brands fa-facebook"></i></a>
+          <a href="https://www.facebook.com/@cruisewithjoe"
+            ><i class="fa-brands fa-facebook"></i
+          ></a>
           <a href="https://www.x.com/@cruisewithjoe"><i class="fa-brands fa-x-twitter"></i></a>
-          <a href="https://www.youtube.com/@cruisewithjoe"><i class="fab fa-youtube"></i></a>
-          <a href="https://www.instagram.com/@cruisewithjoe"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.youtube.com/@cruisewithjoe"
+            ><i class="fab fa-youtube"></i
+          ></a>
+          <a href="https://www.instagram.com/@cruisewithjoe"
+            ><i class="fab fa-instagram"></i
+          ></a>
         </div>
 
         <!-- Add this to your navbar -->
-        <div class="admin-login-container">
-            <button id="adminLoginBtn" class="admin-login-btn">
+        <div class="admin-login-button">
+          <button id="adminLoginBtn" class="admin-login-btn">
             <i class="fas fa-user-cog"></i>
-            </button>
+          </button>
         </div>
 
-        <span class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-utensils"></i></span>
+        <span class="menu-toggle" onclick="toggleMenu()"
+          ><i class="fa-solid fa-utensils"></i
+        ></span>
       </div>
     </header>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Empty Cart Prompt -->
+    <div class="empty-cart-prompt" id="emptyCartPrompt">
+      <div class="empty-cart-container">
+        <i class="fas fa-shopping-cart"></i>
+        <h3>Your Cart is Empty</h3>
+        <p>Please add items to your cart before proceeding to checkout.</p>
+        <div class="empty-cart-actions">
+          <button class="btn" id="closeEmptyCart">Close</button>
+          <button class="btn" id="browseMenu">Browse Menu</button>
+        </div>
+      </div>
+    </div>
 
     <main class="main-content">
       <section class="hero">
@@ -182,7 +206,7 @@
               <option value="Kwara">Kwara</option>
               <option value="Lagos">Lagos</option>
               <option value="Nasarawa">Nasarawa</option>
-              <option value="Niger">Niger</option>
+              <option value="Niger">Niber</option>
               <option value="Ogun">Ogun</option>
               <option value="Ondo">Ondo</option>
               <option value="Osun">Osun</option>
@@ -373,7 +397,114 @@
       </div>
     </div>
 
+    <!-- Admin Login Modal -->
+    <div class="admin-login-modal" id="adminLoginModal">
+      <div class="admin-login-container">
+        <div class="admin-login-header">
+          <h2>Admin Login</h2>
+          <button class="close-admin-login">&times;</button>
+        </div>
+        <form id="adminLoginForm">
+          <div class="form-group">
+            <label for="adminUsername">Username</label>
+            <input type="text" id="adminUsername" required />
+          </div>
+          <div class="form-group">
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" required />
+          </div>
+          <button type="submit" class="btn btn-admin-login">Login</button>
+        </form>
+      </div>
+    </div>
 
+    <!-- Admin Dashboard Modal -->
+    <div class="admin-dashboard-modal" id="adminDashboard">
+      <div class="admin-dashboard-container">
+        <div class="admin-dashboard-header">
+          <h2>Admin Dashboard</h2>
+          <button class="close-admin-dashboard">&times;</button>
+        </div>
+        <div class="admin-dashboard-body">
+          <div class="dashboard-stats">
+            <div class="stat-card">
+              <h3>Total Orders</h3>
+              <p id="totalOrdersCount">0</p>
+            </div>
+            <div class="stat-card">
+              <h3>Pending Orders</h3>
+              <p id="pendingOrdersCount">0</p>
+            </div>
+            <div class="stat-card">
+              <h3>Revenue</h3>
+              <p id="totalRevenue">₦0.00</p>
+            </div>
+          </div>
+
+          <div class="dashboard-tabs">
+            <button class="dashboard-tab active" data-tab="pending">
+              Pending Orders
+            </button>
+            <button class="dashboard-tab" data-tab="completed">
+              Completed Orders
+            </button>
+            <button class="dashboard-tab" data-tab="all">All Orders</button>
+          </div>
+
+          <div class="recent-orders">
+            <h3 id="ordersTableTitle">Pending Orders</h3>
+            <div class="orders-table-container">
+              <table class="orders-table" id="ordersTable">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Amount</th>
+                    <th>Payment Method</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                  <!-- Orders will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="admin-actions">
+            <button class="btn btn-logout" id="adminLogout">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Password Modal -->
+    <div class="admin-password-modal" id="adminPasswordModal">
+      <div class="admin-password-container">
+        <div class="admin-password-header">
+          <h2>Admin Verification</h2>
+          <button class="close-admin-password">&times;</button>
+        </div>
+        <div class="admin-password-body">
+          <p id="passwordPrompt">
+            Please enter your admin password to continue
+          </p>
+          <div class="form-group">
+            <label for="adminActionPassword">Admin Password</label>
+            <input type="password" id="adminActionPassword" required />
+          </div>
+          <div class="password-actions">
+            <button class="btn btn-back" id="cancelPassword">Cancel</button>
+            <button class="btn btn-submit" id="submitPassword">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     
 

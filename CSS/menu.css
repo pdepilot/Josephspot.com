@@ -1,5 +1,7 @@
 /* Base Styles */
 :root {
+  --starlight-gold: #ffd700;
+  --cosmic-gold: #ffb400;
   --primary: #e67e22;
   --secondary: #d35400;
   --accent: #f1c40f;
@@ -37,7 +39,7 @@ body {
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   z-index: 1000;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  border-bottom: 2px solid var(--cosmic-gold);
   box-shadow: 0 5px 30px rgba(123, 45, 222, 0.3);
   transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
