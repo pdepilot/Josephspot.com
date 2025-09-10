@@ -747,11 +747,16 @@ document.addEventListener("DOMContentLoaded", function () {
     // Set appropriate prompt based on action
     if (action === "delete") {
       passwordPrompt.textContent =
-        "Please enter your admin action password to delete this order";
+        "Please enter your admin password to delete this order";
     }
 
     adminPasswordModal.style.display = "flex";
     document.body.style.overflow = "hidden";
+    
+    // Focus on password input when modal opens
+    setTimeout(() => {
+      adminActionPassword.focus();
+    }, 100);
   }
 
   function closeAdminPasswordModal() {
@@ -900,8 +905,9 @@ document.addEventListener("DOMContentLoaded", function () {
     ) {
       closeAdminLoginModal();
       openAdminDashboard();
+      showToast("Admin login successful!");
     } else {
-      alert("Invalid admin credentials");
+      showToast("Invalid admin credentials", true);
     }
   }
 
@@ -910,12 +916,73 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (password === ADMIN_CREDENTIALS.actionPassword) {
       // Password is correct, perform the action
-      if (currentAction === "delete") {
+      if (currentAction === "delete" && currentOrderId) {
         deleteOrder(currentOrderId);
       }
       closeAdminPasswordModal();
     } else {
-      alert("Incorrect action password. Action not authorized.");
+      showToast("Incorrect action password. Action not authorized.", true);
+      adminActionPassword.value = "";
+    }
+  }
+
+  // Function to handle order actions
+  function handleOrderAction(action, orderId) {
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    const orderIndex = orders.findIndex((order) => order.id === orderId);
+
+    if (orderIndex !== -1) {
+      if (action === "complete") {
+        orders[orderIndex].status = "completed";
+        localStorage.setItem("orders", JSON.stringify(orders));
+        loadAdminData(); // Refresh the table
+        showToast(`Order ${orderId} has been marked as completed.`);
+      } else if (action === "delete") {
+        // Open password modal for delete confirmation
+        openAdminPasswordModal("delete", orderId);
+      } else if (action === "view") {
+        viewOrder(orderId);
+      }
+    }
+  }
+
+  function deleteOrder(orderId) {
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    const orderIndex = orders.findIndex((order) => order.id === orderId);
+
+    if (orderIndex !== -1) {
+      orders.splice(orderIndex, 1);
+      localStorage.setItem("orders", JSON.stringify(orders));
+      loadAdminData(); // Refresh the table
+      showToast(`Order ${orderId} has been deleted.`);
+    }
+  }
+
+  function viewOrder(orderId) {
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    const order = orders.find((order) => order.id === orderId);
+
+    if (order) {
+      let orderDetails = `Order Details:\n\n`;
+      orderDetails += `Order ID: ${order.id}\n`;
+      orderDetails += `Customer: ${order.customerName}\n`;
+      orderDetails += `Phone: ${order.customerPhone}\n`;
+      orderDetails += `Email: ${order.customerEmail}\n`;
+      orderDetails += `Address: ${order.customerAddress}\n\n`;
+      orderDetails += `Items:\n`;
+      
+      order.items.forEach(item => {
+        orderDetails += `- ${item.title} x${item.quantity} - ₦${(item.price * item.quantity).toLocaleString()}\n`;
+      });
+      
+      orderDetails += `\nSubtotal: ₦${order.subtotal.toLocaleString()}\n`;
+      orderDetails += `Delivery Fee: ₦${order.deliveryFee.toLocaleString()}\n`;
+      orderDetails += `Total: ₦${order.total.toLocaleString()}\n\n`;
+      orderDetails += `Payment Method: ${order.paymentMethod}\n`;
+      orderDetails += `Status: ${order.status}\n`;
+      orderDetails += `Date: ${order.dateFormatted || new Date(order.date).toLocaleString()}`;
+
+      alert(orderDetails);
     }
   }
 
@@ -959,10 +1026,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (filteredOrders.length === 0) {
       ordersTableBody.innerHTML = `
-                        <tr>
-                            <td colspan="8" style="text-align: center;">No orders found</td>
-                        </tr>
-                    `;
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 20px;">No orders found</td>
+        </tr>
+      `;
       return;
     }
 
@@ -972,28 +1039,27 @@ document.addEventListener("DOMContentLoaded", function () {
     sortedOrders.forEach((order) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-                        <td>${order.id}</td>
-                        <td>${order.customerName}</td>
-                        <td>${order.customerPhone}</td>
-                        <td>₦${order.total.toLocaleString()}</td>
-                        <td>${formatPaymentMethod(order.paymentMethod)}</td>
-                        <td class="order-date">${
-                          order.dateFormatted ||
-                          new Date(order.date).toLocaleString()
-                        }</td>
-                        <td class="status-${order.status}">${
+        <td>${order.id}</td>
+        <td>${order.customerName}</td>
+        <td>${order.customerPhone}</td>
+        <td>₦${order.total.toLocaleString()}</td>
+        <td>${formatPaymentMethod(order.paymentMethod)}</td>
+        <td class="order-date">${
+          order.dateFormatted || new Date(order.date).toLocaleString()
+        }</td>
+        <td class="status-${order.status}">${
         order.status.charAt(0).toUpperCase() + order.status.slice(1)
       }</td>
-                        <td>
-                            ${
-                              order.status === "pending"
-                                ? `<button class="action-btn complete-order" data-id="${order.id}">Complete</button>
-                                   <button class="delete-btn delete-order" data-id="${order.id}">Delete</button>`
-                                : `<button class="action-btn view-order" data-id="${order.id}">View</button>
-                                   <button class="delete-btn delete-order" data-id="${order.id}">Delete</button>`
-                            }
-                        </td>
-                    `;
+        <td>
+          ${
+            order.status === "pending"
+              ? `<button class="action-btn complete-order" data-id="${order.id}">Complete</button>
+                 <button class="delete-btn delete-order" data-id="${order.id}">Delete</button>`
+              : `<button class="action-btn view-order" data-id="${order.id}">View</button>
+                 <button class="delete-btn delete-order" data-id="${order.id}">Delete</button>`
+          }
+        </td>
+      `;
       ordersTableBody.appendChild(row);
     });
 
@@ -1001,70 +1067,23 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".complete-order").forEach((btn) => {
       btn.addEventListener("click", function () {
         const orderId = this.getAttribute("data-id");
-        completeOrder(orderId);
+        handleOrderAction("complete", orderId);
       });
     });
 
     document.querySelectorAll(".view-order").forEach((btn) => {
       btn.addEventListener("click", function () {
         const orderId = this.getAttribute("data-id");
-        viewOrder(orderId);
+        handleOrderAction("view", orderId);
       });
     });
 
-    // Add event listeners to delete buttons
     document.querySelectorAll(".delete-order").forEach((btn) => {
       btn.addEventListener("click", function () {
         const orderId = this.getAttribute("data-id");
-        openAdminPasswordModal("delete", orderId);
+        handleOrderAction("delete", orderId);
       });
     });
-  }
-
-  function completeOrder(orderId) {
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    const orderIndex = orders.findIndex((order) => order.id === orderId);
-
-    if (orderIndex !== -1) {
-      orders[orderIndex].status = "completed";
-      localStorage.setItem("orders", JSON.stringify(orders));
-      loadAdminData(); // Refresh the table
-
-      // Show confirmation message
-      alert(`Order ${orderId} has been marked as completed.`);
-    }
-  }
-
-  function deleteOrder(orderId) {
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    const orderIndex = orders.findIndex((order) => order.id === orderId);
-
-    if (orderIndex !== -1) {
-      orders.splice(orderIndex, 1);
-      localStorage.setItem("orders", JSON.stringify(orders));
-      loadAdminData(); // Refresh the table
-
-      // Show confirmation message
-      alert(`Order ${orderId} has been deleted.`);
-    }
-  }
-
-  function viewOrder(orderId) {
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    const order = orders.find((order) => order.id === orderId);
-
-    if (order) {
-      alert(`Order Details:\n
-Order ID: ${order.id}
-Customer: ${order.customerName}
-Phone: ${order.customerPhone}
-Email: ${order.customerEmail}
-Address: ${order.customerAddress}
-Total: ₦${order.total.toLocaleString()}
-Payment Method: ${order.paymentMethod}
-Status: ${order.status}
-Date: ${order.dateFormatted || new Date(order.date).toLocaleString()}`);
-    }
   }
 
   // 11. Receipt Generation - UPDATED TO ACCEPT ITEMS AND TOTALS AS PARAMETERS
@@ -1468,7 +1487,7 @@ scrollBtn.onclick = function () {
 };
 
 // WhatsApp link
-const whatsappNumber = "2349064296917"; // Replace with your WhatsApp number (no '+' sign)
+const whatsappNumber = "2349064296917";
 const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
   "Hello, I would like to place an order"
 )}`;
