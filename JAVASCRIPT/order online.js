@@ -29,11 +29,10 @@ function toggleMenu() {
   }
 }
 
-// Close menu when clicking on a nav link (optional)
+// Close menu when clicking on a nav link
 document.querySelectorAll(".nav-links a").forEach((link) => {
   link.addEventListener("click", () => {
     if (window.innerWidth <= 768) {
-      // Only for mobile
       toggleMenu();
     }
   });
@@ -45,8 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
     {
       id: 1,
       title: "Ofe Owerri",
-      description:
-        "Filled With Snails, Stockfishes, Dryfishes, Lots of Protein",
+      description: "Filled With Snails, Stockfishes, Dryfishes, Lots of Protein",
       price: 2500,
       category: "soups",
       image: "../images/image20.jpg",
@@ -54,8 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
     {
       id: 2,
       title: "Ofe Nsala White Soup",
-      description:
-        "Thickened With Pure White Yam, Filled With Snails, And Lots of Proteins",
+      description: "Thickened With Pure White Yam, Filled With Snails, And Lots of Proteins",
       price: 3500,
       category: "soups",
       image: "../images/nsala.jpeg",
@@ -127,8 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
     {
       id: 11,
       title: "Instant Noodles",
-      description:
-        "Quick noodles with vegetables and eggs mixed with fried plantain",
+      description: "Quick noodles with vegetables and eggs mixed with fried plantain",
       price: 1800,
       category: "noodles",
       image: "../images/2021-09-06.webp",
@@ -204,14 +200,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const clearCartBtn = document.getElementById("clearCart");
   const proceedToCheckoutBtn = document.getElementById("proceedToCheckout");
   const customerDetailsModal = document.getElementById("customerDetailsModal");
-  const closeCustomerDetails = document.querySelector(
-    ".close-customer-details"
-  );
+  const closeCustomerDetails = document.querySelector(".close-customer-details");
   const customerDetailsForm = document.getElementById("customerDetailsForm");
   const backToCartBtn = document.getElementById("backToCart");
-  const paymentOptions = document.querySelectorAll(
-    'input[name="paymentMethod"]'
-  );
+  const paymentOptions = document.querySelectorAll('input[name="paymentMethod"]');
   const bankDetailsSection = document.getElementById("bankDetails");
   const copyAccountNumberBtn = document.getElementById("copyAccountNumber");
   const receiptModal = document.getElementById("receiptModal");
@@ -222,13 +214,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const receiptCustomerEmail = document.getElementById("receiptCustomerEmail");
   const receiptCustomerPhone = document.getElementById("receiptCustomerPhone");
   const receiptCustomerState = document.getElementById("receiptCustomerState");
-  const receiptCustomerAddress = document.getElementById(
-    "receiptCustomerAddress"
-  );
+  const receiptCustomerAddress = document.getElementById("receiptCustomerAddress");
   const receiptPaymentMethod = document.getElementById("receiptPaymentMethod");
-  const receiptPaymentDetails = document.getElementById(
-    "receiptPaymentDetails"
-  );
+  const receiptPaymentDetails = document.getElementById("receiptPaymentDetails");
   const receiptOrderId = document.getElementById("receiptOrderId");
   const receiptDate = document.getElementById("receiptDate");
   const receiptQrCode = document.getElementById("receiptQrCode");
@@ -237,7 +225,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const shareWhatsAppBtn = document.getElementById("shareWhatsApp");
   const shareEmailBtn = document.getElementById("shareEmail");
   const closeReceiptBtn = document.getElementById("closeReceipt");
-
   // Admin Elements
   const adminLoginBtn = document.getElementById("adminLoginBtn");
   const adminLoginModal = document.getElementById("adminLoginModal");
@@ -252,7 +239,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const adminLogoutBtn = document.getElementById("adminLogout");
   const dashboardTabs = document.querySelectorAll(".dashboard-tab");
   const ordersTableTitle = document.getElementById("ordersTableTitle");
-
   // Password Modal Elements
   const adminPasswordModal = document.getElementById("adminPasswordModal");
   const closeAdminPassword = document.querySelector(".close-admin-password");
@@ -260,18 +246,21 @@ document.addEventListener("DOMContentLoaded", function () {
   const cancelPasswordBtn = document.getElementById("cancelPassword");
   const submitPasswordBtn = document.getElementById("submitPassword");
   const passwordPrompt = document.getElementById("passwordPrompt");
-
   // Toast and Empty Cart Elements
   const toastContainer = document.getElementById("toastContainer");
   const emptyCartPrompt = document.getElementById("emptyCartPrompt");
   const closeEmptyCartBtn = document.getElementById("closeEmptyCart");
   const browseMenuBtn = document.getElementById("browseMenu");
+  // Proof of Payment Modal Elements
+  const proofViewModal = document.getElementById("proofViewModal");
+  const closeProofView = document.querySelector(".close-proof-view");
+  const proofImage = document.getElementById("proofImage");
 
   // Admin Credentials
   const ADMIN_CREDENTIALS = {
     username: "admin",
-    password: "admin123", // Login password
-    actionPassword: "secure123", // Different password for actions
+    password: "admin123",
+    actionPassword: "secure123",
   };
 
   // 3. Cart State
@@ -282,27 +271,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 4. Initialize App
   function init() {
+    console.log("Initializing app");
     renderMenuItems();
     updateCartCount();
     setupEventListeners();
     setupAdminEventListeners();
-
-    // Initialize with some sample orders if none exist
     initializeSampleOrders();
-
-    // Setup empty cart prompt event listeners
     closeEmptyCartBtn.addEventListener("click", closeEmptyCartPrompt);
     browseMenuBtn.addEventListener("click", function () {
       closeEmptyCartPrompt();
-      // Scroll to menu section
       document.getElementById("menu").scrollIntoView({ behavior: "smooth" });
     });
   }
 
-  // Initialize sample orders for demonstration
+  // Initialize sample orders
   function initializeSampleOrders() {
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    if (orders.length === 0) {
+    console.log("Checking for sample orders");
+    let orders = JSON.parse(localStorage.getItem("orders"));
+    if (!Array.isArray(orders) || orders.length === 0) {
+      console.log("No orders found, initializing sample orders");
       const sampleOrders = [
         {
           id: "GD10001",
@@ -316,26 +303,22 @@ document.addEventListener("DOMContentLoaded", function () {
               title: "Ofe Owerri",
               price: 2500,
               quantity: 2,
-              image:
-                "https://images.unsplash.com/photo-1547592166-23ac45744acd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+              image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
             },
             {
               id: 17,
               title: "Malt",
               price: 1800,
               quantity: 1,
-              image:
-                "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+              image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
             },
           ],
           subtotal: 6800,
           deliveryFee: 1500,
           total: 8300,
           paymentMethod: "cod",
-          date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-          dateFormatted: new Date(
-            Date.now() - 2 * 60 * 60 * 1000
-          ).toLocaleDateString("en-US", {
+          date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          dateFormatted: new Date(Date.now() - 2 * 60 * 60 * 1000).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
             day: "numeric",
@@ -356,26 +339,23 @@ document.addEventListener("DOMContentLoaded", function () {
               title: "Jollof Rice",
               price: 3200,
               quantity: 1,
-              image:
-                "https://images.unsplash.com/photo-1593219531316-511804d4b5e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+              image: "https://images.unsplash.com/photo-1593219531316-511804d4b5e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
             },
             {
               id: 6,
               title: "Fried Rice",
               price: 3500,
               quantity: 1,
-              image:
-                "https://images.unsplash.com/photo-1630918037678-a8f7e0f9c9c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+              image: "https://images.unsplash.com/photo-1630918037678-a8f7e0f9c9c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
             },
           ],
           subtotal: 6700,
           deliveryFee: 1500,
           total: 8200,
           paymentMethod: "bank",
-          date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-          dateFormatted: new Date(
-            Date.now() - 24 * 60 * 60 * 1000
-          ).toLocaleDateString("en-US", {
+          proofOfPayment: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAB9SURBVFhH7ZLRDcAgCEO9/6Un8Gi0oBvoBrqBAaQ7KULM3b2V3F0hF0gBXACXgAswAFwAF8AFcAFcABfABXABXAAXwAVwAVwAF8AFcAFcABfABXABXAAXwAVwAVwAF8AFcAFcABfABXABXAAXwAVwAVwAF8AFcAFcABfABXABXAAXwAb8AB2vA0E8RAAAAAElFTkSuQmCC",
+          date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          dateFormatted: new Date(Date.now() - 24 * 60 * 60 * 1000).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
             day: "numeric",
@@ -386,21 +366,18 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       ];
       localStorage.setItem("orders", JSON.stringify(sampleOrders));
+      orders = sampleOrders;
     }
+    console.log("Orders initialized:", orders);
   }
 
   // 5. Render Menu Items
   function renderMenuItems(category = "all") {
     menuItemsContainer.innerHTML = "";
-
-    const filteredItems =
-      category === "all"
-        ? menuItems
-        : menuItems.filter((item) => item.category === category);
+    const filteredItems = category === "all" ? menuItems : menuItems.filter((item) => item.category === category);
 
     if (filteredItems.length === 0) {
-      menuItemsContainer.innerHTML =
-        '<p class="no-items">No items in this category</p>';
+      menuItemsContainer.innerHTML = '<p class="no-items">No items in this category</p>';
       return;
     }
 
@@ -408,27 +385,22 @@ document.addEventListener("DOMContentLoaded", function () {
       const menuItemElement = document.createElement("div");
       menuItemElement.className = "menu-item";
       menuItemElement.innerHTML = `
-                        <img src="${item.image}" alt="${
-        item.title
-      }" class="menu-item-img">
-                        <div class="menu-item-content">
-                            <h3 class="menu-item-title">${item.title}</h3>
-                            <p class="menu-item-desc">${item.description}</p>
-                            <div class="menu-item-footer">
-                                <span class="menu-item-price">₦${item.price.toLocaleString()}</span>
-                                <button class="add-to-cart" data-id="${
-                                  item.id
-                                }">Add to Cart</button>
-                            </div>
-                        </div>
-                    `;
+        <img src="${item.image}" alt="${item.title}" class="menu-item-img">
+        <div class="menu-item-content">
+          <h3 class="menu-item-title">${item.title}</h3>
+          <p class="menu-item-desc">${item.description}</p>
+          <div class="menu-item-footer">
+            <span class="menu-item-price">₦${item.price.toLocaleString()}</span>
+            <button class="add-to-cart" data-id="${item.id}">Add to Cart</button>
+          </div>
+        </div>
+      `;
       menuItemsContainer.appendChild(menuItemElement);
     });
   }
 
   // 6. Setup Event Listeners
   function setupEventListeners() {
-    // Category Buttons
     categoryButtons.forEach((button) => {
       button.addEventListener("click", function () {
         categoryButtons.forEach((btn) => btn.classList.remove("active"));
@@ -437,7 +409,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    // Add to Cart
     menuItemsContainer.addEventListener("click", function (e) {
       if (e.target.classList.contains("add-to-cart")) {
         const itemId = parseInt(e.target.getAttribute("data-id"));
@@ -445,7 +416,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    // Cart Icon - Modified to check for empty cart
     cartIcon.addEventListener("click", function () {
       if (cart.length === 0) {
         showEmptyCartPrompt();
@@ -454,36 +424,19 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    // Close Checkout Modal
     closeCheckout.addEventListener("click", closeCheckoutModal);
-
-    // Clear Cart
     clearCartBtn.addEventListener("click", clearCart);
-
-    // Proceed to Checkout
     proceedToCheckoutBtn.addEventListener("click", openCustomerDetails);
-
-    // Close Customer Details
     closeCustomerDetails.addEventListener("click", closeCustomerDetailsModal);
-
-    // Back to Cart
     backToCartBtn.addEventListener("click", function () {
       closeCustomerDetailsModal();
       openCheckoutModal();
     });
-
-    // Payment Method Change
     paymentOptions.forEach((option) => {
       option.addEventListener("change", handlePaymentMethodChange);
     });
-
-    // Copy Account Number
     copyAccountNumberBtn.addEventListener("click", copyAccountNumber);
-
-    // Form Submission
     customerDetailsForm.addEventListener("submit", handleFormSubmission);
-
-    // Receipt Actions
     printReceiptBtn.addEventListener("click", printReceipt);
     downloadReceiptBtn.addEventListener("click", downloadReceipt);
     shareWhatsAppBtn.addEventListener("click", shareViaWhatsApp);
@@ -493,24 +446,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Setup Admin Event Listeners
   function setupAdminEventListeners() {
-    // Admin login button
+    console.log("Setting up admin event listeners");
     adminLoginBtn.addEventListener("click", openAdminLogin);
-
-    // Close admin login
     closeAdminLogin.addEventListener("click", closeAdminLoginModal);
-
-    // Admin login form submission
     adminLoginForm.addEventListener("submit", handleAdminLogin);
-
-    // Close admin dashboard
     closeAdminDashboard.addEventListener("click", closeAdminDashboardModal);
-
-    // Admin logout button
     adminLogoutBtn.addEventListener("click", handleAdminLogout);
 
-    // Dashboard tabs
     dashboardTabs.forEach((tab) => {
       tab.addEventListener("click", function () {
+        console.log("Tab clicked:", this.dataset.tab);
         dashboardTabs.forEach((t) => t.classList.remove("active"));
         this.classList.add("active");
         currentTab = this.dataset.tab;
@@ -519,13 +464,39 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    // Password modal events
     closeAdminPassword.addEventListener("click", closeAdminPasswordModal);
     cancelPasswordBtn.addEventListener("click", closeAdminPasswordModal);
     submitPasswordBtn.addEventListener("click", handlePasswordSubmit);
+
+    if (closeProofView) {
+      closeProofView.addEventListener("click", closeProofViewModal);
+    } else {
+      console.error("closeProofView element not found");
+    }
+
+    if (ordersTableBody) {
+      ordersTableBody.addEventListener("click", function (e) {
+        if (e.target.classList.contains("proof-thumbnail")) {
+          console.log("Thumbnail clicked, order ID:", e.target.dataset.id);
+          const orderId = e.target.dataset.id;
+          const orders = JSON.parse(localStorage.getItem("orders")) || [];
+          const order = orders.find((o) => o.id === orderId);
+          if (order && order.proofOfPayment) {
+            console.log("Opening modal with image:", order.proofOfPayment);
+            openProofViewModal(order.proofOfPayment);
+          } else {
+            console.warn("No proof of payment found for order:", orderId);
+            showToast("No proof of payment available for this order.", true);
+          }
+        }
+      });
+    } else {
+      console.error("ordersTableBody not found");
+    }
   }
 
   function updateOrdersTableTitle() {
+    console.log("Updating table title for tab:", currentTab);
     switch (currentTab) {
       case "pending":
         ordersTableTitle.textContent = "Pending Orders";
@@ -539,7 +510,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to format payment method for display
   function formatPaymentMethod(method) {
     switch (method) {
       case "cod":
@@ -574,7 +544,6 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCart();
     animateCartIcon();
 
-    // Show toast notification
     const addedItem = menuItems.find((item) => item.id === itemId);
     if (addedItem) {
       showToast(`Added ${addedItem.title} to cart`);
@@ -598,8 +567,7 @@ document.addEventListener("DOMContentLoaded", function () {
     cartItemsContainer.innerHTML = "";
 
     if (cart.length === 0) {
-      cartItemsContainer.innerHTML =
-        '<p class="empty-cart">Your cart is empty</p>';
+      cartItemsContainer.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
       return;
     }
 
@@ -607,42 +575,29 @@ document.addEventListener("DOMContentLoaded", function () {
       const cartItemElement = document.createElement("div");
       cartItemElement.className = "cart-item";
       cartItemElement.innerHTML = `
-                        <img src="${item.image}" alt="${
-        item.title
-      }" class="cart-item-img">
-                        <div class="cart-item-details">
-                            <h4 class="cart-item-title">${item.title}</h4>
-                            <p class="cart-item-price">₦${(
-                              item.price * item.quantity
-                            ).toLocaleString()}</p>
-                        </div>
-                        <div class="quantity-control">
-                            <button class="quantity-btn minus" data-id="${
-                              item.id
-                            }">-</button>
-                            <span class="quantity">${item.quantity}</span>
-                            <button class="quantity-btn plus" data-id="${
-                              item.id
-                            }">+</button>
-                        </div>
-                        <button class="remove-item" data-id="${item.id}">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    `;
+        <img src="${item.image}" alt="${item.title}" class="cart-item-img">
+        <div class="cart-item-details">
+          <h4 class="cart-item-title">${item.title}</h4>
+          <p class="cart-item-price">₦${(item.price * item.quantity).toLocaleString()}</p>
+        </div>
+        <div class="quantity-control">
+          <button class="quantity-btn minus" data-id="${item.id}">-</button>
+          <span class="quantity">${item.quantity}</span>
+          <button class="quantity-btn plus" data-id="${item.id}">+</button>
+        </div>
+        <button class="remove-item" data-id="${item.id}">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
       cartItemsContainer.appendChild(cartItemElement);
     });
 
-    // Add event listeners to quantity controls
     document.querySelectorAll(".quantity-btn.minus").forEach((btn) => {
-      btn.addEventListener("click", () =>
-        updateQuantity(parseInt(btn.dataset.id), -1)
-      );
+      btn.addEventListener("click", () => updateQuantity(parseInt(btn.dataset.id), -1));
     });
 
     document.querySelectorAll(".quantity-btn.plus").forEach((btn) => {
-      btn.addEventListener("click", () =>
-        updateQuantity(parseInt(btn.dataset.id), 1)
-      );
+      btn.addEventListener("click", () => updateQuantity(parseInt(btn.dataset.id), 1));
     });
 
     document.querySelectorAll(".remove-item").forEach((btn) => {
@@ -673,10 +628,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function calculateTotals() {
-    const subtotal = cart.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
+    const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
     const deliveryFee = 1500;
     const total = subtotal + deliveryFee;
 
@@ -718,7 +670,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.style.overflow = "auto";
   }
 
-  // Admin Modal Functions
   function openAdminLogin() {
     adminLoginModal.style.display = "flex";
     document.body.style.overflow = "hidden";
@@ -730,6 +681,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function openAdminDashboard() {
+    adminLoginModal.style.display = "none";
     adminDashboard.style.display = "flex";
     document.body.style.overflow = "hidden";
     loadAdminData();
@@ -741,19 +693,17 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function openAdminPasswordModal(action, orderId) {
+    console.log(`Opening password modal for action: ${action}, order: ${orderId}`);
     currentAction = action;
     currentOrderId = orderId;
 
-    // Set appropriate prompt based on action
     if (action === "delete") {
-      passwordPrompt.textContent =
-        "Please enter your admin password to delete this order";
+      passwordPrompt.textContent = "Please enter your admin password to delete this order";
     }
 
     adminPasswordModal.style.display = "flex";
     document.body.style.overflow = "hidden";
-    
-    // Focus on password input when modal opens
+
     setTimeout(() => {
       adminActionPassword.focus();
     }, 100);
@@ -767,15 +717,41 @@ document.addEventListener("DOMContentLoaded", function () {
     currentOrderId = null;
   }
 
+  function openProofViewModal(imageSrc) {
+    if (proofViewModal && proofImage) {
+      console.log("Setting proof image src:", imageSrc);
+      proofImage.src = imageSrc;
+      proofViewModal.style.display = "flex";
+      document.body.style.overflow = "hidden";
+    } else {
+      console.error("proofViewModal or proofImage not found");
+      showToast("Error: Unable to display proof of payment.", true);
+    }
+  }
+
+  function closeProofViewModal() {
+    if (proofViewModal && proofImage) {
+      proofViewModal.style.display = "none";
+      proofImage.src = "";
+      document.body.style.overflow = "auto";
+    } else {
+      console.error("proofViewModal or proofImage not found");
+    }
+  }
+
   function handleAdminLogout() {
     closeAdminDashboardModal();
-    // Clear any admin session data if needed
   }
 
   // 9. Payment Handling
   function handlePaymentMethodChange(e) {
-    bankDetailsSection.style.display =
-      e.target.value === "bank" ? "block" : "none";
+    bankDetailsSection.style.display = e.target.value === "bank" ? "block" : "none";
+    const proofUploadInput = document.getElementById("proofUpload");
+    if (e.target.value === "bank") {
+      proofUploadInput.required = true;
+    } else {
+      proofUploadInput.required = false;
+    }
   }
 
   function copyAccountNumber() {
@@ -787,7 +763,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // 10. Form Handling - UPDATED TO SHOW PROCESSING STATE
+  // 10. Form Handling
   async function handleFormSubmission(e) {
     e.preventDefault();
 
@@ -798,51 +774,44 @@ document.addEventListener("DOMContentLoaded", function () {
       state: document.getElementById("state").value,
       address: document.getElementById("address").value,
       deliveryNotes: document.getElementById("deliveryNotes").value,
-      paymentMethod: document.querySelector(
-        'input[name="paymentMethod"]:checked'
-      ).value,
-      proofUpload: document.getElementById("proofUpload").files[0]
-        ? "Uploaded"
-        : "Not provided",
+      paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
+      proofUpload: document.getElementById("proofUpload").files[0] ? "Uploaded" : "Not provided",
     };
 
-    const subtotal = cart.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-    const totalAmount = subtotal + 1500; // Include delivery fee
+    const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    const totalAmount = subtotal + 1500;
 
-    // Show processing state
+    if (formData.paymentMethod === "bank" && !document.getElementById("proofUpload").files[0]) {
+      showToast("Please upload proof of payment for bank transfer.", true);
+      return;
+    }
+
     const submitButton = document.querySelector('.btn-submit');
     const originalText = submitButton.textContent;
     submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
     submitButton.disabled = true;
-    
-    // Disable form inputs during processing
+
     const formInputs = customerDetailsForm.querySelectorAll('input, textarea, select, button');
     formInputs.forEach(input => {
       input.disabled = true;
     });
 
     try {
-      // Process payment based on selected method
       if (formData.paymentMethod === 'paystack') {
         await loadPaystackScript();
-        processPaystackPayment(formData, subtotal, totalAmount * 100); // Convert to kobo
-        return; // Exit early as Paystack will handle the callback
+        processPaystackPayment(formData, subtotal, totalAmount * 100);
+        return;
       } else if (formData.paymentMethod === 'flutterwave') {
         await loadFlutterwaveScript();
-        processFlutterwavePayment(formData, subtotal, totalAmount * 100); // Convert to kobo
-        return; // Exit early as Flutterwave will handle the callback
+        processFlutterwavePayment(formData, subtotal, totalAmount * 100);
+        return;
       } else {
-        // For COD and Bank Transfer, just save the order
-        const order = saveOrder(formData, subtotal, totalAmount);
-        
-        // Clear cart
+        const order = await saveOrder(formData, subtotal, totalAmount, "pending");
+        if (!order) {
+          throw new Error("Order creation failed");
+        }
         cart = [];
         updateCart();
-        
-        // Show receipt - pass the order data instead of using cart
         openReceiptModal();
         generateReceipt(formData, order.items, subtotal, totalAmount);
       }
@@ -850,30 +819,58 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error('Payment processing error:', error);
       showToast('Payment processing failed. Please try again.', true);
     } finally {
-      // Reset button state
       submitButton.textContent = originalText;
       submitButton.disabled = false;
-      
-      // Re-enable form inputs
       formInputs.forEach(input => {
         input.disabled = false;
       });
     }
   }
 
-  function saveOrder(formData, subtotal, totalAmount) {
+  function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+      if (!file || !file.type.startsWith("image/")) {
+        reject(new Error("Invalid file type. Please upload an image (PNG, JPEG)."));
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        reject(new Error("Image size exceeds 2MB limit."));
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function saveOrder(formData, subtotal, totalAmount, status = "pending") {
     const now = new Date();
+    let proofOfPayment = null;
+
+    if (formData.paymentMethod === "bank" && document.getElementById("proofUpload").files[0]) {
+      try {
+        const file = document.getElementById("proofUpload").files[0];
+        proofOfPayment = await readFileAsBase64(file);
+      } catch (error) {
+        console.error("Error reading proof of payment:", error);
+        showToast(error.message, true);
+        return null;
+      }
+    }
+
     const order = {
       id: "GD" + Math.floor(10000 + Math.random() * 90000),
       customerName: formData.fullName,
       customerEmail: formData.email,
       customerPhone: formData.phone,
       customerAddress: formData.address,
-      items: [...cart], // Save a copy of the cart items
+      items: [...cart],
       subtotal: subtotal,
       deliveryFee: 1500,
       total: totalAmount,
       paymentMethod: formData.paymentMethod,
+      proofOfPayment: proofOfPayment,
       date: now.toISOString(),
       dateFormatted: now.toLocaleDateString("en-US", {
         year: "numeric",
@@ -882,10 +879,9 @@ document.addEventListener("DOMContentLoaded", function () {
         hour: "2-digit",
         minute: "2-digit",
       }),
-      status: "pending", // All new orders start as pending
+      status: status,
     };
 
-    // Save to localStorage
     const orders = JSON.parse(localStorage.getItem("orders")) || [];
     orders.push(order);
     localStorage.setItem("orders", JSON.stringify(orders));
@@ -899,10 +895,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const username = document.getElementById("adminUsername").value;
     const password = document.getElementById("adminPassword").value;
 
-    if (
-      username === ADMIN_CREDENTIALS.username &&
-      password === ADMIN_CREDENTIALS.password
-    ) {
+    if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
       closeAdminLoginModal();
       openAdminDashboard();
       showToast("Admin login successful!");
@@ -912,12 +905,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function handlePasswordSubmit() {
+    console.log("Handling password submit");
     const password = adminActionPassword.value;
 
     if (password === ADMIN_CREDENTIALS.actionPassword) {
-      // Password is correct, perform the action
       if (currentAction === "delete" && currentOrderId) {
         deleteOrder(currentOrderId);
+        showToast(`Order ${currentOrderId} has been deleted.`);
       }
       closeAdminPasswordModal();
     } else {
@@ -926,36 +920,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to handle order actions
   function handleOrderAction(action, orderId) {
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    console.log(`Handling action: ${action} for order: ${orderId}`);
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
     const orderIndex = orders.findIndex((order) => order.id === orderId);
 
     if (orderIndex !== -1) {
       if (action === "complete") {
         orders[orderIndex].status = "completed";
         localStorage.setItem("orders", JSON.stringify(orders));
-        loadAdminData(); // Refresh the table
-        showToast(`Order ${orderId} has been marked as completed.`);
+        showToast(`Order ${orderId} marked as completed.`);
+        loadAdminData();
       } else if (action === "delete") {
-        // Open password modal for delete confirmation
         openAdminPasswordModal("delete", orderId);
       } else if (action === "view") {
         viewOrder(orderId);
       }
+    } else {
+      showToast(`Order ${orderId} not found.`, true);
     }
   }
 
   function deleteOrder(orderId) {
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    const orderIndex = orders.findIndex((order) => order.id === orderId);
-
-    if (orderIndex !== -1) {
-      orders.splice(orderIndex, 1);
-      localStorage.setItem("orders", JSON.stringify(orders));
-      loadAdminData(); // Refresh the table
-      showToast(`Order ${orderId} has been deleted.`);
-    }
+    console.log(`Deleting order: ${orderId}`);
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
+    orders = orders.filter((order) => order.id !== orderId);
+    localStorage.setItem("orders", JSON.stringify(orders));
+    showToast(`Order ${orderId} has been deleted.`);
+    loadAdminData();
   }
 
   function viewOrder(orderId) {
@@ -970,15 +962,14 @@ document.addEventListener("DOMContentLoaded", function () {
       orderDetails += `Email: ${order.customerEmail}\n`;
       orderDetails += `Address: ${order.customerAddress}\n\n`;
       orderDetails += `Items:\n`;
-      
       order.items.forEach(item => {
         orderDetails += `- ${item.title} x${item.quantity} - ₦${(item.price * item.quantity).toLocaleString()}\n`;
       });
-      
       orderDetails += `\nSubtotal: ₦${order.subtotal.toLocaleString()}\n`;
       orderDetails += `Delivery Fee: ₦${order.deliveryFee.toLocaleString()}\n`;
       orderDetails += `Total: ₦${order.total.toLocaleString()}\n\n`;
       orderDetails += `Payment Method: ${order.paymentMethod}\n`;
+      orderDetails += `Proof of Payment: ${order.proofOfPayment ? "Uploaded" : "Not provided"}\n`;
       orderDetails += `Status: ${order.status}\n`;
       orderDetails += `Date: ${order.dateFormatted || new Date(order.date).toLocaleString()}`;
 
@@ -987,31 +978,32 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function loadAdminData() {
-    // Get orders from localStorage
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    console.log("Loading admin data for tab:", currentTab);
+    let orders = JSON.parse(localStorage.getItem("orders"));
+    if (!Array.isArray(orders)) {
+      console.warn("Orders in localStorage is not an array, resetting to empty array");
+      orders = [];
+      localStorage.setItem("orders", JSON.stringify(orders));
+    }
+    console.log("All orders:", orders);
 
-    // Update stats
     totalOrdersCount.textContent = orders.length;
-
-    // Calculate pending orders
     const pendingOrders = orders.filter((order) => order.status === "pending");
     pendingOrdersCount.textContent = pendingOrders.length;
-
-    // Calculate total revenue from completed orders
-    const completedOrders = orders.filter(
-      (order) => order.status === "completed"
-    );
-    const revenue = completedOrders.reduce(
-      (total, order) => total + order.total,
-      0
-    );
+    const revenue = orders
+      .filter((order) => order.status === "completed")
+      .reduce((total, order) => total + (order.total || 0), 0);
     totalRevenue.textContent = `₦${revenue.toLocaleString()}`;
 
-    // Populate orders table based on current tab
-    ordersTableBody.innerHTML = "";
+    if (ordersTableBody) {
+      ordersTableBody.innerHTML = "";
+    } else {
+      console.error("ordersTableBody not found in DOM");
+      showToast("Error: Orders table not found.", true);
+      return;
+    }
 
     let filteredOrders = [];
-
     switch (currentTab) {
       case "pending":
         filteredOrders = orders.filter((order) => order.status === "pending");
@@ -1022,76 +1014,89 @@ document.addEventListener("DOMContentLoaded", function () {
       case "all":
         filteredOrders = orders;
         break;
+      default:
+        filteredOrders = orders;
     }
+    console.log("Filtered orders:", filteredOrders);
 
     if (filteredOrders.length === 0) {
       ordersTableBody.innerHTML = `
         <tr>
-          <td colspan="8" style="text-align: center; padding: 20px;">No orders found</td>
+          <td colspan="9" style="text-align: center; padding: 20px;">No orders found</td>
         </tr>
       `;
       return;
     }
 
-    // Show orders in reverse chronological order (newest first)
-    const sortedOrders = [...filteredOrders].reverse();
+    const sortedOrders = [...filteredOrders].sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
+    );
 
     sortedOrders.forEach((order) => {
       const row = document.createElement("tr");
+      const proofCell = order.paymentMethod === "bank" && order.proofOfPayment
+        ? `<img src="${order.proofOfPayment}" class="proof-thumbnail" data-id="${order.id}" alt="Proof of Payment" />`
+        : "N/A";
       row.innerHTML = `
         <td>${order.id}</td>
         <td>${order.customerName}</td>
         <td>${order.customerPhone}</td>
-        <td>₦${order.total.toLocaleString()}</td>
+        <td>₦${(order.total || 0).toLocaleString()}</td>
         <td>${formatPaymentMethod(order.paymentMethod)}</td>
-        <td class="order-date">${
-          order.dateFormatted || new Date(order.date).toLocaleString()
-        }</td>
-        <td class="status-${order.status}">${
-        order.status.charAt(0).toUpperCase() + order.status.slice(1)
-      }</td>
+        <td class="order-date">${order.dateFormatted || new Date(order.date).toLocaleString()}</td>
+        <td class="status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</td>
+        <td>${proofCell}</td>
         <td>
           ${
             order.status === "pending"
               ? `<button class="action-btn complete-order" data-id="${order.id}">Complete</button>
-                 <button class="delete-btn delete-order" data-id="${order.id}">Delete</button>`
+                 <button class="action-btn delete-order" data-id="${order.id}" style="background-color: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Delete</button>`
               : `<button class="action-btn view-order" data-id="${order.id}">View</button>
-                 <button class="delete-btn delete-order" data-id="${order.id}">Delete</button>`
+                 <button class="action-btn delete-order" data-id="${order.id}" style="background-color: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Delete</button>`
           }
         </td>
       `;
       ordersTableBody.appendChild(row);
     });
 
-    // Add event listeners to action buttons
-    document.querySelectorAll(".complete-order").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const orderId = this.getAttribute("data-id");
-        handleOrderAction("complete", orderId);
+    attachOrderActionListeners();
+  }
+
+  function attachOrderActionListeners() {
+    console.log("Attaching order action listeners");
+    const oldButtons = document.querySelectorAll(".complete-order, .delete-order, .view-order");
+    oldButtons.forEach(btn => btn.replaceWith(btn.cloneNode(true)));
+
+    const completeButtons = document.querySelectorAll(".complete-order");
+    const deleteButtons = document.querySelectorAll(".delete-order");
+    const viewButtons = document.querySelectorAll(".view-order");
+
+    completeButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        console.log(`Complete button clicked for order: ${btn.dataset.id}`);
+        handleOrderAction("complete", btn.dataset.id);
       });
     });
 
-    document.querySelectorAll(".view-order").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const orderId = this.getAttribute("data-id");
-        handleOrderAction("view", orderId);
+    deleteButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        console.log(`Delete button clicked for order: ${btn.dataset.id}`);
+        handleOrderAction("delete", btn.dataset.id);
       });
     });
 
-    document.querySelectorAll(".delete-order").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const orderId = this.getAttribute("data-id");
-        handleOrderAction("delete", orderId);
+    viewButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        console.log(`View button clicked for order: ${btn.dataset.id}`);
+        handleOrderAction("view", btn.dataset.id);
       });
     });
   }
 
-  // 11. Receipt Generation - UPDATED TO ACCEPT ITEMS AND TOTALS AS PARAMETERS
   function generateReceipt(formData = {}, items = [], subtotal = 0, totalAmount = 0) {
     const orderId = "GD" + Math.floor(10000 + Math.random() * 90000);
     const now = new Date();
 
-    // Format options for current date and time
     const dateOptions = {
       weekday: "long",
       year: "numeric",
@@ -1110,60 +1115,53 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentTime = now.toLocaleTimeString("en-US", timeOptions);
     const currentDateTime = `${currentDate} at ${currentTime}`;
 
-    // Set receipt details with current time
     receiptOrderId.textContent = orderId;
-    receiptDate.textContent = currentDateTime; // Shows exact generation time
+    receiptDate.textContent = currentDateTime;
     receiptQrCode.innerHTML = "";
 
-    // Set customer details
     receiptCustomerName.textContent = formData.fullName || "Walk-in Customer";
     receiptCustomerEmail.textContent = formData.email || "Not provided";
     receiptCustomerPhone.textContent = formData.phone || "N/A";
     receiptCustomerState.textContent = formData.state || "Not specified";
     receiptCustomerAddress.textContent = formData.address || "In-store pickup";
 
-    // Render items
     receiptItemsContainer.innerHTML = `
-                <tr>
-                    <th class="item-name">Item</th>
-                    <th class="item-qty">Qty</th>
-                    <th class="item-price">Price</th>
-                </tr>
-            `;
+      <tr>
+        <th class="item-name">Item</th>
+        <th class="item-qty">Qty</th>
+        <th class="item-price">Price</th>
+      </tr>
+    `;
 
-    // Calculate subtotal from provided items
     let calculatedSubtotal = 0;
     if (items.length > 0) {
       items.forEach((item) => {
         const itemTotal = item.price * item.quantity;
         calculatedSubtotal += itemTotal;
         receiptItemsContainer.innerHTML += `
-                    <tr>
-                        <td>${item.title}</td>
-                        <td class="item-qty">${item.quantity}</td>
-                        <td class="item-price">₦${itemTotal.toLocaleString()}</td>
-                    </tr>
-                `;
+          <tr>
+            <td>${item.title}</td>
+            <td class="item-qty">${item.quantity}</td>
+            <td class="item-price">₦${itemTotal.toLocaleString()}</td>
+          </tr>
+        `;
       });
     } else {
-      // Fallback if no items provided
       calculatedSubtotal = subtotal;
     }
 
-    // Add delivery fee
     const deliveryFee = 1500;
     receiptItemsContainer.innerHTML += `
-                <tr>
-                    <td colspan="2">Delivery Fee</td>
-                    <td class="item-price">₦${deliveryFee.toLocaleString()}</td>
-                </tr>
-            `;
+      <tr>
+        <td colspan="2">Delivery Fee</td>
+        <td class="item-price">₦${deliveryFee.toLocaleString()}</td>
+      </tr>
+    `;
 
     const total = calculatedSubtotal + deliveryFee;
     receiptSubtotal.textContent = `₦${calculatedSubtotal.toLocaleString()}`;
     receiptTotal.textContent = `₦${total.toLocaleString()}`;
 
-    // Payment details
     if (formData.paymentMethod) {
       let paymentDetails = "";
       switch (formData.paymentMethod) {
@@ -1174,37 +1172,25 @@ document.addEventListener("DOMContentLoaded", function () {
         case "bank":
           receiptPaymentMethod.textContent = "Bank Transfer";
           paymentDetails = `
-                            <p><strong>Bank Name:</strong> Zenith Bank</p>
-                            <p><strong>Account Name:</strong> Joseph's Pot Ltd</p>
-                            <p><strong>Account Number:</strong> 1012345678</p>
-                            ${
-                              formData.proofUpload === "Uploaded"
-                                ? "<p><strong>Proof Uploaded:</strong> Yes</p>"
-                                : ""
-                            }
-                        `;
+            <p><strong>Bank Name:</strong> Zenith Bank</p>
+            <p><strong>Account Name:</strong> Joseph's Pot Ltd</p>
+            <p><strong>Account Number:</strong> 1012345678</p>
+            ${formData.proofUpload === "Uploaded" ? "<p><strong>Proof Uploaded:</strong> Yes</p>" : ""}
+          `;
           break;
         case "paystack":
           receiptPaymentMethod.textContent = "Paystack";
           paymentDetails = `
-                            <p>Paid via Paystack payment gateway</p>
-                            ${
-                              formData.paymentReference
-                                ? `<p><strong>Reference:</strong> ${formData.paymentReference}</p>`
-                                : ""
-                            }
-                        `;
+            <p>Paid via Paystack payment gateway</p>
+            ${formData.paymentReference ? `<p><strong>Reference:</strong> ${formData.paymentReference}</p>` : ""}
+          `;
           break;
         case "flutterwave":
           receiptPaymentMethod.textContent = "Flutterwave";
           paymentDetails = `
-                            <p>Paid via Flutterwave payment gateway</p>
-                            ${
-                              formData.paymentReference
-                                ? `<p><strong>Reference:</strong> ${formData.paymentReference}</p>`
-                                : ""
-                            }
-                        `;
+            <p>Paid via Flutterwave payment gateway</p>
+            ${formData.paymentReference ? `<p><strong>Reference:</strong> ${formData.paymentReference}</p>` : ""}
+          `;
           break;
         default:
           receiptPaymentMethod.textContent = "Unknown";
@@ -1213,7 +1199,6 @@ document.addEventListener("DOMContentLoaded", function () {
       receiptPaymentDetails.innerHTML = paymentDetails;
     }
 
-    // Generate QR code
     try {
       const qrCodeElement = document.createElement("canvas");
       receiptQrCode.appendChild(qrCodeElement);
@@ -1232,7 +1217,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // 12. Receipt Actions
   function printReceipt() {
     const printContent = document.querySelector(".receipt-container").innerHTML;
     const originalContent = document.body.innerHTML;
@@ -1243,9 +1227,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function downloadReceipt() {
-    const element = document
-      .querySelector(".receipt-container")
-      .cloneNode(true);
+    const element = document.querySelector(".receipt-container").cloneNode(true);
     const actions = element.querySelector(".receipt-actions");
     if (actions) actions.remove();
 
@@ -1266,16 +1248,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const message = `My order from Joseph's Pot - Order #${orderId} - Total: ${total}`;
     const encodedMessage = encodeURIComponent(message);
 
-    // First try the universal WhatsApp API
     const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
-
-    // Fallback for mobile devices
     const mobileUrl = `whatsapp://send?text=${encodedMessage}`;
 
-    // Open the link
     window.open(whatsappUrl, "_blank");
 
-    // Fallback mechanism in case the first attempt fails
     setTimeout(() => {
       if (!document.hidden) {
         window.location.href = mobileUrl;
@@ -1287,20 +1264,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const orderId = receiptOrderId.textContent;
     const total = receiptTotal.textContent;
     window.open(
-      `mailto:?subject=${encodeURIComponent(
-        `My Order #${orderId} from Joseph's Pot`
-      )}&body=${encodeURIComponent(
+      `mailto:?subject=${encodeURIComponent(`My Order #${orderId} from Joseph's Pot`)}&body=${encodeURIComponent(
         `Hi,\n\nHere's my order details:\nOrder ID: ${orderId}\nTotal: ${total}\n\nThank you!`
       )}`,
       "_blank"
     );
   }
 
-  // 13. Payment Processors - UPDATED TO PASS ORDER DATA
   function processPaystackPayment(formData, subtotal, amount) {
-    // Show processing state
     showProcessingState(true);
-    
+
     const handler = PaystackPop.setup({
       key: "pk_test_26f8c2230ec7838bcf82ad3e199674e777ccfac0",
       email: formData.email,
@@ -1309,20 +1282,15 @@ document.addEventListener("DOMContentLoaded", function () {
       ref: "GD-" + Date.now(),
       callback: function (response) {
         formData.paymentReference = response.reference;
-        
-        // Save order and show receipt - pass the cart items before clearing
-        const order = saveOrder(formData, subtotal, amount / 100);
+        const order = saveOrder(formData, subtotal, amount / 100, "completed");
         cart = [];
         updateCart();
         openReceiptModal();
         generateReceipt(formData, order.items, subtotal, amount / 100);
-        
-        // Hide processing state
         showProcessingState(false);
       },
       onClose: function () {
         alert("Payment window closed");
-        // Hide processing state
         showProcessingState(false);
       },
     });
@@ -1340,9 +1308,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function processFlutterwavePayment(formData, subtotal, amount) {
-    // Show processing state
     showProcessingState(true);
-    
+
     FlutterwaveCheckout({
       public_key: "FLWPUBK_TEST-598a8b4cadcb2c02ca9b177034b11e16-X",
       tx_ref: "GD-" + Date.now(),
@@ -1356,20 +1323,15 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       callback: function (response) {
         formData.paymentReference = response.tx_ref;
-        
-        // Save order and show receipt - pass the cart items before clearing
-        const order = saveOrder(formData, subtotal, amount / 100);
+        const order = saveOrder(formData, subtotal, amount / 100, "completed");
         cart = [];
         updateCart();
         openReceiptModal();
         generateReceipt(formData, order.items, subtotal, amount / 100);
-        
-        // Hide processing state
         showProcessingState(false);
       },
       onclose: function () {
         alert("Payment window closed");
-        // Hide processing state
         showProcessingState(false);
       },
       customizations: {
@@ -1390,23 +1352,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // NEW: Function to show/hide processing state
   function showProcessingState(show) {
     const paymentOptions = document.querySelectorAll('.payment-option');
     const submitButton = document.querySelector('.btn-submit');
     const formInputs = customerDetailsForm.querySelectorAll('input, textarea, select, button');
-    
+
     if (show) {
       submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
       submitButton.disabled = true;
-      
-      // Disable all form inputs
       formInputs.forEach(input => {
         input.disabled = true;
         input.style.opacity = '0.7';
       });
-      
-      // Style payment options to show processing
       paymentOptions.forEach(option => {
         option.style.opacity = '0.7';
         option.style.pointerEvents = 'none';
@@ -1414,14 +1371,10 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       submitButton.innerHTML = 'Submit Order';
       submitButton.disabled = false;
-      
-      // Re-enable all form inputs
       formInputs.forEach(input => {
         input.disabled = false;
         input.style.opacity = '1';
       });
-      
-      // Reset payment options styling
       paymentOptions.forEach(option => {
         option.style.opacity = '1';
         option.style.pointerEvents = 'auto';
@@ -1429,7 +1382,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // 14. Helper Functions
   function animateCartIcon() {
     cartIcon.style.transform = "scale(1.2)";
     setTimeout(() => {
@@ -1437,20 +1389,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 300);
   }
 
-  // New Functions for Toast and Empty Cart Prompt
   function showToast(message, isError = false) {
     const toast = document.createElement("div");
     toast.className = isError ? "toast error" : "toast";
     toast.innerHTML = `
-                    <i class="fas ${
-                      isError ? "fa-exclamation-circle" : "fa-check-circle"
-                    }"></i>
-                    <span>${message}</span>
-                `;
-
+      <i class="fas ${isError ? "fa-exclamation-circle" : "fa-check-circle"}"></i>
+      <span>${message}</span>
+    `;
     toastContainer.appendChild(toast);
-
-    // Remove toast after animation completes
     setTimeout(() => {
       toast.remove();
     }, 3000);
@@ -1473,10 +1419,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // Scroll To Top Button
 const scrollBtn = document.getElementById("scrollTopBtn");
 window.onscroll = function () {
-  if (
-    document.body.scrollTop > 300 ||
-    document.documentElement.scrollTop > 300
-  ) {
+  if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
     scrollBtn.style.display = "block";
   } else {
     scrollBtn.style.display = "none";
@@ -1488,6 +1431,4 @@ scrollBtn.onclick = function () {
 
 // WhatsApp link
 const whatsappNumber = "2349064296917";
-const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-  "Hello, I would like to place an order"
-)}`;
+const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hello, I would like to place an order")}`;

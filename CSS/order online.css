@@ -996,6 +996,83 @@ body {
   font-weight: bold;
 }
 
+
+/* Proof of Payment Modal */
+.proof-view-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.proof-view-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.proof-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.close-proof-view {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--dark-color);
+}
+
+.proof-view-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Thumbnail in Orders Table */
+.proof-thumbnail {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid #ddd;
+}
+
+.proof-thumbnail:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 576px) {
+  .proof-view-container {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .proof-thumbnail {
+    width: 30px;
+    height: 30px;
+  }
+}
+
 /* Receipt Actions */
 .receipt-actions {
   display: flex;
@@ -1176,7 +1253,6 @@ body {
   background: #c82333;
 }
 
-/* Payment method badges */
 .payment-badge {
   display: inline-block;
   padding: 3px 8px;
@@ -1205,7 +1281,6 @@ body {
   color: #fff;
 }
 
-/* Delete button style */
 .delete-btn {
   background: #dc3545;
   color: white;
@@ -1221,7 +1296,6 @@ body {
   background: #c82333;
 }
 
-/* Password modal styles */
 .admin-password-container {
   text-align: center;
 }
