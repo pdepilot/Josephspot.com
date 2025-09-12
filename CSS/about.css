@@ -771,6 +771,7 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  
 }
 .close:hover {
   color: white;
