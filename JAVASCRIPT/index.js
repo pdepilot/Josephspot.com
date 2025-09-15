@@ -1214,104 +1214,167 @@ window.open(whatsappURL, "_blank");
 /* =====================================================
    Joseph's Pot Chatbot (Menu + Hugging Face AI Assistant)
    ===================================================== */
+// === Chef Joseph AI Chatbot - SMART GPT Version ===
 
-// --- Append chat bubbles to the chat window ---
-function appendBubble(sender, text) {
-  const chatBox = document.getElementById("chat-box");
-  const bubble = document.createElement("div");
-  bubble.className = sender === "bot" ? "bot-bubble" : "user-bubble";
-  bubble.innerText = text;
-  chatBox.appendChild(bubble);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
+// DOM Elements
+const chatContainer = document.getElementById("aiChat-container");
+const messagesDiv = document.getElementById("aiChat-messages");
+const openBtn = document.getElementById("aiChat-open-btn");
+const closeBtn = document.getElementById("aiChat-close");
+const sendBtn = document.getElementById("aiChat-send-btn");
+const userInput = document.getElementById("aiChat-user-input");
+const welcomeBox = document.getElementById("aiChat-welcome-options");
+const liveBtn = document.getElementById("ai-start-live");
+const waBtn = document.getElementById("ai-start-whatsapp");
+const inputArea = document.getElementById("aiChat-input-area");
 
-// --- Send user message ---
-async function sendMessage() {
-  const input = document.getElementById("chat-input");
-  const message = input.value.trim();
-  if (!message) return;
+// Sounds
+const openSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-game-notification-alert-1075.mp3");
+const messageSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-echo-3157.mp3");
 
-  // Show user's message
-  appendBubble("user", message);
-  input.value = "";
+let awaitingName = false;
+let awaitingAddress = false;
 
-  // Handle reply
-  await handleFoodQuestion(message);
-}
+/* System prompt instructing higher intelligence */
+const basePrompt = `
+You are Chef Joseph, a smart and friendly AI assistant for Joseph's Pot restaurant in Ikenegbu, Owerri.
+You are able to answer customer questions clearly and politely. You specialize in:
+- our menu items and soup dishes
+- pricing
+- delivery information
+- order assistance
+- cooking tips or basic recipe advice
 
-// --- Rule-based replies for common restaurant questions ---
-function generateFoodResponse(text) {
-  text = text.toLowerCase();
+If a question is unrelated to the restaurant, you can still answer in a friendly conversational ChatGPT style, so users feel engaged. 
+If someone asks something random, politely answer in a helpful tone.
 
-  if (text.includes("menu") || text.includes("food")) {
-    return "🍽️ Our menu includes: Jollof Rice, Egusi Soup, Suya, Pepper Soup, Fried Plantain, and more!";
-  }
-  if (text.includes("open") || text.includes("time") || text.includes("hours")) {
-    return "⏰ We are open daily from 9:00 AM to 10:00 PM.";
-  }
-  if (text.includes("location") || text.includes("where")) {
-    return "📍 Joseph's Pot is located in Lagos, Nigeria.";
-  }
-  if (text.includes("order") || text.includes("delivery")) {
-    return "🚚 You can place an order directly on our website or via WhatsApp for quick delivery!";
-  }
-  if (text.includes("thanks") || text.includes("thank you")) {
-    return "😊 You're welcome! We look forward to serving you at Joseph's Pot.";
-  }
+Menu:
+Ofe Owerri - 25000
+Nsala - 20000
+Onugbu Soup - 18000
+Jollof Rice - 15000
+Pepper Soup - 10000
+Drinks - 5000
+Nkwobi - 20000
+Opening hours: Mon–Sun 8:30am – 9pm.
+WhatsApp: +2349064296917
+`;
 
-  return null; // fallback to AI if no rule found
-}
+window.onload = () => {
+  setTimeout(() => {
+    chatContainer.style.display = "flex";
+    openSound.play();
+  }, 3000);
+};
 
-// --- Hugging Face API call (Falcon-7B Instruct) ---
-async function callHF(message) {
-  const response = await fetch("https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct", {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer YOUR_HF_API_KEY", // ⚠️ Replace with your Hugging Face API key
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      inputs: `You are Chef Joseph, a friendly Nigerian restaurant assistant. Be polite and helpful.\nUser: ${message}\nAssistant:`
-    })
-  });
+// Open and Close chat
+openBtn.onclick = () => {
+  chatContainer.style.display = "flex";
+  openSound.play();
+};
 
-  const data = await response.json();
-  if (data.error) {
-    console.error("HF error:", data.error);
-    return "😔 Sorry, I’m having trouble connecting to the assistant right now.";
-  }
+closeBtn.onclick = () => {
+  chatContainer.style.display = "none";
+};
 
-  return data[0].generated_text;
-}
+// Live chat flow
+liveBtn.onclick = () => {
+  welcomeBox.style.display = "none";
+  inputArea.style.display = "flex";
+  appendBubble("bot", "Great! Let's chat. May I have your name please?");
+  awaitingName = true;
+};
 
-// --- Handle customer questions (rules + AI fallback) ---
-async function handleFoodQuestion(text) {
-  // Try rule-based response first
-  const ruleReply = generateFoodResponse(text);
-  if (ruleReply) {
-    appendBubble("bot", ruleReply);
-    return;
-  }
+// WhatsApp instant chat
+waBtn.onclick = () => {
+  window.open("https://wa.me/2349064296917", "_blank");
+};
 
-  // Otherwise, fallback to Hugging Face AI
-  appendBubble("bot", "🤔 Let me think...");
-  try {
-    const reply = await callHF(text);
-    // Replace "thinking..." bubble with AI reply
-    document.querySelector("#chat-box .bot-bubble:last-child").innerText = reply;
-  } catch (err) {
-    console.error("AI error:", err);
-    document.querySelector("#chat-box .bot-bubble:last-child").innerText =
-      "😔 Sorry, I’m having trouble right now. Please try again.";
-  }
-}
-
-// --- Enter key support for sending messages ---
-document.getElementById("chat-input").addEventListener("keypress", function (e) {
+// Enter key Send
+userInput.addEventListener("keypress", function (e) {
   if (e.key === "Enter") {
-    sendMessage();
+    sendBtn.click();
   }
 });
 
-// --- Optional: Button click handler ---
-document.getElementById("send-btn").addEventListener("click", sendMessage);
+// Send button logic
+sendBtn.onclick = async () => {
+  const text = userInput.value.trim();
+  if (!text) return;
+
+  appendBubble("user", text);
+  userInput.value = "";
+
+  if (awaitingName) {
+    awaitingName = false;
+    awaitingAddress = true;
+    appendBubble("bot", `Thanks ${text}! Please enter your delivery address:`);
+    return;
+  }
+  if (awaitingAddress) {
+    awaitingAddress = false;
+    appendBubble("bot", "Great! What would you like to order?");
+    return;
+  }
+
+  // Typing bubble
+  appendBubble("bot", "Chef Joseph is typing...", true);
+
+  const response = await getAIResponse(text);
+
+  const typingElm = document.querySelector(".typing-indicator");
+  if (typingElm) typingElm.remove();
+
+  appendBubble("bot", response);
+  textToSpeech(response);
+};
+
+// Bubble rendering with sound
+function appendBubble(type, msg, isTyping = false) {
+  const p = document.createElement("p");
+  p.className = isTyping ? "bot-bubble typing-indicator" : (type === "bot" ? "bot-bubble" : "user-bubble");
+  p.textContent = msg;
+  messagesDiv.appendChild(p);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+  if (type === "bot" && !isTyping) {
+    messageSound.play();
+  }
+}
+
+// SMART OpenAI call with system prompt / GPT-4o-mini
+async function getAIResponse(userText) {
+  const apiKey = "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";  // put your real key
+
+  const messages = [
+    { role: "system", content: basePrompt },
+    { role: "user", content: userText }
+  ];
+
+  try {
+    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",      // SMARTER model
+        messages: messages,
+        temperature: 0.7
+      })
+    });
+    const data = await resp.json();
+    return data.choices[0].message.content.trim();
+  } catch (err) {
+    return "Sorry, I had trouble responding. Please try again.";
+  }
+}
+
+// TTS
+function textToSpeech(text) {
+  const synth = window.speechSynthesis;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "en-US";
+  synth.speak(utter);
+}
