@@ -512,7 +512,6 @@ body::before {
   }
 }
 
-/* ---------- HERO TEXT FLY-IN ---------- */
 
 :root {
   --primary-color: #e63946;
@@ -668,7 +667,7 @@ body::before {
 }
 
 .cta-button-primary:hover {
-  background: var(--primary-dark);
+  background: black;
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(230, 57, 70, 0.6);
 }
@@ -691,7 +690,7 @@ body::before {
 }
 
 .cta-button-secondary:hover {
-  background: var(--primary-dark);
+  background: black;
   transform: translateY(-3px);
   backdrop-filter: blur(5px);
 }

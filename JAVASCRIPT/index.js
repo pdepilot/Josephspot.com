@@ -1214,7 +1214,7 @@ window.open(whatsappURL, "_blank");
 /* =====================================================
    Joseph's Pot Chatbot (Menu + Hugging Face AI Assistant)
    ===================================================== */
-// === Chef Joseph AI Chatbot - SMART GPT Version ===
+// === Chef Joseph AI Chatbot - FULL SMART GPT VERSION ===
 
 // DOM Elements
 const chatContainer = document.getElementById("aiChat-container");
@@ -1227,15 +1227,20 @@ const welcomeBox = document.getElementById("aiChat-welcome-options");
 const liveBtn = document.getElementById("ai-start-live");
 const waBtn = document.getElementById("ai-start-whatsapp");
 const inputArea = document.getElementById("aiChat-input-area");
+const micBtn = document.getElementById("aiChat-mic-btn");
 
 // Sounds
 const openSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-game-notification-alert-1075.mp3");
 const messageSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-echo-3157.mp3");
 
+// State variables
 let awaitingName = false;
 let awaitingAddress = false;
+let hasSuggestedChangeDetails = false;
+let hasSuggestedMenu = false;
+let lastOrder = JSON.parse(localStorage.getItem("lastOrder")) || [];
 
-/* System prompt instructing higher intelligence */
+/* System prompt */
 const basePrompt = `
 You are Chef Joseph, a smart and friendly AI assistant for Joseph's Pot restaurant in Ikenegbu, Owerri.
 You are able to answer customer questions clearly and politely. You specialize in:
@@ -1260,97 +1265,156 @@ Opening hours: Mon–Sun 8:30am – 9pm.
 WhatsApp: +2349064296917
 `;
 
+/* --- Window load --- */
 window.onload = () => {
   setTimeout(() => {
     chatContainer.style.display = "flex";
     openSound.play();
+    welcomeBox.style.display = "flex";
+    inputArea.style.display = "none";
   }, 3000);
 };
 
-// Open and Close chat
+/* --- Open/Close chat --- */
 openBtn.onclick = () => {
   chatContainer.style.display = "flex";
   openSound.play();
 };
-
 closeBtn.onclick = () => {
   chatContainer.style.display = "none";
 };
 
-// Live chat flow
+/* --- Live AI Chat --- */
 liveBtn.onclick = () => {
   welcomeBox.style.display = "none";
   inputArea.style.display = "flex";
-  appendBubble("bot", "Great! Let's chat. May I have your name please?");
-  awaitingName = true;
+
+  const savedName = localStorage.getItem("userName");
+  const savedAddress = localStorage.getItem("userAddress");
+
+  if (savedName && savedAddress) {
+    appendBubble(
+      "bot",
+      `Welcome back ${savedName}! 👋 I already have your delivery address as "${savedAddress}". Would you like to order something today?` +
+        (!hasSuggestedChangeDetails ? " (Tip: If you want to update your details, just type 'change my details')" : "")
+    );
+    hasSuggestedChangeDetails = true;
+  } else if (savedName && !savedAddress) {
+    appendBubble(
+      "bot",
+      `Welcome back ${savedName}! Please provide your delivery address:` +
+        (!hasSuggestedChangeDetails ? " (Tip: If you want to update your details, just type 'change my details')" : "")
+    );
+    awaitingAddress = true;
+    hasSuggestedChangeDetails = true;
+  } else {
+    appendBubble(
+      "bot",
+      "Great! Let's chat. May I have your name please?" +
+        (!hasSuggestedChangeDetails ? " (Tip: If you want to update your details, just type 'change my details')" : "")
+    );
+    awaitingName = true;
+    hasSuggestedChangeDetails = true;
+  }
 };
 
-// WhatsApp instant chat
+/* --- WhatsApp --- */
 waBtn.onclick = () => {
   window.open("https://wa.me/2349064296917", "_blank");
 };
 
-// Enter key Send
+/* --- Enter key --- */
 userInput.addEventListener("keypress", function (e) {
-  if (e.key === "Enter") {
-    sendBtn.click();
-  }
+  if (e.key === "Enter") sendBtn.click();
 });
 
-// Send button logic
+/* --- Save last order --- */
+function saveLastOrder(orderText) {
+  lastOrder = [orderText];
+  localStorage.setItem("lastOrder", JSON.stringify(lastOrder));
+}
+
+/* --- Send button logic --- */
 sendBtn.onclick = async () => {
   const text = userInput.value.trim();
   if (!text) return;
-
   appendBubble("user", text);
+
+  // Handle "change my details"
+  if (text.toLowerCase() === "change my details") {
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userAddress");
+    awaitingName = true;
+    awaitingAddress = false;
+    appendBubble("bot", "Okay, let's update your details! What's your name?");
+    return;
+  }
+
   userInput.value = "";
 
   if (awaitingName) {
     awaitingName = false;
     awaitingAddress = true;
+    localStorage.setItem("userName", text);
     appendBubble("bot", `Thanks ${text}! Please enter your delivery address:`);
     return;
   }
+
   if (awaitingAddress) {
     awaitingAddress = false;
-    appendBubble("bot", "Great! What would you like to order?");
+    localStorage.setItem("userAddress", text);
+    appendBubble("bot", `Great! Address saved: ${text}. What would you like to order today?`);
     return;
   }
 
   // Typing bubble
   appendBubble("bot", "Chef Joseph is typing...", true);
-
   const response = await getAIResponse(text);
-
   const typingElm = document.querySelector(".typing-indicator");
   if (typingElm) typingElm.remove();
 
   appendBubble("bot", response);
   textToSpeech(response);
+
+  // Menu / last order suggestion (once)
+  if (!hasSuggestedMenu) {
+    const savedName = localStorage.getItem("userName");
+    let suggestionText = "";
+    if (lastOrder.length > 0) {
+      suggestionText = `Last time you ordered: ${lastOrder.join(", ")}. Would you like the same order again or something different?`;
+    } else {
+      suggestionText = "Here is our popular menu: Ofe Owerri, Nsala, Onugbu Soup, Jollof Rice, Pepper Soup, Drinks, Nkwobi.";
+    }
+    appendBubble("bot", `${savedName ? savedName + "," : ""} ${suggestionText}`);
+    textToSpeech(suggestionText);
+    hasSuggestedMenu = true;
+  }
+
+  // Save order if user mentions "order"
+  if (/order/i.test(text)) saveLastOrder(text);
 };
 
-// Bubble rendering with sound
+/* --- Bubble rendering --- */
 function appendBubble(type, msg, isTyping = false) {
   const p = document.createElement("p");
-  p.className = isTyping ? "bot-bubble typing-indicator" : (type === "bot" ? "bot-bubble" : "user-bubble");
+  p.className = isTyping
+    ? "bot-bubble typing-indicator"
+    : type === "bot"
+    ? "bot-bubble"
+    : "user-bubble";
   p.textContent = msg;
   messagesDiv.appendChild(p);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-  if (type === "bot" && !isTyping) {
-    messageSound.play();
-  }
+  if (type === "bot" && !isTyping) messageSound.play();
 }
 
-// SMART OpenAI call with system prompt / GPT-4o-mini
+/* --- AI call --- */
 async function getAIResponse(userText) {
-  const apiKey = "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";  // put your real key
-
+  const apiKey = ""; // your real key
   const messages = [
     { role: "system", content: basePrompt },
     { role: "user", content: userText }
   ];
-
   try {
     const resp = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -1359,7 +1423,7 @@ async function getAIResponse(userText) {
         Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",      // SMARTER model
+        model: "gpt-4o-mini",
         messages: messages,
         temperature: 0.7
       })
@@ -1371,10 +1435,74 @@ async function getAIResponse(userText) {
   }
 }
 
-// TTS
+/* --- TTS --- */
 function textToSpeech(text) {
   const synth = window.speechSynthesis;
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = "en-US";
   synth.speak(utter);
+}
+
+/* --- Robust Microphone Toggle --- */
+if (micBtn) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+    let listening = false;
+
+    const startListening = () => {
+      try {
+        recognition.start();
+        listening = true;
+        micBtn.textContent = "🎙️ Listening...";
+        appendBubble("bot", "🎤 I am listening. Speak now!");
+      } catch (err) {
+        console.error(err);
+        appendBubble("bot", "⚠️ Cannot start microphone. Check permissions.");
+      }
+    };
+
+    const stopListening = () => {
+      recognition.stop();
+      listening = false;
+      micBtn.textContent = "🎤";
+      appendBubble("bot", "🛑 Stopped listening.");
+    };
+
+    micBtn.onclick = () => (listening ? stopListening() : startListening());
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      listening = false;
+      micBtn.textContent = "🎤";
+
+      appendBubble("user", transcript);
+      appendBubble("bot", `I heard: "${transcript}"`);
+      textToSpeech(`I heard: ${transcript}`);
+      userInput.value = transcript;
+      sendBtn.click();
+
+      if (/order/i.test(transcript)) saveLastOrder(transcript);
+    };
+
+    recognition.onerror = (event) => {
+      listening = false;
+      micBtn.textContent = "🎤";
+      appendBubble("bot", "⚠️ Microphone error or permission denied. Please try again.");
+      console.error(event.error);
+    };
+
+    recognition.onend = () => {
+      listening = false;
+      micBtn.textContent = "🎤";
+    };
+  } else {
+    micBtn.style.display = "none";
+    console.warn("SpeechRecognition not supported");
+  }
+} else {
+  console.warn("Mic button not found");
 }
