@@ -1432,12 +1432,3 @@ scrollBtn.onclick = function () {
 // WhatsApp link
 const whatsappNumber = "2349064296917";
 const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hello, I would like to place an order")}`;
-
-// fetch("https://www.themealdb.com/api/json/v1/1/random.php").then(res => res.json()).then((data) =>{
-//   const meal = data.meals[0];
-//   const mealName = meal.strMeal;
-//   const mealImage = meal.strMealThumb;
-//   const mealCategory = meal.strCategory;
-//   const mealArea = meal.strArea;
-//   const mealInstructions = meal.strInstructions;
-// })

@@ -1214,236 +1214,347 @@ window.open(whatsappURL, "_blank");
 /* =====================================================
    Joseph's Pot Chatbot (Menu + Hugging Face AI Assistant)
    ===================================================== */
-// === Chef Joseph AI Chatbot - FULL SMART GPT VERSION ===
 
-// DOM Elements
+// --- DOM elements (using your original IDs) ---
 const chatContainer = document.getElementById("aiChat-container");
 const messagesDiv = document.getElementById("aiChat-messages");
 const openBtn = document.getElementById("aiChat-open-btn");
 const closeBtn = document.getElementById("aiChat-close");
-const sendBtn = document.getElementById("aiChat-send-btn");
-const userInput = document.getElementById("aiChat-user-input");
-const welcomeBox = document.getElementById("aiChat-welcome-options");
 const liveBtn = document.getElementById("ai-start-live");
 const waBtn = document.getElementById("ai-start-whatsapp");
+const welcomeBox = document.getElementById("aiChat-welcome-options");
 const inputArea = document.getElementById("aiChat-input-area");
+const userInput = document.getElementById("aiChat-user-input");
+const sendBtn = document.getElementById("aiChat-send-btn");
 const micBtn = document.getElementById("aiChat-mic-btn");
 
-// Sounds
+// Defensive checks
+if (!chatContainer) console.warn("aiChat-container not found");
+if (!messagesDiv) console.warn("aiChat-messages not found");
+if (!openBtn) console.warn("aiChat-open-btn not found");
+if (!liveBtn) console.warn("ai-start-live not found");
+
+// --- Sounds (unchanged) ---
 const openSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-game-notification-alert-1075.mp3");
 const messageSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-echo-3157.mp3");
 
-// State variables
+// --- State ---
 let awaitingName = false;
 let awaitingAddress = false;
-let hasSuggestedChangeDetails = false;
-let hasSuggestedMenu = false;
-let lastOrder = JSON.parse(localStorage.getItem("lastOrder")) || [];
+let suggestionShown = false;         // tip about change details shown once
+let cartClickCount = 0;              // counts suggestion clicks for checkout prompt
 
-/* System prompt */
-const basePrompt = `
-You are Chef Joseph, a smart and friendly AI assistant for Joseph's Pot restaurant in Ikenegbu, Owerri.
-You are able to answer customer questions clearly and politely. You specialize in:
-- our menu items and soup dishes
-- pricing
-- delivery information
-- order assistance
-- cooking tips or basic recipe advice
+// Last order and saved details (persisted)
+let savedName = localStorage.getItem("aiChat-name") || null;
+let savedAddress = localStorage.getItem("aiChat-address") || null;
+let lastOrder = JSON.parse(localStorage.getItem("aiChat-lastOrder") || "[]");
 
-If a question is unrelated to the restaurant, you can still answer in a friendly conversational ChatGPT style, so users feel engaged. 
-If someone asks something random, politely answer in a helpful tone.
-
-Menu:
-Ofe Owerri - 25000
-Nsala - 20000
-Onugbu Soup - 18000
-Jollof Rice - 15000
-Pepper Soup - 10000
-Drinks - 5000
-Nkwobi - 20000
-Opening hours: Mon–Sun 8:30am – 9pm.
-WhatsApp: +2349064296917
-`;
-
-/* --- Window load --- */
-window.onload = () => {
-  setTimeout(() => {
-    chatContainer.style.display = "flex";
-    openSound.play();
-    welcomeBox.style.display = "flex";
-    inputArea.style.display = "none";
-  }, 3000);
+// === Map chat food names -> your real menu item IDs (update IDs to match your menuItems) ===
+const chatFoodMap = {
+  "Nkwobi": 1,
+  "Abacha": 2,
+  "Nsala": 3,
+  "Asun Rice": 4,
+  "Ofe Owerri": 5,
+  "Palm Wine": 6,
+  "Drinks": 7,
+  "Jollof": 8
 };
+// NOTE: Replace the numeric IDs above with the IDs used in your `menuItems` array.
 
-/* --- Open/Close chat --- */
-openBtn.onclick = () => {
-  chatContainer.style.display = "flex";
-  openSound.play();
-};
-closeBtn.onclick = () => {
-  chatContainer.style.display = "none";
-};
-
-/* --- Live AI Chat --- */
-liveBtn.onclick = () => {
-  welcomeBox.style.display = "none";
-  inputArea.style.display = "flex";
-
-  const savedName = localStorage.getItem("userName");
-  const savedAddress = localStorage.getItem("userAddress");
-
-  if (savedName && savedAddress) {
-    appendBubble(
-      "bot",
-      `Welcome back ${savedName}! 👋 I already have your delivery address as "${savedAddress}". Would you like to order something today?` +
-        (!hasSuggestedChangeDetails ? " (Tip: If you want to update your details, just type 'change my details')" : "")
-    );
-    hasSuggestedChangeDetails = true;
-  } else if (savedName && !savedAddress) {
-    appendBubble(
-      "bot",
-      `Welcome back ${savedName}! Please provide your delivery address:` +
-        (!hasSuggestedChangeDetails ? " (Tip: If you want to update your details, just type 'change my details')" : "")
-    );
-    awaitingAddress = true;
-    hasSuggestedChangeDetails = true;
-  } else {
-    appendBubble(
-      "bot",
-      "Great! Let's chat. May I have your name please?" +
-        (!hasSuggestedChangeDetails ? " (Tip: If you want to update your details, just type 'change my details')" : "")
-    );
-    awaitingName = true;
-    hasSuggestedChangeDetails = true;
-  }
-};
-
-/* --- WhatsApp --- */
-waBtn.onclick = () => {
-  window.open("https://wa.me/2349064296917", "_blank");
-};
-
-/* --- Enter key --- */
-userInput.addEventListener("keypress", function (e) {
-  if (e.key === "Enter") sendBtn.click();
-});
-
-/* --- Save last order --- */
-function saveLastOrder(orderText) {
-  lastOrder = [orderText];
-  localStorage.setItem("lastOrder", JSON.stringify(lastOrder));
-}
-
-/* --- Send button logic --- */
-sendBtn.onclick = async () => {
-  const text = userInput.value.trim();
-  if (!text) return;
-  appendBubble("user", text);
-
-  // Handle "change my details"
-  if (text.toLowerCase() === "change my details") {
-    localStorage.removeItem("userName");
-    localStorage.removeItem("userAddress");
-    awaitingName = true;
-    awaitingAddress = false;
-    appendBubble("bot", "Okay, let's update your details! What's your name?");
-    return;
-  }
-
-  userInput.value = "";
-
-  if (awaitingName) {
-    awaitingName = false;
-    awaitingAddress = true;
-    localStorage.setItem("userName", text);
-    appendBubble("bot", `Thanks ${text}! Please enter your delivery address:`);
-    return;
-  }
-
-  if (awaitingAddress) {
-    awaitingAddress = false;
-    localStorage.setItem("userAddress", text);
-    appendBubble("bot", `Great! Address saved: ${text}. What would you like to order today?`);
-    return;
-  }
-
-  // Typing bubble
-  appendBubble("bot", "Chef Joseph is typing...", true);
-  const response = await getAIResponse(text);
-  const typingElm = document.querySelector(".typing-indicator");
-  if (typingElm) typingElm.remove();
-
-  appendBubble("bot", response);
-  textToSpeech(response);
-
-  // Menu / last order suggestion (once)
-  if (!hasSuggestedMenu) {
-    const savedName = localStorage.getItem("userName");
-    let suggestionText = "";
-    if (lastOrder.length > 0) {
-      suggestionText = `Last time you ordered: ${lastOrder.join(", ")}. Would you like the same order again or something different?`;
-    } else {
-      suggestionText = "Here is our popular menu: Ofe Owerri, Nsala, Onugbu Soup, Jollof Rice, Pepper Soup, Drinks, Nkwobi.";
-    }
-    appendBubble("bot", `${savedName ? savedName + "," : ""} ${suggestionText}`);
-    textToSpeech(suggestionText);
-    hasSuggestedMenu = true;
-  }
-
-  // Save order if user mentions "order"
-  if (/order/i.test(text)) saveLastOrder(text);
-};
-
-/* --- Bubble rendering --- */
+// --- Helper to append bubbles consistently ---
 function appendBubble(type, msg, isTyping = false) {
+  if (!messagesDiv) return;
   const p = document.createElement("p");
-  p.className = isTyping
-    ? "bot-bubble typing-indicator"
-    : type === "bot"
-    ? "bot-bubble"
-    : "user-bubble";
+  p.className = isTyping ? "bot-bubble typing-indicator" : (type === "bot" ? "bot-bubble" : "user-bubble");
   p.textContent = msg;
   messagesDiv.appendChild(p);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  if (type === "bot" && !isTyping) messageSound.play();
-}
 
-/* --- AI call --- */
-async function getAIResponse(userText) {
-  const apiKey = ""; // your real key
-  const messages = [
-    { role: "system", content: basePrompt },
-    { role: "user", content: userText }
-  ];
-  try {
-    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: messages,
-        temperature: 0.7
-      })
-    });
-    const data = await resp.json();
-    return data.choices[0].message.content.trim();
-  } catch (err) {
-    return "Sorry, I had trouble responding. Please try again.";
+  if (type === "bot" && !isTyping) {
+    try { messageSound.play(); } catch (e) { /* ignore autoplay errors */ }
   }
 }
 
-/* --- TTS --- */
-function textToSpeech(text) {
-  const synth = window.speechSynthesis;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "en-US";
-  synth.speak(utter);
+// --- Helper: Bot voice output (Text-to-Speech) ---
+function speakBot(text) {
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+  }
 }
 
-/* --- Robust Microphone Toggle --- */
+// --- show the main "order" suggestions ---
+function showFoodSuggestions() {
+  if (!messagesDiv) return;
+
+  const prev = messagesDiv.querySelectorAll(".chat-suggestions");
+  prev.forEach(el => el.remove());
+
+  const suggestionDiv = document.createElement("div");
+  suggestionDiv.className = "chat-suggestions";
+  suggestionDiv.style.display = "flex";
+  suggestionDiv.style.flexWrap = "wrap";
+  suggestionDiv.style.gap = "8px";
+  suggestionDiv.style.margin = "8px 0";
+
+  Object.keys(chatFoodMap).forEach(food => {
+    const btn = document.createElement("button");
+    btn.className = "chat-suggestion-btn";
+    btn.setAttribute("data-name", food);
+    btn.setAttribute("data-id", chatFoodMap[food]);
+    btn.type = "button";
+    btn.style.padding = "6px 10px";
+    btn.style.borderRadius = "6px";
+    btn.style.border = "1px solid rgba(0,0,0,0.08)";
+    btn.style.background = "white";
+    btn.style.cursor = "pointer";
+    btn.textContent = food;
+    suggestionDiv.appendChild(btn);
+  });
+
+  messagesDiv.appendChild(suggestionDiv);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// --- event delegation for suggestion button clicks ---
+if (messagesDiv) {
+  messagesDiv.addEventListener("click", (e) => {
+    const btn = e.target.closest && e.target.closest(".chat-suggestion-btn");
+    if (!btn) return;
+
+    const foodName = btn.getAttribute("data-name");
+    const itemIdRaw = btn.getAttribute("data-id");
+    const itemId = itemIdRaw ? parseInt(itemIdRaw, 10) : null;
+
+    if (typeof addToCart === "function" && itemId) {
+      try {
+        addToCart(itemId);
+        appendBubble("bot", `✅ ${foodName} added to your cart.`);
+      } catch (err) {
+        console.error("addToCart threw:", err);
+        appendBubble("bot", `✅ ${foodName} added (but addToCart() threw an error).`);
+      }
+    } else {
+      appendBubble("bot", `✅ ${foodName} added to your cart (local fallback).`);
+      console.warn("addToCart(itemId) not found — please make sure your addToCart function is loaded.");
+    }
+
+    lastOrder = JSON.parse(localStorage.getItem("aiChat-lastOrder") || "[]");
+    lastOrder.push(foodName);
+    localStorage.setItem("aiChat-lastOrder", JSON.stringify(lastOrder));
+
+    cartClickCount += 1;
+
+    if (cartClickCount >= 3) {
+      const prevBlocks = messagesDiv.querySelectorAll(".chat-suggestions");
+      prevBlocks.forEach(el => el.remove());
+
+      appendBubble("bot", `🛒 You've added ${cartClickCount} items. Would you like to checkout now or keep adding more?`);
+
+      const choiceDiv = document.createElement("div");
+      choiceDiv.className = "chat-suggestions";
+
+      const checkoutBtn = document.createElement("button");
+      checkoutBtn.type = "button";
+      checkoutBtn.className = "chat-suggestion-btn";
+      checkoutBtn.textContent = "Checkout";
+      checkoutBtn.style.marginRight = "8px";
+      checkoutBtn.onclick = () => {
+        appendBubble("bot", "Okay! Opening your cart — please review and proceed to payment.");
+        const cartIcon = document.getElementById("cart-icon") || document.querySelector(".cart-toggle") || document.querySelector(".open-cart");
+        if (cartIcon) {
+          cartIcon.click();
+        } else {
+          appendBubble("bot", "If your cart didn't open automatically, please open it from the page header.");
+        }
+      };
+
+      const moreBtn = document.createElement("button");
+      moreBtn.type = "button";
+      moreBtn.className = "chat-suggestion-btn";
+      moreBtn.textContent = "Add More";
+      moreBtn.onclick = () => {
+        appendBubble("bot", "Sure — here are more options:");
+        cartClickCount = 0;
+        showFoodSuggestions();
+      };
+
+      choiceDiv.appendChild(checkoutBtn);
+      choiceDiv.appendChild(moreBtn);
+      messagesDiv.appendChild(choiceDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    } else {
+      setTimeout(() => {
+        appendBubble("bot", "Would you like to add another? Here are some options:");
+        showFoodSuggestions();
+      }, 700);
+    }
+  });
+}
+
+// --- Ask for order ---
+function askForOrder() {
+  appendBubble("bot", "Would you like Nkwobi, Abacha, Nsala, Asun Rice, Ofe Owerri, Palm Wine, Drinks, or Jollof today?");
+  showFoodSuggestions();
+}
+
+// --- Welcome "pulp out" ---
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    if (chatContainer) {
+      chatContainer.style.display = "flex";
+      try { openSound.play(); } catch(e) { /* ignore */ }
+    }
+    if (welcomeBox) welcomeBox.style.display = "flex";
+    if (inputArea) inputArea.style.display = "none";
+
+    appendBubble("bot", "Welcome to Joseph's Pot! How would you like to chat with us?");
+  }, 1200);
+});
+
+if (openBtn) {
+  openBtn.addEventListener("click", () => {
+    if (chatContainer) chatContainer.style.display = "flex";
+    if (welcomeBox) welcomeBox.style.display = "flex";
+    if (inputArea) inputArea.style.display = "none";
+    try { openSound.play(); } catch(e) {}
+  });
+}
+
+if (closeBtn) {
+  closeBtn.addEventListener("click", () => {
+    if (chatContainer) chatContainer.style.display = "none";
+  });
+}
+
+if (liveBtn) {
+  liveBtn.addEventListener("click", () => {
+    if (welcomeBox) welcomeBox.style.display = "none";
+    if (inputArea) inputArea.style.display = "flex";
+
+    savedName = localStorage.getItem("aiChat-name") || null;
+    savedAddress = localStorage.getItem("aiChat-address") || null;
+
+    if (savedName && savedAddress) {
+      appendBubble("bot", `Welcome back ${savedName}! I have your delivery address as "${savedAddress}". What would you like to order today?`);
+      const stored = JSON.parse(localStorage.getItem("aiChat-lastOrder") || "[]");
+      if (stored && stored.length > 0) {
+        appendBubble("bot", `Last time you ordered: ${stored.join(", ")}. Would you like the same or modify it?`);
+      }
+      askForOrder();
+      if (!suggestionShown) {
+        appendBubble("bot", 'Tip: If you want to update your details, just type "change my details".');
+        suggestionShown = true;
+      }
+    } else if (savedName && !savedAddress) {
+      appendBubble("bot", `Welcome back ${savedName}! Please provide your delivery address:`);
+      awaitingAddress = true;
+    } else {
+      appendBubble("bot", "Great! Let's chat. May I have your name please?");
+      awaitingName = true;
+    }
+  });
+}
+
+if (waBtn) {
+  waBtn.addEventListener("click", () => {
+    window.open("https://wa.me/2349064296917", "_blank");
+  });
+}
+
+if (userInput) {
+  userInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter" && sendBtn) sendBtn.click();
+  });
+}
+
+if (sendBtn) {
+  sendBtn.addEventListener("click", async () => {
+    const text = (userInput && userInput.value) ? userInput.value.trim() : "";
+    if (!text) return;
+
+    appendBubble("user", text);
+    if (userInput) userInput.value = "";
+
+    if (awaitingName) {
+      localStorage.setItem("aiChat-name", text);
+      awaitingName = false;
+      awaitingAddress = true;
+      appendBubble("bot", `Thanks ${text}! Please enter your delivery address:`);
+      return;
+    }
+    if (awaitingAddress) {
+      localStorage.setItem("aiChat-address", text);
+      awaitingAddress = false;
+      appendBubble("bot", "Great! What would you like to order?");
+      askForOrder();
+      if (!suggestionShown) {
+        appendBubble("bot", 'Tip: If you want to update your details, just type "change my details".');
+        suggestionShown = true;
+      }
+      return;
+    }
+
+    if (text.toLowerCase().includes("change my details")) {
+      localStorage.removeItem("aiChat-name");
+      localStorage.removeItem("aiChat-address");
+      savedName = null;
+      savedAddress = null;
+      awaitingName = true;
+      appendBubble("bot", "Alright — let's update your details. What's your name?");
+      return;
+    }
+
+    const typedFood = Object.keys(chatFoodMap).find(f => text.toLowerCase().includes(f.toLowerCase()));
+    if (typedFood) {
+      const itemId = chatFoodMap[typedFood];
+      if (typeof addToCart === "function") {
+        addToCart(itemId);
+        appendBubble("bot", `✅ ${typedFood} added to your cart.`);
+      } else {
+        appendBubble("bot", `✅ ${typedFood} noted (addToCart not found).`);
+      }
+      lastOrder = JSON.parse(localStorage.getItem("aiChat-lastOrder") || "[]");
+      lastOrder.push(typedFood);
+      localStorage.setItem("aiChat-lastOrder", JSON.stringify(lastOrder));
+      cartClickCount++;
+      if (cartClickCount >= 3) {
+        appendBubble("bot", `🛒 You've added ${cartClickCount} items. Checkout or add more?`);
+        const div = document.createElement("div");
+        div.className = "chat-suggestions";
+        const cBtn = document.createElement("button"); cBtn.textContent = "Checkout"; cBtn.onclick = () => {
+          const cartIcon = document.getElementById("cart-icon")
+            || document.querySelector(".cart-toggle")
+            || document.querySelector(".open-cart");
+          if (cartIcon) cartIcon.click();
+          else appendBubble("bot", "Please open the cart to proceed to checkout.");
+        };
+        const mBtn = document.createElement("button"); mBtn.textContent = "Add More"; mBtn.onclick = () => { cartClickCount = 0; appendBubble("bot", "Here are more options:"); showFoodSuggestions(); };
+        div.appendChild(cBtn); div.appendChild(mBtn);
+        messagesDiv.appendChild(div);
+      } else {
+        setTimeout(() => { appendBubble("bot", "Would you like to add another?"); showFoodSuggestions(); }, 600);
+      }
+      return;
+    }
+
+    if (/order|menu|food|want|buy/i.test(text)) {
+      askForOrder();
+      return;
+    }
+
+    // --- Fallback with voice response ---
+    const fallbackMsg = "Sorry, Am not trained to understand that. Try saying the name of a dish or order.";
+    appendBubble("bot", fallbackMsg);
+    speakBot(fallbackMsg);
+  });
+}
+
+// --- Optional: Microphone toggle ---
 if (micBtn) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SpeechRecognition) {
@@ -1453,56 +1564,45 @@ if (micBtn) {
     recognition.lang = "en-US";
     let listening = false;
 
-    const startListening = () => {
-      try {
-        recognition.start();
-        listening = true;
-        micBtn.textContent = "🎙️ Listening...";
-        appendBubble("bot", "🎤 I am listening. Speak now!");
-      } catch (err) {
-        console.error(err);
-        appendBubble("bot", "⚠️ Cannot start microphone. Check permissions.");
+    micBtn.addEventListener("click", () => {
+      if (!listening) {
+        try {
+          recognition.start();
+          listening = true;
+          micBtn.classList && micBtn.classList.add("listening");
+          appendBubble("bot", "🎤 Listening... speak now");
+        } catch (e) {
+          appendBubble("bot", "⚠️ Cannot start microphone. Check permissions.");
+        }
+      } else {
+        recognition.stop();
+        listening = false;
+        micBtn.classList && micBtn.classList.remove("listening");
       }
+    });
+
+    recognition.onresult = (ev) => {
+      const transcript = ev.results && ev.results[0] && ev.results[0][0] && ev.results[0][0].transcript;
+      if (transcript) {
+        if (userInput) userInput.value = transcript;
+        if (sendBtn) sendBtn.click();
+      }
+      listening = false;
+      micBtn.classList && micBtn.classList.remove("listening");
     };
 
-    const stopListening = () => {
-      recognition.stop();
+    recognition.onerror = (ev) => {
+      console.error("Speech error:", ev);
+      appendBubble("bot", "⚠️ Microphone error. Please try again.");
       listening = false;
-      micBtn.textContent = "🎤";
-      appendBubble("bot", "🛑 Stopped listening.");
-    };
-
-    micBtn.onclick = () => (listening ? stopListening() : startListening());
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      listening = false;
-      micBtn.textContent = "🎤";
-
-      appendBubble("user", transcript);
-      appendBubble("bot", `I heard: "${transcript}"`);
-      textToSpeech(`I heard: ${transcript}`);
-      userInput.value = transcript;
-      sendBtn.click();
-
-      if (/order/i.test(transcript)) saveLastOrder(transcript);
-    };
-
-    recognition.onerror = (event) => {
-      listening = false;
-      micBtn.textContent = "🎤";
-      appendBubble("bot", "⚠️ Microphone error or permission denied. Please try again.");
-      console.error(event.error);
+      micBtn.classList && micBtn.classList.remove("listening");
     };
 
     recognition.onend = () => {
       listening = false;
-      micBtn.textContent = "🎤";
+      micBtn.classList && micBtn.classList.remove("listening");
     };
   } else {
-    micBtn.style.display = "none";
-    console.warn("SpeechRecognition not supported");
+    if (micBtn) micBtn.style.display = "none";
   }
-} else {
-  console.warn("Mic button not found");
 }
