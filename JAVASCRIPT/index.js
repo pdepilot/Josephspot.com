@@ -1234,22 +1234,100 @@ if (!messagesDiv) console.warn("aiChat-messages not found");
 if (!openBtn) console.warn("aiChat-open-btn not found");
 if (!liveBtn) console.warn("ai-start-live not found");
 
-// --- Sounds (unchanged) ---
+// --- Sounds ---
 const openSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-game-notification-alert-1075.mp3");
 const messageSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-echo-3157.mp3");
+
+// ====== TEXT-TO-SPEECH (TTS) ======
+let voicesList = [];
+let preferredVoice = null;
+let voicesLoaded = false;
+let pendingSpeech = null;
+let speechUnlocked = false;
+
+function loadVoices() {
+  voicesList = window.speechSynthesis && window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+  preferredVoice = voicesList.find(v => /ng/i.test(v.lang || "") && /female/i.test((v.name || "").toLowerCase()));
+  if (!preferredVoice) {
+    preferredVoice = voicesList.find(v => /ng/i.test(v.lang || ""));
+    if (!preferredVoice) preferredVoice = voicesList.find(v => /female/i.test((v.name || "").toLowerCase()));
+    if (!preferredVoice) preferredVoice = voicesList.find(v => /en/i.test(v.lang || ""));
+  }
+  voicesLoaded = voicesList.length > 0;
+}
+if (typeof window.speechSynthesis !== "undefined") {
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+  loadVoices();
+}
+
+function speakBot(text) {
+  if (!("speechSynthesis" in window)) return false;
+  try {
+    window.speechSynthesis.cancel();
+    if (!voicesLoaded) loadVoices();
+    const utter = new SpeechSynthesisUtterance(text);
+    if (preferredVoice) utter.voice = preferredVoice;
+    utter.lang = (preferredVoice && preferredVoice.lang) ? preferredVoice.lang : "en-NG";
+    utter.rate = 1;
+    utter.pitch = 1;
+    window.speechSynthesis.speak(utter);
+    return true;
+  } catch (err) {
+    console.warn("speakBot error:", err);
+    return false;
+  }
+}
+
+function trySpeak(text) {
+  try {
+    if (typeof text === "string") {
+      const isCartConfirmation = /added[\s\S]*\b(cart|to your cart|to cart)\b/i.test(text)
+                               || /\badded to your cart\b/i.test(text)
+                               || /\badded to cart\b/i.test(text);
+      if (isCartConfirmation) return;
+    }
+  } catch (e) { console.warn("trySpeak cart-suppression check error:", e); }
+  if (speechUnlocked) {
+    const ok = speakBot(text);
+    if (!ok) pendingSpeech = text;
+  } else {
+    const ok = speakBot(text);
+    if (!ok) pendingSpeech = text;
+  }
+}
+
+function unlockSpeech() {
+  if (speechUnlocked) return;
+  speechUnlocked = true;
+  setTimeout(() => {
+    if (pendingSpeech) {
+      trySpeak(pendingSpeech);
+      pendingSpeech = null;
+    }
+  }, 100);
+}
+
+document.addEventListener("click", unlockSpeech, { once: true });
+document.addEventListener("keydown", unlockSpeech, { once: true });
+
+// ====== TIME-BASED GREETING ======
+function getTimeGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
 
 // --- State ---
 let awaitingName = false;
 let awaitingAddress = false;
-let suggestionShown = false;         // tip about change details shown once
-let cartClickCount = 0;              // counts suggestion clicks for checkout prompt
+let suggestionShown = false;
+let cartClickCount = 0;
 
-// Last order and saved details (persisted)
 let savedName = localStorage.getItem("aiChat-name") || null;
 let savedAddress = localStorage.getItem("aiChat-address") || null;
 let lastOrder = JSON.parse(localStorage.getItem("aiChat-lastOrder") || "[]");
 
-// === Map chat food names -> your real menu item IDs (update IDs to match your menuItems) ===
 const chatFoodMap = {
   "Nkwobi": 1,
   "Abacha": 2,
@@ -1260,9 +1338,8 @@ const chatFoodMap = {
   "Drinks": 7,
   "Jollof": 8
 };
-// NOTE: Replace the numeric IDs above with the IDs used in your `menuItems` array.
 
-// --- Helper to append bubbles consistently ---
+// --- Append bubbles ---
 function appendBubble(type, msg, isTyping = false) {
   if (!messagesDiv) return;
   const p = document.createElement("p");
@@ -1270,27 +1347,12 @@ function appendBubble(type, msg, isTyping = false) {
   p.textContent = msg;
   messagesDiv.appendChild(p);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-  if (type === "bot" && !isTyping) {
-    try { messageSound.play(); } catch (e) { /* ignore autoplay errors */ }
-  }
+  if (type === "bot" && !isTyping) try { messageSound.play(); } catch (e) {}
 }
 
-// --- Helper: Bot voice output (Text-to-Speech) ---
-function speakBot(text) {
-  if ('speechSynthesis' in window) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    window.speechSynthesis.speak(utterance);
-  }
-}
-
-// --- show the main "order" suggestions ---
+// --- Show food suggestions ---
 function showFoodSuggestions() {
   if (!messagesDiv) return;
-
   const prev = messagesDiv.querySelectorAll(".chat-suggestions");
   prev.forEach(el => el.remove());
 
@@ -1320,7 +1382,7 @@ function showFoodSuggestions() {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-// --- event delegation for suggestion button clicks ---
+// --- Event delegation for suggestions ---
 if (messagesDiv) {
   messagesDiv.addEventListener("click", (e) => {
     const btn = e.target.closest && e.target.closest(".chat-suggestion-btn");
@@ -1334,26 +1396,27 @@ if (messagesDiv) {
       try {
         addToCart(itemId);
         appendBubble("bot", `✅ ${foodName} added to your cart.`);
+        trySpeak(`${foodName} added to your cart.`);
       } catch (err) {
         console.error("addToCart threw:", err);
         appendBubble("bot", `✅ ${foodName} added (but addToCart() threw an error).`);
       }
     } else {
-      appendBubble("bot", `✅ ${foodName} added to your cart (local fallback).`);
-      console.warn("addToCart(itemId) not found — please make sure your addToCart function is loaded.");
+      appendBubble("bot", `✅ ${foodName} added to your cart.`);
+      trySpeak(`${foodName} added to your cart.`);
     }
 
     lastOrder = JSON.parse(localStorage.getItem("aiChat-lastOrder") || "[]");
     lastOrder.push(foodName);
     localStorage.setItem("aiChat-lastOrder", JSON.stringify(lastOrder));
 
-    cartClickCount += 1;
-
+    cartClickCount++;
     if (cartClickCount >= 3) {
       const prevBlocks = messagesDiv.querySelectorAll(".chat-suggestions");
       prevBlocks.forEach(el => el.remove());
 
       appendBubble("bot", `🛒 You've added ${cartClickCount} items. Would you like to checkout now or keep adding more?`);
+      trySpeak(`You have added ${cartClickCount} items. Would you like to checkout now or keep adding more?`);
 
       const choiceDiv = document.createElement("div");
       choiceDiv.className = "chat-suggestions";
@@ -1365,12 +1428,10 @@ if (messagesDiv) {
       checkoutBtn.style.marginRight = "8px";
       checkoutBtn.onclick = () => {
         appendBubble("bot", "Okay! Opening your cart — please review and proceed to payment.");
+        trySpeak("Okay! Opening your cart — please review and proceed to payment.");
         const cartIcon = document.getElementById("cart-icon") || document.querySelector(".cart-toggle") || document.querySelector(".open-cart");
-        if (cartIcon) {
-          cartIcon.click();
-        } else {
-          appendBubble("bot", "If your cart didn't open automatically, please open it from the page header.");
-        }
+        if (cartIcon) cartIcon.click();
+        else appendBubble("bot", "If your cart didn't open automatically, please open it from the page header.");
       };
 
       const moreBtn = document.createElement("button");
@@ -1402,17 +1463,17 @@ function askForOrder() {
   showFoodSuggestions();
 }
 
-// --- Welcome "pulp out" ---
+// --- Welcome on load ---
 window.addEventListener("load", () => {
   setTimeout(() => {
-    if (chatContainer) {
-      chatContainer.style.display = "flex";
-      try { openSound.play(); } catch(e) { /* ignore */ }
-    }
+    if (chatContainer) chatContainer.style.display = "flex";
+    try { openSound.play(); } catch(e) {}
     if (welcomeBox) welcomeBox.style.display = "flex";
     if (inputArea) inputArea.style.display = "none";
 
-    appendBubble("bot", "Welcome to Joseph's Pot! How would you like to chat with us?");
+    const greetMsg = `${getTimeGreeting()}! Welcome to Joseph's Pot! How would you like to chat with us?`;
+    appendBubble("bot", greetMsg);
+    trySpeak(greetMsg);
   }, 1200);
 });
 
@@ -1422,6 +1483,7 @@ if (openBtn) {
     if (welcomeBox) welcomeBox.style.display = "flex";
     if (inputArea) inputArea.style.display = "none";
     try { openSound.play(); } catch(e) {}
+    unlockSpeech();
   });
 }
 
@@ -1431,6 +1493,7 @@ if (closeBtn) {
   });
 }
 
+// --- AI Chat button behavior ---
 if (liveBtn) {
   liveBtn.addEventListener("click", () => {
     if (welcomeBox) welcomeBox.style.display = "none";
@@ -1441,9 +1504,13 @@ if (liveBtn) {
 
     if (savedName && savedAddress) {
       appendBubble("bot", `Welcome back ${savedName}! I have your delivery address as "${savedAddress}". What would you like to order today?`);
+
       const stored = JSON.parse(localStorage.getItem("aiChat-lastOrder") || "[]");
       if (stored && stored.length > 0) {
-        appendBubble("bot", `Last time you ordered: ${stored.join(", ")}. Would you like the same or modify it?`);
+        appendBubble(
+          "bot",
+          "Last time you ordered:\n" + stored.map(item => `✅ ${item}`).join("\n") + "\nWould you like the same or modify it?"
+        );
       }
       askForOrder();
       if (!suggestionShown) {
@@ -1457,15 +1524,19 @@ if (liveBtn) {
       appendBubble("bot", "Great! Let's chat. May I have your name please?");
       awaitingName = true;
     }
+    unlockSpeech();
   });
 }
 
+// --- WhatsApp button ---
 if (waBtn) {
   waBtn.addEventListener("click", () => {
     window.open("https://wa.me/2349064296917", "_blank");
+    unlockSpeech();
   });
 }
 
+// --- Input/Send handling ---
 if (userInput) {
   userInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter" && sendBtn) sendBtn.click();
@@ -1479,6 +1550,7 @@ if (sendBtn) {
 
     appendBubble("user", text);
     if (userInput) userInput.value = "";
+    unlockSpeech();
 
     if (awaitingName) {
       localStorage.setItem("aiChat-name", text);
@@ -1515,6 +1587,7 @@ if (sendBtn) {
       if (typeof addToCart === "function") {
         addToCart(itemId);
         appendBubble("bot", `✅ ${typedFood} added to your cart.`);
+        trySpeak(`${typedFood} added to your cart.`);
       } else {
         appendBubble("bot", `✅ ${typedFood} noted (addToCart not found).`);
       }
@@ -1527,9 +1600,7 @@ if (sendBtn) {
         const div = document.createElement("div");
         div.className = "chat-suggestions";
         const cBtn = document.createElement("button"); cBtn.textContent = "Checkout"; cBtn.onclick = () => {
-          const cartIcon = document.getElementById("cart-icon")
-            || document.querySelector(".cart-toggle")
-            || document.querySelector(".open-cart");
+          const cartIcon = document.getElementById("cart-icon") || document.querySelector(".cart-toggle") || document.querySelector(".open-cart");
           if (cartIcon) cartIcon.click();
           else appendBubble("bot", "Please open the cart to proceed to checkout.");
         };
@@ -1539,70 +1610,11 @@ if (sendBtn) {
       } else {
         setTimeout(() => { appendBubble("bot", "Would you like to add another?"); showFoodSuggestions(); }, 600);
       }
-      return;
+    } else {
+      appendBubble("bot", "Sorry, I didn't understand. Please select from the options below:");
+      showFoodSuggestions();
     }
-
-    if (/order|menu|food|want|buy/i.test(text)) {
-      askForOrder();
-      return;
-    }
-
-    // --- Fallback with voice response ---
-    const fallbackMsg = "Sorry, Am not trained to understand that. Try saying the name of a dish or order.";
-    appendBubble("bot", fallbackMsg);
-    speakBot(fallbackMsg);
   });
 }
 
-// --- Optional: Microphone toggle ---
-if (micBtn) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (SpeechRecognition) {
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = "en-US";
-    let listening = false;
 
-    micBtn.addEventListener("click", () => {
-      if (!listening) {
-        try {
-          recognition.start();
-          listening = true;
-          micBtn.classList && micBtn.classList.add("listening");
-          appendBubble("bot", "🎤 Listening... speak now");
-        } catch (e) {
-          appendBubble("bot", "⚠️ Cannot start microphone. Check permissions.");
-        }
-      } else {
-        recognition.stop();
-        listening = false;
-        micBtn.classList && micBtn.classList.remove("listening");
-      }
-    });
-
-    recognition.onresult = (ev) => {
-      const transcript = ev.results && ev.results[0] && ev.results[0][0] && ev.results[0][0].transcript;
-      if (transcript) {
-        if (userInput) userInput.value = transcript;
-        if (sendBtn) sendBtn.click();
-      }
-      listening = false;
-      micBtn.classList && micBtn.classList.remove("listening");
-    };
-
-    recognition.onerror = (ev) => {
-      console.error("Speech error:", ev);
-      appendBubble("bot", "⚠️ Microphone error. Please try again.");
-      listening = false;
-      micBtn.classList && micBtn.classList.remove("listening");
-    };
-
-    recognition.onend = () => {
-      listening = false;
-      micBtn.classList && micBtn.classList.remove("listening");
-    };
-  } else {
-    if (micBtn) micBtn.style.display = "none";
-  }
-}
