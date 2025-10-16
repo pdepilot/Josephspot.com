@@ -325,24 +325,24 @@ document.addEventListener("DOMContentLoaded", () => {
 // UPCOMING EVENTS SECTION - MODERN VERSION
 const events = [
   {
-    title: "Wines During Specific Nights",
+    title: "Birthday Celebration for Princeton (AKA, Pricelesshacker1)",
     description:
-      "Join us for an exclusive evening of fine wines paired with gourmet dishes in our elegant dining room. Our sommelier will guide you through each selection.",
-    date: "2025-09-19T2:00:00",
-    eventImage: "../images/image52.jpg",
+      "Join us for an exclusive evening of fine dine-in Birthday celebration of our amiable friend a brother  paired with gourmet dishes and arabian.",
+    date: "2025-10-10T19:00:00",
+    eventImage: "../images/princeton.jpg",
   },
   {
     title: "Cultural Night Experience",
     description:
       "Celebrate Igbo heritage through an immersive culinary journey featuring traditional cuisine, live music, and cultural performances.",
-    date: "2025-08-30T19:00:00",
+    date: "2025-10-30T19:00:00",
     eventImage: "../images/image51.jpg",
   },
   {
     title: "Palm Wine & Poetry",
     description:
       "An intimate evening of locally sourced palm wine tasting accompanied by live poetry readings under the stars in our garden terrace.",
-    date: "2025-09-30T19:30:00",
+    date: "2025-11-30T19:30:00",
     eventImage: "../images/image50.jpg",
   },
 ];
