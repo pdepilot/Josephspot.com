@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Filled With Snails, Stockfishes, Dryfishes, Lots of Protein",
       price: 2500,
       category: "soups",
-      image: "../images/image20.jpg",
+      image: "./images/image20.jpg",
     },
     {
       id: 2,
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Thickened With Pure White Yam, Filled With Snails, And Lots of Proteins",
       price: 3500,
       category: "soups",
-      image: "../images/nsala.jpeg",
+      image: "./images/nsala.jpeg",
     },
     {
       id: 3,
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Melon seed soup with assorted meat and fish",
       price: 2800,
       category: "soups",
-      image: "../images/egusi.jpg",
+      image: "./images/egusi.jpg",
     },
     {
       id: 4,
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "African mango seed soup with okra and assorted meat",
       price: 3000,
       category: "soups",
-      image: "../images/okra.jpeg",
+      image: "./images/okra.jpeg",
     },
     {
       id: 5,
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Classic Nigerian jollof rice with chicken and plantain",
       price: 3200,
       category: "main courses",
-      image: "../images/jollof rice.jpg",
+      image: "./images/jollof rice.jpg",
     },
     {
       id: 6,
@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Special fried rice with mixed vegetables and beef",
       price: 3500,
       category: "main courses",
-      image: "../images/fried rice.jpg",
+      image: "./images/fried rice.jpg",
     },
     {
       id: 7,
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Smooth pounded yam or Fufu with soup filled with Happiness",
       price: 4000,
       category: "main courses",
-      image: "../images/ogbonno soup.jpg",
+      image: "./images/ogbonno soup.jpg",
     },
     {
       id: 8,
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Goat Meat Sauced with Igbo Traditional Spiced and ugba",
       price: 3800,
       category: "main courses",
-      image: "../images/nkwobi.jpeg",
+      image: "./images/nkwobi.jpeg",
     },
     {
       id: 9,
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Special indomie noodles with fried egg and sausages",
       price: 2500,
       category: "noodles",
-      image: "../images/noodles.jpeg",
+      image: "./images/noodles.jpeg",
     },
     {
       id: 10,
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Jollof spaghetti with chicken and vegetables",
       price: 2800,
       category: "noodles",
-      image: "../images/spaghetti.jpg",
+      image: "./images/spaghetti.jpg",
     },
     {
       id: 11,
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Quick noodles with vegetables and eggs mixed with fried plantain",
       price: 1800,
       category: "noodles",
-      image: "../images/2021-09-06.webp",
+      image: "./images/2021-09-06.webp",
     },
     {
       id: 12,
@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Healthy hotdog noodles with stir-fry vegetables",
       price: 3000,
       category: "noodles",
-      image: "../images/noodle and hotdog.jpg",
+      image: "./images/noodle and hotdog.jpg",
     },
     {
       id: 13,
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Refreshing Igbo Palm-wine drink",
       price: 1500,
       category: "drinks",
-      image: "../images/palm wine.jpg",
+      image: "./images/palm wine.jpg",
     },
     {
       id: 14,
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Iced or Cold sprite drink",
       price: 1200,
       category: "drinks",
-      image: "../images/images (10).jpeg",
+      image: "./images/images (10).jpeg",
     },
     {
       id: 15,
@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Iced or Cold Fanta drink",
       price: 1800,
       category: "drinks",
-      image: "../images/images (8).jpeg",
+      image: "./images/images (8).jpeg",
     },
     {
       id: 16,
@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Iced or Cold Coca Cola drink",
       price: 1800,
       category: "drinks",
-      image: "../images/images (9).jpeg",
+      image: "./images/images (9).jpeg",
     },
     {
       id: 17,
@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Iced or Cold Choice of Malt drink",
       price: 1800,
       category: "drinks",
-      image: "../images/malts.png",
+      image: "./images/malts.png",
     },
     {
       id: 18,
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Iced or Cold Choice of bottled water",
       price: 1800,
       category: "drinks",
-      image: "../images/images (11).jpeg",
+      image: "./images/images (11).jpeg",
     },
   ];
 
