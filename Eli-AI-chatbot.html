@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Chatbot</title>
+<style>
+  /* Floating chat bubble button */
+  #chatBtn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #ff6b00;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+  }
+
+  /* Chat window */
+  #chatWindow {
+    position: fixed;
+    bottom: 90px;
+    right: 25px;
+    width: 320px;
+    max-height: 500px;
+    background: rgba(255,255,255,0.97);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;
+  }
+
+  #chatHeader {
+    background: #ff6b00;
+    color: white;
+    text-align: center;
+    padding: 12px;
+    font-weight: bold;
+  }
+
+  #chatMessages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 15px;
+  }
+
+  .bot, .user {
+    margin: 8px 0;
+    line-height: 1.4;
+  }
+
+  .bot {
+    color: #333;
+    background: #f2f2f2;
+    padding: 8px 10px;
+    border-radius: 10px;
+    width: fit-content;
+    max-width: 80%;
+  }
+
+  .user {
+    color: white;
+    background: #ff6b00;
+    padding: 8px 10px;
+    border-radius: 10px;
+    width: fit-content;
+    max-width: 80%;
+    align-self: flex-end;
+  }
+
+  #chatInput {
+    display: flex;
+    border-top: 1px solid #ccc;
+  }
+
+  #userInput {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+  }
+
+  #sendBtn {
+    background: #ff6b00;
+    color: white;
+    border: none;
+    padding: 0 15px;
+    cursor: pointer;
+  }
+
+  img.meal-thumb {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating chat button -->
+<button id="chatBtn">💬</button>
+
+<!-- Chat window -->
+<div id="chatWindow">
+  <div id="chatHeader">Food Chatbot 🍽️</div>
+  <div id="chatMessages"></div>
+  <div id="chatInput">
+    <input type="text" id="userInput" placeholder="Ask me about food...">
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<script>
+const chatBtn = document.getElementById("chatBtn");
+const chatWindow = document.getElementById("chatWindow");
+const sendBtn = document.getElementById("sendBtn");
+const chatMessages = document.getElementById("chatMessages");
+
+chatBtn.addEventListener("click", () => {
+  chatWindow.style.display = chatWindow.style.display === "flex" ? "none" : "flex";
+});
+
+sendBtn.addEventListener("click", handleChat);
+document.getElementById("userInput").addEventListener("keypress", e => {
+  if (e.key === "Enter") handleChat();
+});
+
+async function handleChat() {
+  const inputField = document.getElementById("userInput");
+  const userText = inputField.value.trim();
+  if (!userText) return;
+
+  appendMessage("user", userText);
+  inputField.value = "";
+
+  let url = "";
+
+  // Basic intent detection
+  if (userText.includes("random")) {
+    url = "https://www.themealdb.com/api/json/v1/1/random.php";
+  } else if (userText.includes("chicken")) {
+    url = "https://www.themealdb.com/api/json/v1/1/search.php?s=chicken";
+  } else if (userText.includes("beef")) {
+    url = "https://www.themealdb.com/api/json/v1/1/filter.php?i=beef";
+  } else if (userText.includes("seafood")) {
+    url = "https://www.themealdb.com/api/json/v1/1/filter.php?c=Seafood";
+  } else {
+    appendMessage("bot", "Try asking about chicken, beef, seafood, or say 'random meal'.");
+    return;
+  }
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.meals) {
+      appendMessage("bot", "Sorry, I couldn’t find that meal.");
+      return;
+    }
+
+    const meal = data.meals[Math.floor(Math.random() * data.meals.length)];
+    const reply = `
+      <strong>${meal.strMeal}</strong><br>
+      ${meal.strInstructions ? meal.strInstructions.slice(0, 200) + "..." : ""}
+      <br><img class="meal-thumb" src="${meal.strMealThumb}" alt="${meal.strMeal}">
+    `;
+    appendMessage("bot", reply);
+  } catch (err) {
+    appendMessage("bot", "Something went wrong while fetching the meal.");
+  }
+}
+
+function appendMessage(sender, text) {
+  const msg = document.createElement("div");
+  msg.className = sender;
+  msg.innerHTML = text;
+  chatMessages.appendChild(msg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+</script>
+
+</body>
+</html>

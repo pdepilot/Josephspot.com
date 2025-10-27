@@ -347,7 +347,7 @@ body::before {
 }
 
 .navbar.scrolled {
-  background-color: #fa2626;
+  background-color: #50070b;
   padding: 10px 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -380,6 +380,7 @@ body::before {
 
 .navbar.scrolled .logo img {
   height: 40px;
+  filter: brightness(5);
 }
 
 .nav-links {
