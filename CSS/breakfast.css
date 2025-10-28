@@ -56,7 +56,7 @@ body::before {
   }
   
   .navbar.scrolled {
-    background-color: #fa2626;
+    background-color: #50070b;
     padding: 10px 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
@@ -89,6 +89,7 @@ body::before {
   
   .navbar.scrolled .logo img {
     height: 40px;
+    filter: brightness(5);
   }
   
   .nav-links {
@@ -122,7 +123,7 @@ body::before {
 
 /* Active Link Styling */
 .nav-links a.active {
-  color: rgb(255, 0, 0);
+  color: #50070b;
 }
 
 .nav-links a.active::after {
@@ -146,7 +147,7 @@ body::before {
   }
   
   .social a:hover {
-    color: #ee0d0d;
+    color: #50070b;
     transform: translateY(-3px);
   }
   
@@ -154,7 +155,7 @@ body::before {
     display: none;
     font-size: 24px;
     cursor: pointer;
-    color: #fa2828;
+    color: #50070b;
     transition: all 0.3s ease;
   }
   
@@ -176,7 +177,7 @@ body::before {
       left: -100%;
       width: 100%;
       height: calc(100vh - 80px);
-      background-color: #f10c0c;
+      background-color: #50070b;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -241,7 +242,7 @@ body::before {
   margin-bottom: 30px;
   border-bottom: 2px solid #ffffff;
   padding-bottom: 20px;
-  background-color: #fa2626;
+  background-color: #50070b;
 }
 
 h1 {
@@ -267,9 +268,9 @@ h1 {
 .menu-title {
   font-family: "Playfair Display", serif;
   font-size: 2rem;
-  color: #fa2626;
+  color: #50070b;
   margin-bottom: 15px;
-  border-bottom: 1px dashed #fa2626;
+  border-bottom: 1px dashed #50070b;
   padding-bottom: 5px;
   display: inline-block;
 }
@@ -289,7 +290,7 @@ h1 {
 
 .item-name:before {
   content: "•";
-  color: #f01b1b;
+  color: black;
   font-size: 2rem;
   margin-right: 10px;
 }
@@ -303,7 +304,7 @@ h1 {
 
 .presentation {
   font-style: italic;
-  background: #fa2626;
+  background: #50070b;
   padding: 15px;
   border-left: 3px solid #ffffff;
   margin-top: 20px;
@@ -321,7 +322,7 @@ h1 {
   text-align: center;
   margin-top: 40px;
   padding-top: 20px;
-  border-top: 1px dashed #f80707;
+  border-top: 1px dashed #50070b;
 }
 
 .qr-code {
@@ -343,7 +344,7 @@ h1 {
   text-align: center;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
-  color: #fa2626;
+  color: #50070b;
   letter-spacing: 1px;
   margin-top: 30px;
   font-size: 1.2rem;
@@ -408,7 +409,7 @@ h1 {
   .footer-column h3,
   .footer-column h4 {
     margin-bottom: 15px;
-    color: #fa2626;
+    color: white;
     font-size: 1.2rem;
   }
   
@@ -441,7 +442,7 @@ h1 {
   }
   
   .footer-column a span {
-    color: #fa2626;
+    color: #50070b;
     font-size: 20px;
   }
   .footer-column a span:hover {
@@ -517,7 +518,7 @@ h1 {
   position: fixed;
   bottom: 100px;
   right: 30px;
-  background: red;
+  background: #50070b;
   color: var(--deep-space);
   border: none;
   width: 50px;

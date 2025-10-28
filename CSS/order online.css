@@ -55,7 +55,7 @@ body {
 
 .navbar.scrolled {
   padding: 10px 0;
-  background: #fd051a;
+  background: #50070b;
 }
 
 
@@ -107,7 +107,7 @@ body {
 
 /* Active Link Styling */
 .nav-links a.active {
-  color: rgb(255, 3, 3);
+  color: #50070b;
 
 }
 
@@ -121,7 +121,7 @@ body {
 }
 
 .navbar.scrolled {
-  background-color: #fa2626;
+  background-color: #50070b;
   padding: 10px 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -145,6 +145,7 @@ body {
 
 .navbar.scrolled .logo img {
   height: 40px;
+  filter: brightness(5);
 }
 
 .navbar.scrolled .fa-shopping-cart {
@@ -183,7 +184,7 @@ body {
   top: -10px;
   right: -10px;
   background: var(--nebula-pink);
-  color: rgb(255, 0, 0);
+  color: #50070b;
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -217,7 +218,7 @@ body {
   display: none;
   font-size: 24px;
   cursor: pointer;
-  color: rgb(235, 12, 12);
+  color: #50070b;
   transition: all 0.3s ease;
   margin-left: 15px;
 }
@@ -280,7 +281,7 @@ body {
 
 .btn {
   display: inline-block;
-  background: #fc1111;
+  background: #50070b;
   color: white;
   padding: 12px 30px;
   border-radius: 30px;
@@ -329,7 +330,7 @@ body {
 
 .category-btn {
   padding: 10px 20px;
-  background-color: #fa2626;
+  background-color: #50070b;
   border: 1px solid var(--primary-color);
   color: white;
   border-radius: 30px;
@@ -394,11 +395,11 @@ body {
 .menu-item-price {
   font-weight: 700;
   font-size: 1.2rem;
-  color: #fa2626;
+  color: #50070b;
 }
 
 .add-to-cart {
-  background-color: #fa2626;
+  background-color: #50070b;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -465,7 +466,7 @@ body {
 }
 
 .admin-login-button {
-  background: #fc0606;
+  background: #50070b;
   border-radius: 50%;
   width: 40px;
   max-width: 600px;
@@ -509,7 +510,7 @@ body {
 
 /* Admin icon style - properly targeted */
 .admin-login-button .fas.fa-user-cog {
-  color: rgb(236, 9, 9);
+  color: #50070b;
   cursor: pointer;
   font-size: 15px;
 }
@@ -588,7 +589,7 @@ body {
 }
 
 .cart-item-price {
-  color: #f70b0b;
+  color: #50070b;
   font-weight: 600;
 }
 
@@ -620,7 +621,7 @@ body {
 .remove-item {
   background: none;
   border: none;
-  color: #f50c0c;
+  color: #50070b;
   cursor: pointer;
   font-size: 1.2rem;
 }
@@ -653,7 +654,7 @@ body {
 }
 
 .btn-clear {
-  background-color: #fa2626;
+  background-color: #50070b;
 }
 
 .btn-clear:hover {
@@ -786,7 +787,7 @@ body {
 }
 
 .copy-btn {
-  background-color: red;
+  background-color: #50070b;
   color: white;
   border: none;
   padding: 5px 10px;
@@ -1215,7 +1216,7 @@ body {
 }
 
 .status-pending {
-  color: #fd1c03;
+  color: #50070b;
   font-weight: 600;
 }
 
@@ -1282,7 +1283,7 @@ body {
 }
 
 .delete-btn {
-  background: #dc3545;
+  background: #50070b;
   color: white;
   border: none;
   padding: 5px 10px;
@@ -1425,7 +1426,7 @@ body {
     left: -100%;
     width: 100%;
     height: calc(100vh - 80px);
-    background: red;
+    background: #50070b;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -1757,7 +1758,7 @@ body {
 .footer-column h3,
 .footer-column h4 {
   margin-bottom: 15px;
-  color: #fa2626;
+  color: white;
   font-size: 1.2rem;
 }
 
@@ -1873,7 +1874,7 @@ body {
   position: fixed;
   bottom: 100px;
   right: 30px;
-  background: red;
+  background: #50070b;
   color: white;
   border: none;
   width: 50px;

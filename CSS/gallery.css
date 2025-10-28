@@ -60,7 +60,7 @@ body::before {
 }
 
 .navbar.scrolled {
-  background-color: #fa2626;
+  background-color: #50070b;
   padding: 10px 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -93,6 +93,7 @@ body::before {
 
 .navbar.scrolled .logo img {
   height: 40px;
+  filter: brightness(5);
 }
 
 .nav-links {
@@ -126,7 +127,7 @@ body::before {
 
 /* Active Link Styling */
 .nav-links a.active {
-  color: rgb(255, 0, 0);
+  color: #50070b;
 }
 
 .nav-links a.active::after {
@@ -176,7 +177,7 @@ body::before {
     left: -100%;
     width: 100%;
     height: calc(100vh - 80px);
-    background-color: #f10c0c;
+    background-color: #50070b;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -250,7 +251,7 @@ body::before {
   padding: 10px 20px;
   margin: 0 5px;
   border: none;
-  background-color: #fa2626;
+  background-color: #50070b;
   color: #fff;
   border-radius: 25px;
   cursor: pointer;
@@ -374,7 +375,7 @@ body::before {
 .footer-column h3,
 .footer-column h4 {
   margin-bottom: 15px;
-  color: #fa2626;
+  color: white;
   font-size: 1.2rem;
 }
 
@@ -483,7 +484,7 @@ body::before {
   position: fixed;
   bottom: 100px;
   right: 30px;
-  background: red;
+  background: #50070b;
   color: var(--deep-space);
   border: none;
   width: 50px;
@@ -532,7 +533,7 @@ body::before {
   .nav-links {
     display: none;
     flex-direction: column;
-    background: #ec2727;
+    background: #50070b;
     position: absolute;
     top: 80px;
     right: 20px;
@@ -547,7 +548,7 @@ body::before {
 
   .menu-toggle {
     display: block;
-    color: #f51f1f;
+    color: #50070b;
   }
   .gallery-header h1 {
     font-size: 2rem;

@@ -38,7 +38,7 @@ body {
 }
 
 .navbar.scrolled {
-  background-color: #fa2626;
+  background-color: #50070b;
   padding: 10px 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -71,6 +71,7 @@ body {
 
 .navbar.scrolled .logo img {
   height: 40px;
+  filter: brightness(5);
 }
 
 .nav-links {
@@ -103,7 +104,7 @@ body {
 
 /* Active Link Styling */
 .nav-links a.active {
-  color: rgb(255, 0, 0);
+  color: #50070b;
 }
 
 .nav-links a.active::after {
@@ -134,7 +135,7 @@ body {
   display: none;
   font-size: 24px;
   cursor: pointer;
-  color: #fa2828;
+  color: #50070b;
   transition: all 0.3s ease;
 }
 
@@ -156,7 +157,7 @@ body {
     left: -100%;
     width: 100%;
     height: calc(100vh - 80px);
-    background-color: #f10c0c;
+    background-color: #50070b;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -221,8 +222,8 @@ main {
       rgba(0, 0, 0, 0.689)
     ),
     url("../images/image54.jpg") center/cover no-repeat;
-  color: #000;
-  color: #fa2626;
+  color: white;
+  color: white;
   background-attachment: fixed;
   padding: 60px;
   text-align: center;
@@ -271,7 +272,7 @@ main p {
   /* flex: 1; */
   min-width: 550px;
   padding: 40px;
-  background-color: #fa2626;
+  background-color: #50070b;
   color: white;
 } 
 
@@ -364,7 +365,7 @@ textarea.form-control {
 }
 
 .submit-btn {
-  background-color: var(--secondary-color);
+  background-color: #50070b;
   color: white;
   border: none;
   padding: 12px 25px;
@@ -462,7 +463,7 @@ footer {
 .footer-column h3,
 .footer-column h4 {
   margin-bottom: 15px;
-  color: #fa2626;
+  color: white;
   font-size: 1.2rem;
 }
 
@@ -495,7 +496,7 @@ footer {
 }
 
 .footer-column a span {
-  color: #fa2626;
+  color: red;
   font-size: 20px;
 }
 .footer-column a span:hover {
@@ -570,7 +571,7 @@ footer {
   position: fixed;
   bottom: 100px;
   right: 30px;
-  background: red;
+  background: #50070b;
   color: white;
   border: none;
   width: 50px;
@@ -616,7 +617,7 @@ footer {
     left: -100%;
     width: 100%;
     height: calc(100vh - 70px);
-    background-color: var(--primary-color);
+    background-color: #50070b;
     flex-direction: column;
     align-items: center;
     padding-top: 30px;
