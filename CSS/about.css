@@ -118,7 +118,7 @@ body {
 }
 
 .nav-links a.active {
-  color: var(--cosmic-red);
+  color: #50070b;
 }
 
 .nav-links a.active::after {

@@ -89,7 +89,7 @@ body {
 
 /* Active Link Styling */
 .nav-links a.active {
-  color: rgb(255, 3, 3);
+  color: #50070b;
 }
 
 .nav-links a.active::after {
@@ -104,7 +104,7 @@ body {
 
 
 .navbar.scrolled {
-  background-color: #fa2626;
+  background-color: #50070b;
   padding: 10px 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -130,6 +130,7 @@ body {
 
 .navbar.scrolled .logo img {
   height: 40px;
+  filter: brightness(5);
 }
 
 
@@ -158,7 +159,7 @@ body {
   display: none;
   font-size: 24px;
   cursor: pointer;
-  color: rgb(235, 12, 12);
+  color: #50070b;
   transition: all 0.3s ease;
   margin-left: 15px;
 }
@@ -176,7 +177,7 @@ body {
     left: -100%;
     width: 100%;
     height: calc(100vh - 80px);
-    background: red;
+    background: #50070b;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -259,7 +260,7 @@ body {
 /* Header Styles */
 .menu-header {
   position: relative;
-  background: #fa2626;
+  background: #50070b;
   color: white;
   padding: 2rem;
   text-align: center;
@@ -316,7 +317,7 @@ body {
 }
 
 .section-header h2 {
-  color: #fa2626;
+  color: #50070b;
   font-size: 1.8rem;
 }
 
@@ -381,7 +382,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 2rem;
-  background: #fa2626;
+  background: #50070b;
   color: white;
 }
 
@@ -478,7 +479,7 @@ body {
   position: fixed;
   bottom: 100px;
   right: 30px;
-  background: red;
+  background: #50070b;
   color: white;
   border: none;
   width: 50px;

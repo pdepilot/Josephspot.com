@@ -1790,7 +1790,7 @@ if (liveBtn) {
 // --- WhatsApp button quick link ---
 if (waBtn) {
   waBtn.addEventListener("click", () => {
-    window.open("https://wa.me/2349064296917", "_blank");
+    window.open("https://wa.me/2348104344994", "_blank");
     unlockSpeech();
   });
 }

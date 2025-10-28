@@ -29,7 +29,7 @@ scrollBtn.onclick = function () {
 };
 
 // WhatsApp link
-const whatsappNumber = "2349064296917"; 
+const whatsappNumber = "2348104344994"; // Replace with your WhatsApp number (no '+' sign)
 const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
   message
 )}`;
