@@ -1273,7 +1273,7 @@ body::before {
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--primary-color);
+  background: var(--dark-light);
   transition: width 0.3s ease;
 }
 
@@ -1282,7 +1282,7 @@ body::before {
 }
 
 .card-title:hover {
-  color: var(--primary-color);
+  color: #50070b;
 }
 
 .card-description {
@@ -1312,7 +1312,7 @@ body::before {
 .card-link {
   display: inline-flex;
   align-items: center;
-  color: var(--primary-color);
+  color: #50070b;
   font-weight: 600;
   text-decoration: none;
   transition: var(--transition);
@@ -2082,7 +2082,7 @@ a:focus-visible {
 
 .icon-item i {
   font-size: 1.5rem;
-  color: var(--primary);
+  color: var(--light);
   margin-bottom: 0.5rem;
 }
 
@@ -2090,6 +2090,8 @@ a:focus-visible {
   font-size: 0.8rem;
   color: var(--gray);
 }
+
+
 
 .submit-btn {
   display: inline-flex;
@@ -2459,7 +2461,7 @@ a:focus-visible {
   overflow: hidden;
   margin-bottom: 15px;
   position: relative;
-  border: 3px solid var(--cosmic-red);
+  border: 3px solid #50070b;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
@@ -2506,7 +2508,7 @@ a:focus-visible {
 }
 
 .slider-btn {
-  background: rgb(255, 0, 0);
+  background: #50070b;
   border: 2px solid var(--pure-white);
   color: var(--pure-white);
   padding: 8px 16px;
@@ -2548,13 +2550,13 @@ a:focus-visible {
 }
 
 .slider-dots .dot.active {
-  background: red;
+  background: #50070b;
   transform: scale(1.2);
 }
 
 /* Add Review Button */
 .add-review-btn {
-  background: var(--cosmic-red);
+  background: #50070b;
   color: #ffffff;
   border: none;
   padding: 10px 20px;
@@ -3117,7 +3119,7 @@ a:focus-visible {
 .footer-column h3,
 .footer-column h4 {
   margin-bottom: 15px;
-  color: #fa2626;
+  color: white;
   font-size: 1.2rem;
 }
 
@@ -3217,7 +3219,7 @@ a:focus-visible {
 }
 
 #aiChat-header {
-  background: #e60505;
+  background: #50070b;
   padding: 8px;
   display: flex;
   align-items: center;
@@ -3259,7 +3261,7 @@ a:focus-visible {
 }
 
 .user-bubble {
-  background: #e44521;
+  background: #50070b;
   color: #fff;
   align-self: flex-end;
 }
@@ -3279,7 +3281,7 @@ a:focus-visible {
 }
 
 #aiChat-input-area button {
-  background: #e44521;
+  background: #50070b;
   border: none;
   color: #fff;
   padding: 8px 12px;
@@ -3296,7 +3298,7 @@ a:focus-visible {
 }
 
 #aiChat-welcome-options button {
-  background: #e44521;
+  background: #50070b;
   color: #fff;
   border: none;
   margin: 5px;
@@ -3355,7 +3357,7 @@ a:focus-visible {
 }
 
 .quick-reply-btn {
-  background: #e44521;
+  background: #50070b;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -3372,7 +3374,7 @@ a:focus-visible {
 }
 
 .quick-reply-btn {
-  background: #e44521;
+  background: #50070b;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -3512,7 +3514,7 @@ a:focus-visible {
   height: 20px;
   border: none;
   border-radius: 50%;
-  background: #f44336;
+  background: #50070b;
   color: white;
   font-size: 12px;
   cursor: pointer;
@@ -3549,7 +3551,7 @@ a:focus-visible {
 /* Clear Button Styles */
 .clear-btn {
   padding: 10px 15px;
-  background: #f44336;
+  background: #50070b;
   color: white;
   border: none;
   border-radius: 5px;
@@ -3570,7 +3572,7 @@ a:focus-visible {
 
 /* Button Colors */
 .orange-btn {
-  background: #ff7840;
+  background: #50070b;
   color: white;
   padding: 5px 10px;
   border: none;
@@ -3593,7 +3595,7 @@ a:focus-visible {
   font-size: 20px;
   cursor: pointer;
   margin-left: 5px;
-  color: #ff7840;
+  color: #50070b;
 }
 
 #aiChat-voice-btn {
@@ -3610,7 +3612,7 @@ a:focus-visible {
   position: fixed;
   bottom: 100px;
   right: 30px;
-  background: red;
+  background: #50070b;
   color: white;
   border: none;
   width: 50px;
