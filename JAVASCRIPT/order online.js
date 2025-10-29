@@ -168,6 +168,16 @@ document.addEventListener("DOMContentLoaded", function () {
       image: "./images/goat leg.jpg",
     },
 
+    {
+      id: 6,
+      title: "Peppered Snails",
+      description: "Spicy snails cooked in a rich pepper sauce",
+      price: 5000,
+      category: "starters",
+      image: "./images/Peppered-Snail-jumbo.jpg",
+    },
+
+
 
 
 
