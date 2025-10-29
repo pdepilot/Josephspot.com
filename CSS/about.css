@@ -14,14 +14,12 @@
 }
 
 body {
-  font-family: "Poppins", sans-serif;
-  color: var(--text);
+  font-family: "Montserrat", sans-serif;
+  color: var(--pure-white);
   line-height: 1.6;
   overflow-x: hidden;
   background: var(--deep-space);
 }
-
-
 
 /* ===== Navigation ===== */
 .navbar {
@@ -69,7 +67,6 @@ body {
   filter: brightness(5);
 }
 
-
 .nav-links {
   display: flex;
   justify-content: center;
@@ -85,6 +82,7 @@ body {
   position: relative;
   padding: 5px 0;
 }
+
 .navbar.scrolled {
   background-color: #50070b;
   padding: 10px 0;
@@ -102,6 +100,7 @@ body {
 .navbar.scrolled .menu-toggle {
   color: #f7f1f1;
 }
+
 .nav-links a:hover {
   color: var(--cosmic-red);
 }
@@ -136,7 +135,6 @@ body {
 }
 
 .social a {
- 
   color: rgb(0, 0, 0);
   transition: all 0.3s ease;
   font-size: 1.1rem;
@@ -160,7 +158,7 @@ body {
 /* ===== Header Section ===== */
 .header {
   background: linear-gradient(rgba(10, 14, 23, 0.7), rgba(10, 14, 23, 0.7)),
-    url("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80");
+    url("/images/unnamed.webp");
   background-size: cover;
   background-position: center;
   height: 70vh;
@@ -182,23 +180,22 @@ body {
 }
 
 .header h1 {
-  font-family: "Abril Fatface", cursive;
+  font-family: "Playfair Display", serif;
   font-size: clamp(2.5rem, 8vw, 5rem);
   margin-bottom: 20px;
   text-shadow: 0 0 10px var(--cosmic-gold), 0 0 20px rgba(255, 215, 0, 0.5);
   position: relative;
+  margin-right: 70px;
   z-index: 1;
-  left: 70px;
   animation: textGlow 3s ease-in-out infinite alternate;
 }
 
 .header p {
   font-size: clamp(1rem, 3vw, 1.5rem);
   max-width: 700px;
-  margin: 0 auto;
+  margin-right: 70px;
   position: relative;
   z-index: 1;
-  left: 70px;
   text-shadow: 0 0 5px white;
 }
 
@@ -241,21 +238,6 @@ body {
   }
 }
 
-/* Mobile tweaks */
-@media (max-width: 600px) {
-  .header {
-    height: 60vh;
-    min-height: 300px;
-  }
-  .header h1 {
-    font-size: clamp(2rem, 10vw, 3rem);
-  }
-  .header p {
-    font-size: clamp(0.9rem, 4vw, 1.2rem);
-    max-width: 90%;
-  }
-}
-
 /* ===== About Section ===== */
 .about-section {
   padding: 80px 0;
@@ -270,7 +252,7 @@ body {
 }
 
 .section-title {
-  font-family: "Abril Fatface", cursive;
+  font-family: "Playfair Display", serif;
   font-size: clamp(2rem, 5vw, 3rem);
   color: var(--cosmic-gold);
   margin-bottom: 30px;
@@ -386,7 +368,7 @@ body {
 }
 
 .ceo-name {
-  font-family: "Abril Fatface", cursive;
+  font-family: "Playfair Display", serif;
   color: black;
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   margin-bottom: 15px;
@@ -444,7 +426,7 @@ body {
 }
 
 .section-title2 {
-  font-family: "Abril Fatface", cursive;
+  font-family: "Playfair Display", serif;
   font-size: clamp(2rem, 5vw, 3rem);
   color: black;
   margin-bottom: 30px;
@@ -490,7 +472,7 @@ body {
 }
 
 .feature-title {
-  font-family: "Abril Fatface", cursive;
+  font-family: "Playfair Display", serif;
   margin-bottom: 15px;
   color: white;
   font-size: 1.5rem;
@@ -513,7 +495,7 @@ body {
   font-size: 1rem;
 }
 
-
+/* ===== Footer ===== */
 .footer {
   background: linear-gradient(
       to bottom,
@@ -593,6 +575,7 @@ body {
   color: #fa2626;
   font-size: 20px;
 }
+
 .footer-column a span:hover {
   color: #f5eeee;
   text-decoration: underline;
@@ -623,7 +606,6 @@ body {
   color: red;
   transform: translateY(-6px);
 }
-
 
 /* ===== Floating Buttons ===== */
 .whatsapp-chat {
@@ -704,6 +686,7 @@ body {
   background-color: rgba(10, 14, 23, 0.95);
   overflow: auto;
 }
+
 .modal-content {
   display: block;
   margin: auto;
@@ -729,6 +712,7 @@ body {
     transform: translate(-50%, -50%) scale(1);
   }
 }
+
 .close {
   position: absolute;
   top: 20px;
@@ -739,25 +723,107 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  
 }
+
 .close:hover {
   color: white;
   transform: rotate(90deg) scale(1.1);
+}
+
+/* ===== Scroll Reveal Animations ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1s ease;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: all 1s ease;
+}
+
+.reveal-left.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 1s ease;
+}
+
+.reveal-right.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 1s ease;
+}
+
+.reveal-scale.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 1200px) {
+  .container,
+  .containerr {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+  .header {
+    position: relative;
+    height: 60vh;
+    min-height: 300px;
+  }
+
+  .header h1 {
+    position: absolute;
+    top: 20px;
+    font-size: clamp(2rem, 10vw, 3rem);
+    margin-right: 100px;
+  }
+
+  .header p {
+    position: absolute;
+    font-size: clamp(0.9rem, 4vw, 1.2rem);
+    max-width: 90%;
+    margin-right: 100px;
+    top: 220px;
+  }
+  
 }
 
 @media (max-width: 992px) {
   .container {
     padding: 0 15px;
   }
+
   .nav-links {
     gap: 15px;
   }
+
   .ceo-container {
     padding: 30px;
   }
-  .contact-info {
-    padding: 30px;
+
+  .footer-content {
+    gap: 20px;
+  }
+
+  .footer-column {
+    flex: 1 1 200px;
   }
 }
 
@@ -765,6 +831,7 @@ body {
   .menu-toggle {
     display: block;
   }
+
   .nav-links {
     position: fixed;
     top: 70px;
@@ -781,9 +848,11 @@ body {
     transition: transform 0.4s ease;
     z-index: 998;
   }
+
   .nav-links.active {
     transform: translateX(0);
   }
+
   .nav-links a {
     opacity: 0;
     transform: translateY(15px);
@@ -800,6 +869,7 @@ body {
   .nav-links a.active {
     color: black;
   }
+
   /* Staggered animations */
   .nav-links.active a:nth-child(1) {
     transition-delay: 0.1s;
@@ -823,42 +893,94 @@ body {
   .social {
     display: flex;
   }
+
   /* Features grid */
   .features-grid {
     grid-template-columns: 1fr;
     max-width: 500px;
     margin: 30px auto;
   }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .footer-column {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+
+  .header {
+    position: relative;
+    height: 60vh;
+    min-height: 300px;
+  }
+
+  .header h1 {
+    position: absolute;
+    top: 20px;
+    font-size: clamp(2rem, 10vw, 3rem);
+    left: 130px;
+  }
+
+  .header p {
+    position: absolute;
+    font-size: clamp(0.9rem, 4vw, 1.2rem);
+    max-width: 90%;
+    left: 130px;
+    top: 250px;
+  }
 }
+
 @media (max-width: 480px) {
   .logo img {
     height: 35px;
   }
-  .ceo-container,
-  .contact-info {
+
+  .ceo-container {
     padding: 20px;
   }
+
   .ceo-image {
     width: 150px;
     height: 150px;
   }
+
   .whatsapp-chat {
     width: 45px;
     height: 45px;
   }
+
   .whatsapp-chat img {
     width: 24px;
     height: 24px;
   }
+
   #scrollTopBtn {
     width: 40px;
     height: 40px;
     font-size: 1.1rem;
     bottom: 70px;
   }
+
   .close {
     top: 15px;
     right: 20px;
     font-size: 30px;
+  }
+
+  .footer-glass {
+    padding: 20px;
+  }
+
+  .about-section,
+  .ceo-section,
+  .features-section {
+    padding: 60px 0;
   }
 }

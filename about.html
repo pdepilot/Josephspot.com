@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>About Us | Joseph's Pot Owerri</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-     <link rel="icon" href="./images/logo3.png">
+    <link rel="icon" href="./images/logo3.png">
     <link rel="stylesheet" href="./CSS/about.css" />
     <link rel="stylesheet" href="./fontawesome-free-6.7.2-web/css/all.min.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,6 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="/CSS/about.css">
   </head>
   <body>
 
@@ -41,7 +42,7 @@
         </nav>
         
         <span class="menu-toggle" onclick="toggleMenu()">
-          <i class="fa-solid fa-utensils"></i>
+          <i class="fa-solid fa-bars"></i>
           <i class="fa-solid fa-xmark" style="display: none;"></i>
         </span>
       </div>
@@ -50,24 +51,24 @@
     <!-- Header Section -->
     <header class="header">
       <div class="containerr">
-        <h1>Joseph's Pot Owerri</h1>
-        <p>Where Taste Meets Excellence - A Culinary Journey Like No Other</p>
+        <h1 class="reveal">Joseph's Pot Owerri</h1>
+        <p class="reveal">Where Taste Meets Excellence - A Culinary Journey Like No Other</p>
       </div>
     </header>
 
     <!-- About Section -->
     <section class="about-section">
       <div class="container">
-        <h2 class="section-title">Our Story</h2>
+        <h2 class="section-title reveal">Our Story</h2>
         <div class="about-content">
-          <p>
+          <p class="reveal-left">
             At <strong>Joseph's Pot Owerri</strong>, we don't just serve food—we
             craft unforgettable dining experiences. Nestled in the heart of
             Owerri, our restaurant is a celebration of rich flavors, warm
             hospitality, and culinary artistry. Every dish tells a story, every
             bite ignites passion, and every visit feels like coming home.
           </p>
-          <p>
+          <p class="reveal-right">
             Founded with a vision to redefine Nigerian cuisine, Joseph's Pot
             blends tradition with innovation. Our menu is a tribute to the
             vibrant tastes of Nigeria, prepared with the freshest ingredients
@@ -82,7 +83,7 @@
     <!-- CEO Section -->
     <section class="ceo-section">
       <div class="container">
-        <div class="ceo-container">
+        <div class="ceo-container reveal-scale">
           <img
             src="./images/criuse.jpg" loading="lazy"
             alt="CEO of Joseph's Pot Owerri"
@@ -107,9 +108,9 @@
     <!-- Features Section -->
     <section class="features-section">
       <div class="container">
-        <h2 class="section-title2">Why Choose Joseph's Pot?</h2>
+        <h2 class="section-title2 reveal">Why Choose Joseph's Pot?</h2>
         <div class="features-grid">
-          <div class="feature-item">
+          <div class="feature-item reveal-left">
             <div class="feature-icon">🍽️</div>
             <h3 class="feature-title">Exquisite Cuisine</h3>
             <p>
@@ -117,7 +118,7 @@
               prepared by our master chefs.
             </p>
           </div>
-          <div class="feature-item">
+          <div class="feature-item reveal">
             <div class="feature-icon">🏛️</div>
             <h3 class="feature-title">Elegant Ambiance</h3>
             <p>
@@ -125,7 +126,7 @@
               gatherings in luxurious comfort.
             </p>
           </div>
-          <div class="feature-item">
+          <div class="feature-item reveal">
             <div class="feature-icon">👑</div>
             <h3 class="feature-title">World-Class Service</h3>
             <p>
@@ -133,7 +134,7 @@
               attention to detail.
             </p>
           </div>
-          <div class="feature-item">
+          <div class="feature-item reveal-right">
             <div class="feature-icon">🌱</div>
             <h3 class="feature-title">Premium Ingredients</h3>
             <p>
@@ -149,7 +150,7 @@
         <div class="footer-glass">
             <div class="footer-glass-inner">
                 <div class="footer-content">
-                    <div class="footer-column">
+                    <div class="footer-column reveal-left">
                          <img src="./images/logo.jpg" alt="" width="80px"/>
                         <p>Authentic taste, unforgettable experience.<br>Serving happiness from Owerri, Nigeria.</p>
                         <div class="social-links">
@@ -160,7 +161,7 @@
                         </div>
                     </div>
 
-                    <div class="footer-column">
+                    <div class="footer-column reveal">
                         <h4>Quick Links</h4>
                         <ul>
                             <li><a href="index.html">Home</a></li>
@@ -172,7 +173,7 @@
                         </ul>
                     </div>
 
-                    <div class="footer-column">
+                    <div class="footer-column reveal">
                         <h4><i class="fas fa-clock"></i> Opening Hours</h4>
                         <p>
                             Monday – Friday: 08:30 AM – 9:00 PM<br>
@@ -181,7 +182,7 @@
                         </p>
                     </div>
 
-                    <div class="footer-column">
+                    <div class="footer-column reveal-right">
                         <h4><i class="fas fa-map-marker-alt"></i> Visit Us</h4>
                         <p>
                             123 Food Street,<br>
@@ -202,8 +203,8 @@
     </footer>
 
 
-<button id="scrollTopBtn" aria-label="Scroll to Top">
-      ↑</i>
+    <button id="scrollTopBtn" aria-label="Scroll to Top">
+      ↑
     </button>
 
     <!-- WhatsApp Chat Bubble -->
@@ -214,6 +215,6 @@
       />
     </a>
 
-    <script defer src="./JAVASCRIPT/about.js"></script>
+    <script src="/JAVASCRIPT/about.js"></script>
   </body>
 </html>
