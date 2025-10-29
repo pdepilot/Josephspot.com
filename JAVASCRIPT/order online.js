@@ -124,6 +124,66 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+     {
+      id: 7,
+      title: "Nkwobi",
+      description: "Goat Meat Sauced with Igbo Traditional Spiced and ugba",
+      price: 8000,
+      category: "starters",
+      image: "./images/IM16.jpg",
+    },
+
+    {
+      id: 8,
+      title: "Abacha",
+      description: "African Salad made from fermented African Oil Bean Seed, garnished with kpomo, Ugba, fish and spices",
+      price: 7000,
+      category: "starters",
+      image: "./images/Abacha1.jpg",
+    },
+
+    {
+      id: 10,
+      title: "Isi Ewu Ukwu (Large Size)",
+      description: "Large goat head dish cooked with Joseph's pot special sauce with chips (Beware of bones)",
+      price: 20000,
+      category: "starters",
+      image: "./images/isi ewu.jpg",
+    },
+
+    {
+      id: 5,
+      title: "Isi Ewu (Medium Size)",
+      description: "Medium goat head dish cooked with Joseph's pot special sauce with chips (Beware of bones)",
+      price: 17000,
+      category: "starters",
+      image: "./images/isi ewu small.jpg",
+    },
+    {
+      id: 6,
+      title: "Goat Legs & Periwinkle",
+      description: "Special fried rice with mixed vegetables and beef",
+      price: 5000,
+      category: "starters",
+      image: "./images/goat leg.jpg",
+    },
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
     {
       id: 5,
       title: "Jollof Rice",
