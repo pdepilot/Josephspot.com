@@ -1,19 +1,18 @@
 // Scroll effect for navbar
-window.addEventListener('scroll', function() {
-  const navbar = document.getElementById('navbar');
+window.addEventListener("scroll", function () {
+  const navbar = document.getElementById("navbar");
   if (window.scrollY > 50) {
-    navbar.classList.add('scrolled');
+    navbar.classList.add("scrolled");
   } else {
-    navbar.classList.remove('scrolled');
+    navbar.classList.remove("scrolled");
   }
 });
 
 // Mobile menu toggle function
 function toggleMenu() {
-  const navLinks = document.querySelector('.nav-links');
-  navLinks.classList.toggle('active');
+  const navLinks = document.querySelector(".nav-links");
+  navLinks.classList.toggle("active");
 }
-
 
 // Filter Gallery Items
 const filterButtons = document.querySelectorAll(".filter-btn");
@@ -32,27 +31,53 @@ filterButtons.forEach((btn) => {
   });
 });
 
-// Lightbox Functionality
+// Enhanced Lightbox Functionality with Labels
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightbox-img");
 const lightboxVideo = document.getElementById("lightbox-video");
+const lightboxTitle = document.getElementById("lightbox-title");
+const lightboxDescription = document.getElementById("lightbox-description");
 
-document.querySelectorAll(".gallery-item img").forEach((img) => {
-  img.addEventListener("click", () => {
-    lightbox.style.display = "flex";
-    lightboxImg.style.display = "block";
-    lightboxVideo.style.display = "none";
-    lightboxImg.src = img.src;
-  });
-});
+document.querySelectorAll(".gallery-item").forEach((item) => {
+  const img = item.querySelector("img");
+  const video = item.querySelector("video");
+  const label = item.querySelector(".gallery-label");
 
-document.querySelectorAll(".gallery-item video").forEach((vid) => {
-  vid.addEventListener("click", () => {
-    lightbox.style.display = "flex";
-    lightboxImg.style.display = "none";
-    lightboxVideo.style.display = "block";
-    lightboxVideo.src = vid.currentSrc || vid.src;
-  });
+  if (img) {
+    img.addEventListener("click", () => {
+      lightbox.style.display = "flex";
+      lightboxImg.style.display = "block";
+      lightboxVideo.style.display = "none";
+      lightboxImg.src = img.src;
+
+      // Set lightbox label content
+      if (label) {
+        const title = label.querySelector(".label-title").textContent;
+        const description =
+          label.querySelector(".label-description").textContent;
+        lightboxTitle.textContent = title;
+        lightboxDescription.textContent = description;
+      }
+    });
+  }
+
+  if (video) {
+    video.addEventListener("click", () => {
+      lightbox.style.display = "flex";
+      lightboxImg.style.display = "none";
+      lightboxVideo.style.display = "block";
+      lightboxVideo.src = video.currentSrc || video.src;
+
+      // Set lightbox label content
+      if (label) {
+        const title = label.querySelector(".label-title").textContent;
+        const description =
+          label.querySelector(".label-description").textContent;
+        lightboxTitle.textContent = title;
+        lightboxDescription.textContent = description;
+      }
+    });
+  }
 });
 
 function closeLightbox() {
@@ -62,25 +87,29 @@ function closeLightbox() {
   lightboxVideo.src = "";
 }
 
-
-
 // Scroll To Top Button
 const scrollBtn = document.getElementById("scrollTopBtn");
 window.onscroll = function () {
-  if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+  if (
+    document.body.scrollTop > 300 ||
+    document.documentElement.scrollTop > 300
+  ) {
     scrollBtn.style.display = "block";
   } else {
     scrollBtn.style.display = "none";
   }
 };
 scrollBtn.onclick = function () {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
-
 
 // WhatsApp link
 const whatsappNumber = "2348104344994"; // Replace with your WhatsApp number (no '+' sign)
+const message =
+  "Hello! I'm interested in your restaurant. Can you tell me more?";
 const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
   message
 )}`;
-window.open(whatsappURL, "_blank");
+
+// Update WhatsApp link
+document.querySelector(".whatsapp-chat").href = whatsappURL;
