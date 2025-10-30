@@ -20,7 +20,7 @@
 
 body {
   font-family: "Poppins", sans-serif;
-  background-color: var(--pale-orange-light);
+  background-color: var(--pale-orange);
   color: var(--text);
   line-height: 1.6;
   overflow-x: hidden;
@@ -95,6 +95,15 @@ body {
   color: var(--accent);
 }
 
+.nav-links a.active::after {
+  width: 100%;
+  background-color: #000000;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
 .nav-links a::after {
   content: "";
   position: absolute;
@@ -146,7 +155,7 @@ body {
 /* Hero Section */
 .menu-hero {
   background: linear-gradient(rgba(139, 69, 19, 0.8), rgba(139, 69, 19, 0.9)),
-    url("./images/IM16.jpg");
+    url("/images/IM16.jpg");
   background-size: cover;
   background-position: center;
   color: var(--white);
@@ -537,6 +546,19 @@ body {
   .nav-links.active {
     left: 0;
   }
+
+   .nav-links a.active {
+    color: rgb(5, 5, 5);
+  }
+
+  .nav-links a.active::after {
+  width: 100%;
+  background-color: #000000;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
 
   .nav-links a {
     color: var(--white);
