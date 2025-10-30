@@ -370,7 +370,7 @@ body {
 
 .item-price {
   font-weight: bold;
-  color: var(--success);
+  color: #50070b;
   font-size: 1.2rem;
   white-space: nowrap;
   margin-left: 1rem;
