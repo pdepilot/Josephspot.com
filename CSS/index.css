@@ -21,7 +21,7 @@
 
 body {
   font-family: "Poppins", sans-serif;
-  background: #f0eeee;
+  background-color: var(--pale-orange);
   margin: 0;
   padding: 0;
   height: 100%;
@@ -64,7 +64,7 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #1a1a1a;
+  background: var(--pale-orange);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -200,7 +200,7 @@ body::before {
   left: 0;
   width: 60px;
   height: 80px;
-  background: linear-gradient(to right, var(--accent), var(--brown-dark));
+  background: linear-gradient(to right, var(--accent), var(--brown));
   border-radius: 10px 10px 15px 15px;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
 }
@@ -226,21 +226,21 @@ body::before {
   transform: translateX(-50%);
   width: 220px;
   height: 25px;
-  background: linear-gradient(to right, var(--brown), var(--brown-dark));
+  background: linear-gradient(to right, var(--brown), var(--brown));
   border-radius: 5px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   z-index: 1;
 }
 
 .loading-text {
-  color: var(--white);
+  color: var(--brown);
   font-size: 24px;
   margin-bottom: 20px;
   text-align: center;
 }
 
 .loading-subtext {
-  color: #bdbdbd;
+  color: var(--accent);
   font-size: 14px;
   font-style: italic;
   margin-top: 10px;
@@ -259,13 +259,13 @@ body::before {
 .progress-bar {
   height: 100%;
   width: 0%;
-  background: linear-gradient(to right, var(--accent), var(--brown-dark));
+  background: linear-gradient(to right, var(--accent), var(--brown));
   transition: width 0.3s ease;
   box-shadow: 0 0 10px var(--accent);
 }
 
 .percentage {
-  color: var(--white);
+  color: var(--brown);
   font-size: 16px;
   margin-top: 10px;
 }
@@ -342,7 +342,7 @@ body::before {
 .content {
   display: none;
   text-align: center;
-  color: var(--white);
+  color: var(--brown);
   padding: 2rem;
 }
 
@@ -364,17 +364,16 @@ body::before {
   left: 0;
   width: 100%;
   padding: 15px 0;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-bottom: 2px solid var(--accent);
+  background: var(--white);
+  z-index: 1000;
+  border-bottom: 2px solid var(--brown);
   box-shadow: var(--shadow);
   transition: var(--transition);
-  z-index: 1000;
 }
 
 .navbar.scrolled {
-  background-color: var(--brown-dark);
   padding: 10px 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: var(--brown);
 }
 
 .navbar.scrolled .nav-links a {
@@ -405,7 +404,7 @@ body::before {
 
 .navbar.scrolled .logo img {
   height: 40px;
-  filter: brightness(5);
+  filter: brightness(0) invert(1);
 }
 
 .nav-links {
@@ -423,22 +422,23 @@ body::before {
 }
 
 .nav-links a:hover {
-  color: var(--brown-dark);
+  color: var(--accent);
 }
+
 
 .nav-links a::after {
   content: "";
   position: absolute;
   width: 0;
   height: 2px;
-  bottom: -5px;
+  bottom: 0;
   left: 0;
-  background-color: var(--brown-dark);
-  transition: width 0.3s ease;
+  background-color: var(--brown);
+  transition: var(--transition);
 }
 
 .nav-links a.active {
-  color: var(--brown-dark);
+  color: var(--brown);
 }
 
 .nav-links a.active::after {
@@ -456,27 +456,28 @@ body::before {
 }
 
 .social a {
-  color: var(--text);
+  color: var(--brown);
   font-size: 18px;
   transition: var(--transition);
 }
 
 .social a:hover {
-  color: var(--brown-dark);
+  color: var(--accent);
   transform: translateY(-3px);
 }
 
 .menu-toggle {
   display: none;
-  cursor: pointer;
   font-size: 24px;
-  color: var(--brown-dark);
+  cursor: pointer;
+  color: var(--brown);
   transition: var(--transition);
 }
 
 .menu-toggle:hover {
-  color: var(--text);
+  color: var(--accent);
 }
+
 
 /* Responsive Styles */
 @media (max-width: 992px) {
@@ -545,7 +546,7 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--brown-dark);
+  background-color: var(--brown);
   text-align: center;
   overflow: hidden;
 }
@@ -623,7 +624,7 @@ body::before {
 }
 
 .hero-subtitle {
-  color: var(--pale-orange-light);
+  color: var(--pale-orange);
   font-size: 1.8rem;
   font-weight: 300;
   letter-spacing: 4px;
@@ -668,7 +669,7 @@ body::before {
 .cta-button-primary {
   display: inline-block;
   padding: 1.2rem 2.8rem;
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   border-radius: 50px;
   text-decoration: none;
@@ -774,7 +775,7 @@ body::before {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--pale-orange-light);
+  background: var(--pale-orange);
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -810,7 +811,7 @@ body::before {
   }
   50% {
     background-image: linear-gradient(var(--white), var(--white)),
-      linear-gradient(135deg, var(--brown-dark), var(--text), var(--brown-dark));
+      linear-gradient(135deg, var(--brown), var(--text), var(--brown));
   }
   75% {
     background-image: linear-gradient(var(--white), var(--white)),
@@ -850,7 +851,7 @@ body::before {
 
 .about-text3 {
   font-size: clamp(1.5rem, 4vw, 1.8rem);
-  color: var(--brown-dark);
+  color: var(--brown);
   margin-bottom: 1.2rem;
   line-height: 1.3;
   font-weight: 700;
@@ -892,7 +893,7 @@ body::before {
   gap: 0.5rem;
   padding: 0.7rem 1.5rem;
   margin-top: 1rem;
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   border-radius: 50px;
   text-decoration: none;
@@ -1085,15 +1086,15 @@ body::before {
   display: block;
   margin-bottom: 1rem;
   text-shadow: 0 0 2px var(--white), 0 0 2px var(--white),
-    0 0 5px var(--brown-dark), 0 0 10px var(--brown-dark),
-    0 0 20px var(--brown-dark);
+    0 0 5px var(--brown), 0 0 10px var(--brown),
+    0 0 20px var(--brown);
   animation: glow 1.5s ease-in-out infinite alternate;
 }
 
 .intro-text2 {
   font-size: 5.5rem;
   font-weight: 900;
-  color: var(--brown-dark);
+  color: var(--brown);
   line-height: 1.2;
   text-shadow: 0 0 5px var(--white), 0 0 10px var(--white),
     0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);
@@ -1101,15 +1102,15 @@ body::before {
 }
 
 .intro-text2 span {
-  color: var(--brown-dark);
-  text-shadow: 0 0 5px var(--white), 0 0 10px var(--brown-dark),
-    0 0 15px var(--brown-dark), 0 0 20px var(--brown-dark);
+  color: var(--brown);
+  text-shadow: 0 0 5px var(--white), 0 0 10px var(--brown),
+    0 0 15px var(--brown), 0 0 20px var(--brown);
 }
 
 @keyframes glow {
   from {
-    text-shadow: 0 0 5px var(--brown-dark), 0 0 10px var(--brown-dark),
-      0 0 15px var(--brown-dark), 0 0 20px var(--brown-dark);
+    text-shadow: 0 0 5px var(--brown), 0 0 10px var(--brown),
+      0 0 15px var(--brown), 0 0 20px var(--brown);
   }
   to {
     text-shadow: 0 0 10px var(--white), 0 0 20px var(--accent),
@@ -1130,7 +1131,7 @@ body::before {
   }
   100% {
     transform: scale(1);
-    text-shadow: 0 0 5px var(--brown-dark), 0 0 10px var(--brown-dark),
+    text-shadow: 0 0 5px var(--brown), 0 0 10px var(--brown),
       0 0 20px rgba(255, 255, 255, 0.8);
   }
 }
@@ -1150,7 +1151,7 @@ body::before {
 .food-card {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(145deg, var(--white), var(--pale-orange-light));
+  background: linear-gradient(145deg, var(--white), var(--pale-orange));
   border-radius: 20px;
   overflow: hidden;
   box-shadow: var(--shadow);
@@ -1266,7 +1267,7 @@ body::before {
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--brown-light);
+  background: var(--brown);
   transition: width 0.3s ease;
 }
 
@@ -1275,11 +1276,11 @@ body::before {
 }
 
 .card-title:hover {
-  color: var(--brown-dark);
+  color: var(--brown);
 }
 
 .card-description {
-  color: var(--text-light);
+  color: var(--text);
   line-height: 1.7;
   margin-bottom: 1.8rem;
   flex-grow: 1;
@@ -1292,7 +1293,7 @@ body::before {
   margin-top: auto;
   padding-top: 1.2rem;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
-  color: var(--text-light);
+  color: var(--text);
   font-size: 0.9rem;
 }
 
@@ -1305,7 +1306,7 @@ body::before {
 .card-link {
   display: inline-flex;
   align-items: center;
-  color: var(--brown-dark);
+  color: var(--brown);
   font-weight: 600;
   text-decoration: none;
   transition: var(--transition);
@@ -1624,7 +1625,7 @@ a:focus-visible {
 /* EVENTS SECTIONS */
 .events-section {
   padding: 4rem 1rem;
-  background-color: var(--pale-orange-light);
+  background-color: var(--pale-orange);
   position: relative;
   overflow: hidden;
 }
@@ -1643,7 +1644,7 @@ a:focus-visible {
 .section-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--brown-dark);
+  color: var(--brown);
   margin-bottom: 0.5rem;
   position: relative;
   display: inline-block;
@@ -1662,14 +1663,14 @@ a:focus-visible {
 
 .section-subtitle {
   font-size: 1.1rem;
-  color: var(--text-light);
+  color: var(--text);
   font-weight: 400;
 }
 
 .event-card {
   display: flex;
   flex-direction: column;
-  background: var(--brown-dark);
+  background: var(--brown);
   border-radius: 8px;
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -1871,7 +1872,7 @@ a:focus-visible {
   padding: 4rem;
   display: flex;
   flex-direction: column;
-  background-color: var(--brown-dark);
+  background-color: var(--brown-light);
   z-index: 2;
   position: relative;
 }
@@ -1921,7 +1922,7 @@ a:focus-visible {
 
 .form-subtitle {
   font-size: 1.1rem;
-  color: var(--text-light);
+  color: var(--text);
   font-weight: 400;
 }
 
@@ -1954,7 +1955,7 @@ a:focus-visible {
   position: absolute;
   top: 1rem;
   left: 1.5rem;
-  color: var(--text-light);
+  color: var(--text);
   transition: var(--transition);
   pointer-events: none;
   font-size: 1rem;
@@ -1969,7 +1970,7 @@ a:focus-visible {
 .floating textarea {
   width: 100%;
   padding: 1.5rem;
-  border: 2px solid var(--brown-light);
+  border: 2px solid var(--brown);
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 500;
@@ -2039,7 +2040,7 @@ a:focus-visible {
 
 .icon-item:hover {
   transform: translateY(-5px);
-  background: linear-gradient(135deg, var(--brown) 0%, var(--brown-light) 100%);
+  background: linear-gradient(135deg, var(--brown) 0%, var(--brown) 100%);
   box-shadow: var(--shadow);
 }
 
@@ -2051,7 +2052,7 @@ a:focus-visible {
 
 .icon-item span {
   font-size: 0.8rem;
-  color: var(--text-light);
+  color: var(--text);
 }
 
 .submit-btn {
@@ -2060,7 +2061,7 @@ a:focus-visible {
   justify-content: center;
   width: 100%;
   padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, var(--accent), var(--brown-dark));
+  background: linear-gradient(135deg, var(--accent), var(--brown));
   color: var(--white);
   border: none;
   border-radius: 12px;
@@ -2114,7 +2115,7 @@ a:focus-visible {
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.9rem;
-  color: var(--text-light);
+  color: var(--text);
 }
 
 .form-notification {
@@ -2413,7 +2414,7 @@ a:focus-visible {
   overflow: hidden;
   margin-bottom: 15px;
   position: relative;
-  border: 3px solid var(--brown-dark);
+  border: 3px solid var(--brown);
   box-shadow: var(--shadow);
 }
 
@@ -2460,7 +2461,7 @@ a:focus-visible {
 }
 
 .slider-btn {
-  background: var(--brown-dark);
+  background: var(--brown);
   border: 2px solid var(--white);
   color: var(--white);
   padding: 8px 16px;
@@ -2502,13 +2503,13 @@ a:focus-visible {
 }
 
 .slider-dots .dot.active {
-  background: var(--brown-dark);
+  background: var(--brown);
   transform: scale(1.2);
 }
 
 /* Add Review Button */
 .add-review-btn {
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   border: none;
   padding: 10px 20px;
@@ -2625,7 +2626,7 @@ a:focus-visible {
 .star-rating .star {
   cursor: pointer;
   transition: color 0.2s;
-  color: var(--text-light);
+  color: var(--text);
 }
 
 .star-rating .star:hover,
@@ -3029,17 +3030,11 @@ a:focus-visible {
 /* FOOTER SECTION */
 
 .footer {
-  background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.8),
-      rgba(0, 0, 0, 0.95)
-    ),
-    url("https://images.unsplash.com/photo-1504674900247-0877df9cc836")
-      center/cover no-repeat;
+  background: var(--brown);
   padding: 60px 20px 20px;
   position: relative;
   z-index: 0;
-  color: var(--white);
+  color: var(--brown);
 }
 
 .footer-glass {
@@ -3171,7 +3166,7 @@ a:focus-visible {
 }
 
 #aiChat-header {
-  background: var(--brown-dark);
+  background: var(--brown);
   padding: 8px;
   display: flex;
   align-items: center;
@@ -3213,7 +3208,7 @@ a:focus-visible {
 }
 
 .user-bubble {
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   align-self: flex-end;
 }
@@ -3233,7 +3228,7 @@ a:focus-visible {
 }
 
 #aiChat-input-area button {
-  background: var(--brown-dark);
+  background: var(--brown);
   border: none;
   color: var(--white);
   padding: 8px 12px;
@@ -3250,7 +3245,7 @@ a:focus-visible {
 }
 
 #aiChat-welcome-options button {
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   border: none;
   margin: 5px;
@@ -3309,7 +3304,7 @@ a:focus-visible {
 }
 
 .quick-reply-btn {
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   border: none;
   padding: 8px 15px;
@@ -3326,7 +3321,7 @@ a:focus-visible {
 }
 
 .quick-reply-btn {
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   border: none;
   padding: 8px 15px;
@@ -3466,7 +3461,7 @@ a:focus-visible {
   height: 20px;
   border: none;
   border-radius: 50%;
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   font-size: 12px;
   cursor: pointer;
@@ -3503,7 +3498,7 @@ a:focus-visible {
 /* Clear Button Styles */
 .clear-btn {
   padding: 10px 15px;
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   border: none;
   border-radius: 5px;
@@ -3524,7 +3519,7 @@ a:focus-visible {
 
 /* Button Colors */
 .orange-btn {
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   padding: 5px 10px;
   border: none;
@@ -3547,7 +3542,7 @@ a:focus-visible {
   font-size: 20px;
   cursor: pointer;
   margin-left: 5px;
-  color: var(--brown-dark);
+  color: var(--brown);
 }
 
 #aiChat-voice-btn {
@@ -3564,7 +3559,7 @@ a:focus-visible {
   position: fixed;
   bottom: 100px;
   right: 30px;
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   border: none;
   width: 50px;
