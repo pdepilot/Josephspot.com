@@ -34,7 +34,7 @@ body {
   left: 0;
   width: 100%;
   padding: 15px 0;
-  background: var(--white);
+  background: var(--pale-orange);
   z-index: 1000;
   border-bottom: 2px solid var(--brown);
   box-shadow: var(--shadow);
@@ -333,7 +333,7 @@ body {
 
 /* Special Items */
 .special-item {
-  background: linear-gradient(135deg, var(--brown), var(--brown-light));
+  background: linear-gradient(135deg, var(--brown), var(--brown));
   color: var(--white);
 }
 
@@ -394,6 +394,7 @@ body {
   padding-left: 5px;
 }
 
+
 .qr-container {
   text-align: center;
   padding: 20px;
@@ -436,6 +437,7 @@ body {
   padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   opacity: 0.8;
+  color: var(--white);
 }
 
 /* Floating Action Buttons */

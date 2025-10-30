@@ -120,10 +120,6 @@ document.addEventListener("DOMContentLoaded", function () {
     },
 
 
-
-
-
-
      {
       id: 7,
       title: "Nkwobi",
@@ -313,6 +309,15 @@ document.addEventListener("DOMContentLoaded", function () {
       price: 3500,
       category: "drinks",
       image: "./images/IM45.png",
+    },
+
+    {
+      id: 20,
+      title: "Star Radler",
+      description: "Iced or Cold Star Radler beer drink",
+      price: 3500,
+      category: "drinks",
+      image: "./images/IM33.png",
     },
   ];
 
