@@ -1,497 +1,753 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Joseph's Pot</title>
-    <link rel="stylesheet" href="./CSS/menu.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joseph's Pot - Authentic Igbo Cuisine</title>
+    <link rel="icon" href="./images/logo3.png">
+    <link rel="stylesheet" href="./fontawesome-free-6.7.2-web/css/all.min.css">
     <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
-     <link rel="icon" href="./images/logo3.png">
-    <link
-      rel="stylesheet"
-      href="./fontawesome-free-6.7.2-web/css/all.min.css"
-    />
-  </head>
-  <body>
+    <link rel="stylesheet" href="./CSS/menu.css">
+</head>
+<body>
     <!-- Navbar -->
     <header class="navbar" id="navbar">
-      <div class="containerr">
-        <div class="logo">
-          <a href=""><img src="./images/logo3.png" alt="logo"></a>
+        <div class="containerr">
+            <div class="logo">
+                <a href="index.html"><img src="./images/logo3.png" alt="Joseph's Pot Logo"></a>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="menu.html" class="active">Menu</a>
+                <a href="about.html">About</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="index.html#eventContainer">Events</a>
+                <a href="contact.html">Contact</a>
+                <a href="order online.html">Order Online</a>
+            </nav>
+            <div class="social">
+                <a href="https://www.facebook.com/@cruisewithjoe"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.x.com/@cruisewithjoe"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="https://www.youtube.com/@cruisewithjoe"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.instagram.com/@cruisewithjoe"><i class="fab fa-instagram"></i></a>
+            </div>
+            <span class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-utensils"></i></span>
         </div>
-        <nav class="nav-links">
-          <a href="index.html">Home</a>
-          <a href="menu.html" class="active">Menu</a>
-          <a href="about.html">About</a>
-          <a href="gallery.html">Gallery</a>
-           <a href="index.html#eventContainer">Events</a>
-          <a href="contact.html">Contact</a>
-          <a href="order online.html">Order Online</a>
-        </nav>
-
-        <div class="social">
-          <a href="https://www.facebook.com/@cruisewithjoe"><i class="fa-brands fa-facebook"></i></a>
-          <a href="https://www.x.com/@cruisewithjoe"><i class="fa-brands fa-x-twitter"></i></a>
-          <a href="https://www.youtube.com/@cruisewithjoe"><i class="fab fa-youtube"></i></a>
-          <a href="https://www.instagram.com/@cruisewithjoe"><i class="fab fa-instagram"></i></a>
-        </div>
-        <span class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-utensils"></i></span>
-      </div>
     </header>
 
+    <!-- Hero Section -->
+    <section class="menu-hero">
+        <h1>Joseph's Pot Restaurant</h1>
+        <p>Experience the authentic taste of Igbo cuisine with our carefully crafted menu</p>
+    </section>
 
+    <!-- Menu Filter -->
+    <div class="menu-filter">
+        <button class="filter-btn active" data-filter="all">All Items</button>
+        <button class="filter-btn" data-filter="main-course">Main Course</button>
+        <button class="filter-btn" data-filter="proteins">Proteins</button>
+        <button class="filter-btn" data-filter="swallow">Swallow</button>
+        <button class="filter-btn" data-filter="bulk-orders">Bulk Orders</button>
+        <button class="filter-btn" data-filter="specials">Specials</button>
+    </div>
+
+    <!-- Menu Container -->
     <div class="menu-wrapper">
-      <!-- Header with Logo -->
-      <header class="menu-header">
-        <div class="logo-container">
-          <h1>Joseph's Pot Restaurant</h1>
-          <p class="tagline">Taste the Igbo Flavors</p>
-        </div>
-      </header>
-
-      <!-- Menu Sections -->
-      <main class="menu-container">
         <!-- Main Course -->
-        <section class="menu-section">
-          <div class="section-header">
-            <h2><i class="fas fa-utensils"></i> MAIN COURSE</h2>
-            <img
-              src="./images/nsala.jpeg"
-              alt="Main Course"
-              class="section-image"
-            />
-          </div>
-          <div class="menu-items">
-            <div class="menu-item">
-              <div class="item-info">
-                <h3>Jollof Rice & Turkey</h3>
-                <p class="item-description">
-                  Aromatic rice cooked in rich tomato sauce with grilled turkey
-                </p>
-              </div>
-              <span class="item-price">₦4,000</span>
+        <section class="menu-section fade-in" data-category="main-course">
+            <div class="section-header">
+                <h2><i class="fas fa-utensils"></i> MAIN COURSE</h2>
+                <img src="./images/nsala.jpeg" alt="Main Course" class="section-image">
             </div>
-            <div class="menu-item">
-              <span class="item-name">Jollof rice & turkey</span>
-              <span class="item-price">₦4,000</span>
+            <div class="menu-items">
+                <div class="menu-item special-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-crown"></i> Jollof Rice & Turkey</div>
+                        <p class="item-description">Aromatic rice cooked in rich tomato sauce with grilled turkey</p>
+                        <div class="item-tags">
+                            <span class="tag">Popular</span>
+                            <span class="tag">Chef's Special</span>
+                        </div>
+                    </div>
+                    <span class="item-price">₦4,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-utensil-spoon"></i> Pasta & Turkey</div>
+                        <p class="item-description">Delicious pasta served with perfectly grilled turkey</p>
+                    </div>
+                    <span class="item-price">₦4,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-utensil-spoon"></i> Fried Rice</div>
+                        <p class="item-description">Savory fried rice with assorted vegetables and choice of protein</p>
+                    </div>
+                    <span class="item-price">₦4,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-fish"></i> Native Rice With Fish & Egg</div>
+                        <p class="item-description">Traditional rice preparation with fresh fish and egg</p>
+                    </div>
+                    <span class="item-price">₦3,500</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-pot-food"></i> Porridge</div>
+                        <p class="item-description">Hearty and comforting traditional porridge</p>
+                    </div>
+                    <span class="item-price">₦4,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-egg"></i> Noodles & Turkey/Chicken</div>
+                        <p class="item-description">Flavorful noodles served with your choice of protein</p>
+                    </div>
+                    <span class="item-price">₦3,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-drumstick-bite"></i> Goat Meat Nkwobi</div>
+                        <p class="item-description">Spicy goat meat prepared in traditional Nkwobi style</p>
+                    </div>
+                    <span class="item-price">₦3,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-bone"></i> Cowtail Nkwobi</div>
+                        <p class="item-description">Tender cowtail prepared in rich Nkwobi sauce</p>
+                    </div>
+                    <span class="item-price">₦5,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> Roasted Plantain/Ugba</div>
+                        <p class="item-description">Roasted plantain served with traditional Ugba</p>
+                    </div>
+                    <span class="item-price">₦4,500</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-fire"></i> Stir-fry Pasta</div>
+                        <p class="item-description">Pasta stir-fried with fresh vegetables and seasonings</p>
+                    </div>
+                    <span class="item-price">₦1,500</span>
+                </div>
+                
+                <div class="menu-item special-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-crown"></i> Goat Meat Jollof Rice</div>
+                        <p class="item-description">Premium jollof rice with tender goat meat</p>
+                        <div class="item-tags">
+                            <span class="tag">Premium</span>
+                            <span class="tag">Specialty</span>
+                        </div>
+                    </div>
+                    <span class="item-price">₦6,500</span>
+                </div>
             </div>
-            <div class="menu-item">
-              <span class="item-name">Pasta & turkey</span>
-              <span class="item-price">₦4,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">Fried Rice</span>
-              <span class="item-price">₦4,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">Native Rice With Fish & egg</span>
-              <span class="item-price">₦3,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">Porridge</span>
-              <span class="item-price">₦4,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">Noodles & turkey/chicken</span>
-              <span class="item-price">₦3,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">Goat Meat Nkwobi</span>
-              <span class="item-price">₦3,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">Cowtail Nkwobi</span>
-              <span class="item-price">₦5,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">Roasted Plantain/Ugba</span>
-              <span class="item-price">₦4,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">Stir-fry Pasta</span>
-              <span class="item-price">₦1,500</span>
-            </div>
-             <div class="menu-item">
-              <span class="item-name">Goat Meat Jollof Rice</span>
-              <span class="item-price">₦6,500</span>
-            </div>
-          </div>
         </section>
 
         <!-- Proteins -->
-        <section class="menu-section">
-          <div class="section-header">
-            <h2><i class="fas fa-drumstick-bite"></i> PROTEINS</h2>
-            <img
-              src="./images/nkwobi.jpeg"
-              alt="Protein Dishes"
-              class="section-image"
-            />
-          </div>
-          <div class="menu-items">
-            <div class="menu-item">
-              <span class="item-name">Chicken</span>
-              <span class="item-price">₦2,500</span>
+        <section class="menu-section fade-in" data-category="proteins">
+            <div class="section-header">
+                <h2><i class="fas fa-drumstick-bite"></i> PROTEINS</h2>
+                <img src="./images/nkwobi.jpeg" alt="Protein Dishes" class="section-image">
             </div>
-            <div class="menu-item">
-              <span class="item-name">Turkey</span>
-              <span class="item-price">₦2,500</span>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-drumstick-bite"></i> Chicken</div>
+                        <p class="item-description">Tender and juicy chicken prepared to perfection</p>
+                    </div>
+                    <span class="item-price">₦2,500</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-turkey"></i> Turkey</div>
+                        <p class="item-description">Flavorful turkey with our special seasoning</p>
+                    </div>
+                    <span class="item-price">₦2,500</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-cow"></i> Beef</div>
+                        <p class="item-description">Succulent beef cuts cooked to your preference</p>
+                    </div>
+                    <span class="item-price">₦2,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-fish"></i> Croacker Fish</div>
+                        <p class="item-description">Fresh croacker fish, grilled or fried</p>
+                    </div>
+                    <span class="item-price">₦3,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-paw"></i> Goat Meat</div>
+                        <p class="item-description">Tender goat meat with traditional spices</p>
+                    </div>
+                    <span class="item-price">₦3,000</span>
+                </div>
             </div>
-            <div class="menu-item">
-              <span class="item-name">Beef</span>
-              <span class="item-price">₦2,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">Croacker Fish</span>
-              <span class="item-price">₦3,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">Goat Meat</span>
-              <span class="item-price">₦3,000</span>
-            </div>
-          </div>
         </section>
 
         <!-- Swallow -->
-        <section class="menu-section">
-          <div class="section-header">
-            <h2><i class="fas fa-bread-slice"></i> SWALLOW</h2>
-            <img
-              src="./images/fufu.jpg"
-              alt="Swallow Dishes"
-              class="section-image"
-            />
-          </div>
-          <div class="menu-items">
-            <div class="menu-item">
-              <span class="item-name">Egusi with protein</span>
-              <span class="item-price">₦5,000</span>
+        <section class="menu-section fade-in" data-category="swallow">
+            <div class="section-header">
+                <h2><i class="fas fa-bread-slice"></i> SWALLOW</h2>
+                <img src="./images/fufu.jpg" alt="Swallow Dishes" class="section-image">
             </div>
-            <div class="menu-item">
-              <span class="item-name">Efo Riro with protein</span>
-              <span class="item-price">₦5,000</span>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> Egusi with Protein</div>
+                        <p class="item-description">Melon seed soup served with your choice of swallow</p>
+                    </div>
+                    <span class="item-price">₦5,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> Efo Riro with Protein</div>
+                        <p class="item-description">Vegetable soup with assorted meats and fish</p>
+                    </div>
+                    <span class="item-price">₦5,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-mortar-pestle"></i> Ogbono with Protein</div>
+                        <p class="item-description">Draw soup made from ground ogbono seeds</p>
+                    </div>
+                    <span class="item-price">₦5,000</span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> Ewedu with Protein</div>
+                        <p class="item-description">Jute leaf soup served with assorted proteins</p>
+                    </div>
+                    <span class="item-price">₦4,000</span>
+                </div>
             </div>
-            <div class="menu-item">
-              <span class="item-name">Ogbono with protein</span>
-              <span class="item-price">₦5,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">Ewedu with protein</span>
-              <span class="item-price">₦4,000</span>
-            </div>
-          </div>
         </section>
 
         <!-- Bulk Orders -->
-        <section class="menu-section">
-          <div class="section-header">
-            <h2><i class="fas fa-people-carry"></i> BULK ORDERS</h2>
-            <img
-              src="./images/owerri.jpg.png"
-              alt="Bulk Orders"
-              class="section-image"
-            />
-          </div>
-          <div class="menu-items">
-            <div class="menu-item">
-              <span class="item-name">1.5 liter of Ofe-Owerri</span>
-              <span class="item-price">₦27,000 'Takeaway' #29,000</span>
+        <section class="menu-section fade-in" data-category="bulk-orders">
+            <div class="section-header">
+                <h2><i class="fas fa-people-carry"></i> BULK ORDERS</h2>
+                <img src="./images/owerri.jpg.png" alt="Bulk Orders" class="section-image">
             </div>
-            <div class="menu-item">
-              <span class="item-name">1.5 liter of Ofe-Anara</span>
-              <span class="item-price">₦20,000 'Takeaway' ₦22,000</span>
+            <div class="menu-items">
+                <div class="menu-item special-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-soup"></i> 1.5 liter of Ofe-Owerri</div>
+                        <p class="item-description">Traditional Owerri soup with assorted meats</p>
+                    </div>
+                    <span class="item-price">₦27,000 <span class="price-note">Takeaway: ₦29,000</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-soup"></i> 1.5 liter of Ofe-Anara</div>
+                        <p class="item-description">Traditional Anara soup with assorted proteins</p>
+                    </div>
+                    <span class="item-price">₦20,000 <span class="price-note">Takeaway: ₦22,000</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-snail"></i> 1.5 liter of Snail-Soup</div>
+                        <p class="item-description">Rich soup with fresh snails and traditional spices</p>
+                    </div>
+                    <span class="item-price">₦25,000 <span class="price-note">Takeaway: ₦27,000</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-bowl-food"></i> 1.5 liter of White-Soup</div>
+                        <p class="item-description">Traditional white soup with utazi leaves</p>
+                    </div>
+                    <span class="item-price">₦23,000 <span class="price-note">Takeaway: ₦25,000</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-mortar-pestle"></i> 1 liter of Banga-Stew</div>
+                        <p class="item-description">Palm fruit stew with traditional seasonings</p>
+                    </div>
+                    <span class="item-price">₦7,000</span>
+                </div>
+                
+                <!-- Oha Soup Variations -->
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Beef/Fish</div>
+                        <p class="item-description">Traditional Oha soup with beef or fish</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Goat</div>
+                        <p class="item-description">Traditional Oha soup with goat meat</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Snail</div>
+                        <p class="item-description">Traditional Oha soup with snails</p>
+                    </div>
+                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Cowtail</div>
+                        <p class="item-description">Traditional Oha soup with cowtail</p>
+                    </div>
+                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Assorted</div>
+                        <p class="item-description">Traditional Oha soup with assorted meats</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Chicken</div>
+                        <p class="item-description">Traditional Oha soup with chicken</p>
+                    </div>
+                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Dry Fish</div>
+                        <p class="item-description">Traditional Oha soup with dry fish</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1.5 liter of Oha-Soup</div>
+                        <p class="item-description">Traditional Oha soup in larger quantity</p>
+                    </div>
+                    <span class="item-price">₦27,000 <span class="price-note">Takeaway: ₦29,500</span></span>
+                </div>
+                
+                <!-- Vegetable Soup Variations -->
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Beef/Fish</div>
+                        <p class="item-description">Vegetable soup with beef or fish</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Goat</div>
+                        <p class="item-description">Vegetable soup with goat meat</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Snail</div>
+                        <p class="item-description">Vegetable soup with snails</p>
+                    </div>
+                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Cowtail</div>
+                        <p class="item-description">Vegetable soup with cowtail</p>
+                    </div>
+                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦12,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Assorted</div>
+                        <p class="item-description">Vegetable soup with assorted meats</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Chicken</div>
+                        <p class="item-description">Vegetable soup with chicken</p>
+                    </div>
+                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Dry Fish</div>
+                        <p class="item-description">Vegetable soup with dry fish</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦14,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-carrot"></i> 1.5 liters of Veg-Soup</div>
+                        <p class="item-description">Vegetable soup in larger quantity</p>
+                    </div>
+                    <span class="item-price">₦29,000 <span class="price-note">Takeaway: ₦31,500</span></span>
+                </div>
+                
+                <!-- Okra Soup Variations -->
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Beef/Fish</div>
+                        <p class="item-description">Okra soup with beef or fish</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Goat</div>
+                        <p class="item-description">Okra soup with goat meat</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Snail</div>
+                        <p class="item-description">Okra soup with snails</p>
+                    </div>
+                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Cowtail</div>
+                        <p class="item-description">Okra soup with cowtail</p>
+                    </div>
+                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦12,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Assorted</div>
+                        <p class="item-description">Okra soup with assorted meats</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Chicken</div>
+                        <p class="item-description">Okra soup with chicken</p>
+                    </div>
+                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Dry Fish</div>
+                        <p class="item-description">Okra soup with dry fish</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦14,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1.5 liters of Okra-Soup</div>
+                        <p class="item-description">Okra soup in larger quantity</p>
+                    </div>
+                    <span class="item-price">₦27,000 <span class="price-note">Takeaway: ₦29,000</span></span>
+                </div>
+                
+                <!-- Bitterleaf/Okazi Soup Variations -->
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Beef/Fish</div>
+                        <p class="item-description">Bitterleaf or Okazi soup with beef or fish</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Goat</div>
+                        <p class="item-description">Bitterleaf or Okazi soup with goat meat</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Snail</div>
+                        <p class="item-description">Bitterleaf or Okazi soup with snails</p>
+                    </div>
+                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Cowtail</div>
+                        <p class="item-description">Bitterleaf or Okazi soup with cowtail</p>
+                    </div>
+                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦12,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Assorted</div>
+                        <p class="item-description">Bitterleaf or Okazi soup with assorted meats</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Chicken</div>
+                        <p class="item-description">Bitterleaf or Okazi soup with chicken</p>
+                    </div>
+                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Dry Fish</div>
+                        <p class="item-description">Bitterleaf or Okazi soup with dry fish</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦14,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1.5 liters of Bitterleaf/Okazi Soup</div>
+                        <p class="item-description">Bitterleaf or Okazi soup in larger quantity</p>
+                    </div>
+                    <span class="item-price">₦27,000 <span class="price-note">Takeaway: ₦29,000</span></span>
+                </div>
+                
+                <!-- Afang Soup Variations -->
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Beef/Fish</div>
+                        <p class="item-description">Afang soup with beef or fish</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Goat</div>
+                        <p class="item-description">Afang soup with goat meat</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Snail</div>
+                        <p class="item-description">Afang soup with snails</p>
+                    </div>
+                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Cowtail</div>
+                        <p class="item-description">Afang soup with cowtail</p>
+                    </div>
+                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦12,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Assorted</div>
+                        <p class="item-description">Afang soup with assorted meats</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Chicken</div>
+                        <p class="item-description">Afang soup with chicken</p>
+                    </div>
+                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Dry Fish</div>
+                        <p class="item-description">Afang soup with dry fish</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦14,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-leaf"></i> 1.5 liters of Afang-Soup</div>
+                        <p class="item-description">Afang soup in larger quantity</p>
+                    </div>
+                    <span class="item-price">₦29,000 <span class="price-note">Takeaway: ₦31,000</span></span>
+                </div>
+                
+                <!-- Egusi Soup Variations -->
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Beef/Fish</div>
+                        <p class="item-description">Egusi soup with beef or fish</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Goat</div>
+                        <p class="item-description">Egusi soup with goat meat</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Snail</div>
+                        <p class="item-description">Egusi soup with snails</p>
+                    </div>
+                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Cowtail</div>
+                        <p class="item-description">Egusi soup with cowtail</p>
+                    </div>
+                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦12,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Assorted</div>
+                        <p class="item-description">Egusi soup with assorted meats</p>
+                    </div>
+                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Chicken</div>
+                        <p class="item-description">Egusi soup with chicken</p>
+                    </div>
+                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Dry Fish</div>
+                        <p class="item-description">Egusi soup with dry fish</p>
+                    </div>
+                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦14,500</span></span>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-seedling"></i> 1.5 liters of Egusi-Soup</div>
+                        <p class="item-description">Egusi soup in larger quantity</p>
+                    </div>
+                    <span class="item-price">₦27,000 <span class="price-note">Takeaway: ₦31,000</span></span>
+                </div>
+                
+                <!-- Catering -->
+                <div class="menu-item special-item">
+                    <div class="item-info">
+                        <div class="item-name"><i class="fas fa-users"></i> 1000 Menus</div>
+                        <p class="item-description">Large catering orders for events and special occasions</p>
+                        <div class="item-tags">
+                            <span class="tag">Catering</span>
+                            <span class="tag">Events</span>
+                        </div>
+                    </div>
+                    <span class="item-price">Price on request</span>
+                </div>
             </div>
-            <div class="menu-item">
-              <span class="item-name">1.5 liter of Snail-Soup</span>
-              <span class="item-price">₦25,000 'Takeaway' ₦27,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1.5 liter of White-Soup</span>
-              <span class="item-price">₦23,000 'Takeaway' ₦25,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Banga-Stew</span>
-              <span class="item-price">₦7,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Oha-Soup with Beef/Fish</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-
-            <div class="menu-item">
-              <span class="item-name">1 liter of Oha-Soup with Goat</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦13,500</span>
-            </div>
-
-            <div class="menu-item">
-              <span class="item-name">1 liter of Oha-Soup with Snail</span>
-              <span class="item-price">₦12,000 'Takeaway' ₦14,500</span>
-            </div>
-
-            <div class="menu-item">
-              <span class="item-name">1 liter of Oha-Soup with Cowtail</span>
-              <span class="item-price">₦10,000 'Takeaway' ₦13,500</span>
-            </div>
-
-            <div class="menu-item">
-              <span class="item-name">1 liter of Oha-Soup with Assorted</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Oha-Soup with Chicken</span>
-              <span class="item-price">₦9,000 'Takeaway' ₦11,000</span>
-            </div>
-
-            <div class="menu-item">
-              <span class="item-name">1 liter of Oha-Soup with Dry Fish</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦13,500</span>
-            </div>
-
-            <div class="menu-item">
-              <span class="item-name">1.5 liter of Oha-Soup with Oha-Soup</span>
-              <span class="item-price">₦27,000 'Takeaway' ₦29,500</span>
-            </div>
-
-            <div class="menu-item">
-              <span class="item-name">1 liter of Veg-Soup with Beef/Fish</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Veg-Soup with Goat</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦13,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Veg-Soup with Snail</span>
-              <span class="item-price">₦12,000 'Takeaway' ₦13,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Veg-Soup with Cowtail</span>
-              <span class="item-price">₦10,000 'Takeaway' ₦12,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Veg-Soup with Assorted</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Veg-Soup with Chicken</span>
-              <span class="item-price">₦9,000 'Takeaway' ₦11,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Veg-Soup with Dry Fish</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦14,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1.5 liters of Veg-Soup</span>
-              <span class="item-price">₦29,000 'Takeaway' ₦31,500</span>
-            </div>
-          </div>
-
-
-
-
-
-
-           <div class="menu-item">
-              <span class="item-name">1 liter of Okra-Soup with Beef/Fish</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Okra-Soup with Goat</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦13,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Okra-Soup with Snail</span>
-              <span class="item-price">₦12,000 'Takeaway' ₦13,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Okra-Soup with Cowtail</span>
-              <span class="item-price">₦10,000 'Takeaway' ₦12,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Okra-Soup with Assorted</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Okra-Soup with Chicken</span>
-              <span class="item-price">₦9,000 'Takeaway' ₦11,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Okra-Soup with Dry Fish</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦14,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1.5 liters of Okra-Soup</span>
-              <span class="item-price">₦27,000 'Takeaway' ₦29,000</span>
-            </div>
-          </div>
-
-
-
-           <div class="menu-item">
-              <span class="item-name">1 liter of Bitterleaf/Okazi Soup with Beef/Fish</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Bitterleaf/Okazi Soup with Goat</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦13,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Bitterleaf/Okazi Soup with Snail</span>
-              <span class="item-price">₦12,000 'Takeaway' ₦13,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Bitterleaf/Okazi Soup with Cowtail</span>
-              <span class="item-price">₦10,000 'Takeaway' ₦12,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Bitterleaf/Okazi Soup with Assorted</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Bitterleaf/Okazi Soup with Chicken</span>
-              <span class="item-price">₦9,000 'Takeaway' ₦11,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Bitterleaf/Okazi Soup with Dry Fish</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦14,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1.5 liters of Bitterleaf/Okazi Soup</span>
-              <span class="item-price">₦27,000 'Takeaway' ₦29,000</span>
-            </div>
-          </div>
-
-
-           <div class="menu-item">
-              <span class="item-name">1 liter of Afang-Soup with Beef/Fish</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Afang-Soup with Goat</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦13,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Afang-Soup with Snail</span>
-              <span class="item-price">₦12,000 'Takeaway' ₦13,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Afang-Soup with Cowtail</span>
-              <span class="item-price">₦10,000 'Takeaway' ₦12,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Afang-Soup with Assorted</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Afang-Soup with Chicken</span>
-              <span class="item-price">₦9,000 'Takeaway' ₦11,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Afang-Soup with Dry Fish</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦14,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1.5 liters of Afang-Soup</span>
-              <span class="item-price">₦29,000 'Takeaway' ₦31,000</span>
-            </div>
-          </div>
-
-
-           <div class="menu-item">
-              <span class="item-name">1 liter of Egusi-Soup with Beef/Fish</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Egusi-Soup with Goat</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦13,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Egusi-Soup with Snail</span>
-              <span class="item-price">₦12,000 'Takeaway' ₦13,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Egusi-Soup with Cowtail</span>
-              <span class="item-price">₦10,000 'Takeaway' ₦12,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Egusi-Soup with Assorted</span>
-              <span class="item-price">₦8,500 'Takeaway' ₦10,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Egusi-Soup with Chicken</span>
-              <span class="item-price">₦9,000 'Takeaway' ₦11,000</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1 liter of Egusi-Soup with Dry Fish</span>
-              <span class="item-price">₦11,000 'Takeaway' ₦14,500</span>
-            </div>
-            <div class="menu-item">
-              <span class="item-name">1.5 liters of Egusi-Soup</span>
-              <span class="item-price">₦27,000 'Takeaway' ₦31,000</span>
-            </div>
-          </div>
-
-
-
-
-
-          <h2>Joseph's POT</h2>
-          <div class="menu-item">
-            <span class="item-name">1000 Menus</span>
-            <span class="item-price">(Price on request)</span>
-          </div>
         </section>
-      </main>
+    </div>
 
-      <!-- Footer with QR and Contact -->
-      <footer class="menu-footer">
-        <div class="qr-container">
-          <div class="qr-code">
-            <img
-              src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://josephspot.com/menu"
-              alt="Menu QR Code"
-            />
-          </div>
-          <p>Scan for Digital Menu</p>
+    <!-- Footer -->
+    <footer class="menu-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-utensils"></i> Joseph's Pot</h3>
+                <p>Authentic Igbo cuisine served with love and tradition. Experience the true taste of Eastern Nigeria.</p>
+                <div class="qr-container">
+                    <div class="qr-code">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://josephspot.com/menu" alt="Menu QR Code">
+                    </div>
+                    <p class="qr-text">Scan for Digital Menu</p>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-clock"></i> Opening Hours</h3>
+                <p>Monday - Friday: 8:30 AM - 9:00 PM</p>
+                <p>Saturday: 8:00 AM - 9:00 PM</p>
+                <p>Sunday: 12:00 PM - 9:00 PM</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-map-marker-alt"></i> Visit Us</h3>
+                <p>Plot 120, Ikenegbu Layout</p>
+                <p>Maris Junction, Owerri</p>
+                <p>Imo State, Nigeria</p>
+                <p><i class="fas fa-phone"></i> 08104344994</p>
+                <div class="social-icons">
+                    <a href="https://facebook.com/@cruisewithjoe"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com/@cruisewithjoe"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com/@cruisewithjoe"><i class="fab fa-twitter"></i></a>
+                    <a href="https://youtube.com/@cruisewithjoe"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
         </div>
-        <div class="contact-info">
-          <h3><i class="fas fa-phone-alt"></i> PLACE YOUR ORDER</h3>
-          <p class="phone">08104344994</p>
-          <p class="address">
-            120 Food Street,<br />
-            Ikenegbu Layout, Maris Junction Owerri<br />
-            Imo State, Nigeria<br />
-          </p>
-          <div class="social-icons">
-            <a href="https://facebook.com" target="_blank"
-              ><i class="fab fa-facebook-f"></i
-            ></a>
-            <a href="https://instagram.com" target="_blank"
-              ><i class="fab fa-instagram"></i
-            ></a>
-            <a href="https://twitter.com" target="_blank"
-              ><i class="fab fa-twitter"></i
-            ></a>
-            <a href="https://tiktok.com" target="_blank"
-              ><i class="fab fa-tiktok"></i
-            ></a>
-          </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 Joseph's Pot. All Rights Reserved | Developed by ERIBS Tech</p>
         </div>
-      </footer>
+    </footer>
 
-      <button id="scrollTopBtn" aria-label="Scroll to Top">
-      ↑</i>
-    </button>
-
-    <!-- WhatsApp Chat Bubble -->
+    <!-- Floating Action Buttons -->
+    <button id="scrollTopBtn" aria-label="Scroll to Top">↑</button>
     <a href="https://wa.me/2348104344994" class="whatsapp-chat" target="_blank">
-      <img
-        src="https://cdn-icons-png.flaticon.com/512/124/124034.png"
-        alt="WhatsApp"
-      />
+        <img src="https://cdn-icons-png.flaticon.com/512/124/124034.png" alt="WhatsApp">
     </a>
 
-    <script defer src="./JAVASCRIPT/menu.js"></script>
-    </div>
-  </body>
+    <script src="/JAVASCRIPT/menu.js"></script>
+</body>
 </html>
