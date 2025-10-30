@@ -178,37 +178,21 @@ document.addEventListener("DOMContentLoaded", function () {
     },
 
 
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
     {
       id: 5,
       title: "Jollof Rice",
       description: "Classic Nigerian jollof rice with chicken and plantain",
-      price: 3200,
+      price: 8000,
       category: "main courses",
-      image: "./images/jollof rice.jpg",
+      image: "./images/IM10.jpg",
     },
     {
       id: 6,
       title: "Fried Rice",
       description: "Special fried rice with mixed vegetables and beef",
-      price: 3500,
+      price: 4000,
       category: "main courses",
-      image: "./images/fried rice.jpg",
+      image: "./images/IM1.jpg",
     },
     {
       id: 7,
