@@ -91,10 +91,10 @@ document.addEventListener("DOMContentLoaded", function () {
 // BACKGROUND SLIDER – VERTICAL / DIAGONAL ENTRY
 document.addEventListener("DOMContentLoaded", function () {
   const images = [
-    "./images/image20.jpg",
-    "./images/spaghetti.jpg",
-    "./images/unnamed.webp",
-    "./images/image50.jpg",
+    "./images/IM4.jpg",
+    "./images/IM30.jpg",
+    "./images/IM17.jpg",
+    "./images/IM35.jpg",
   ];
 
   let index = 0;
@@ -329,21 +329,21 @@ const events = [
     description:
       "Join us for an exclusive evening of fine dine-in Birthday celebration of our amiable friend a brother  paired with gourmet dishes and arabian.",
     date: "2025-10-10T19:00:00",
-    eventImage: "./images/princeton.jpg",
+    eventImage: "./images/IM41.jpg",
   },
   {
     title: "Cultural Night Experience",
     description:
-      "Celebrate Igbo heritage through an immersive culinary journey featuring traditional cuisine, live music, and cultural performances.",
+      "Celebrate Igbo heritage through Oringo Friday featuring music, dance, comedy and many more.",
     date: "2025-10-30T19:00:00",
-    eventImage: "./images/image51.jpg",
+    eventImage: "./images/oringo friday.jpeg",
   },
   {
     title: "Palm Wine & Poetry",
     description:
       "An intimate evening of locally sourced palm wine tasting accompanied by live poetry readings under the stars in our garden terrace.",
     date: "2025-11-30T19:30:00",
-    eventImage: "./images/image50.jpg",
+    eventImage: "./images/weding1.jpeg",
   },
 ];
 

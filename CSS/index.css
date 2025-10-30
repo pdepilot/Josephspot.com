@@ -493,7 +493,7 @@ body::before {
     left: -100%;
     width: 100%;
     height: calc(100vh - 80px);
-    background-color: var(--brown-dark);
+    background-color: var(--brown);
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -3099,7 +3099,7 @@ a:focus-visible {
 }
 
 .footer-column a span {
-  color: var(--accent);
+  color: var(--white);
   font-size: 20px;
 }
 .footer-column a span:hover {
