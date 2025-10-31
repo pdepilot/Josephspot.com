@@ -675,7 +675,7 @@ body::before {
   text-decoration: none;
   font-weight: 600;
   font-size: 1.1rem;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Poppins", sans-serif;
   text-transform: uppercase;
   letter-spacing: 1px;
   transition: var(--transition);
@@ -700,7 +700,7 @@ body::before {
   text-decoration: none;
   font-weight: 600;
   font-size: 1.1rem;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Poppins", sans-serif;
   text-transform: uppercase;
   letter-spacing: 1px;
   transition: var(--transition);
@@ -876,7 +876,7 @@ body::before {
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 1.2rem;
-  color: var(--text);
+  color: var(--brown);
   width: 100%;
 }
 
@@ -1042,7 +1042,7 @@ body::before {
 
 .intro-text,
 .intro-text2 {
-  font-family: "Montserrat", "Playfair Display", serif;
+  font-family: "Poppins", sans-serif;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
@@ -1253,7 +1253,7 @@ body::before {
 .card-title {
   font-size: 1.6rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--brown-light);
   margin-bottom: 0.5rem;
   transition: color 0.3s ease;
   position: relative;
@@ -1276,11 +1276,11 @@ body::before {
 }
 
 .card-title:hover {
-  color: var(--brown);
+  color: var(--brown-dark);
 }
 
 .card-description {
-  color: var(--text);
+  color: var(--brown);
   line-height: 1.7;
   margin-bottom: 1.8rem;
   flex-grow: 1;
@@ -1293,7 +1293,7 @@ body::before {
   margin-top: auto;
   padding-top: 1.2rem;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
-  color: var(--text);
+  color: var(--brown);
   font-size: 0.9rem;
 }
 
@@ -1319,7 +1319,7 @@ body::before {
 
 .card-link:hover {
   color: var(--white);
-  background: var(--text);
+  background: var(--brown);
   transform: translateX(5px);
 }
 
@@ -1422,8 +1422,10 @@ a:focus-visible {
 .menu1 h1 {
   font-size: 2.8rem;
   margin-top: 0.5rem;
-  color: var(--text);
+  color: var(--brown);
 }
+
+
 
 /* Flip gallery layout */
 .flip-gallery {
@@ -1512,7 +1514,7 @@ a:focus-visible {
   align-items: center;
   text-align: center;
   padding: 1rem;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: var(--accent);
 }
 
 /* Ensure text isn't upside down */
@@ -1577,7 +1579,7 @@ a:focus-visible {
   left: 50%;
   transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.85);
-  color: var(--text);
+  color: var(--brown);
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.9rem;
@@ -1658,12 +1660,12 @@ a:focus-visible {
   transform: translateX(-50%);
   width: 100px;
   height: 3px;
-  background: var(--text);
+  background: var(--brown);
 }
 
 .section-subtitle {
   font-size: 1.1rem;
-  color: var(--text);
+  color: var(--brown);
   font-weight: 400;
 }
 
@@ -1795,7 +1797,7 @@ a:focus-visible {
 .countdown-separator {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--white);
   margin-top: -10px;
 }
 
@@ -1809,7 +1811,7 @@ a:focus-visible {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: var(--white);
+  background: var(--brown);
   border: 1px solid var(--pale-orange);
   display: flex;
   align-items: center;
@@ -1922,7 +1924,7 @@ a:focus-visible {
 
 .form-subtitle {
   font-size: 1.1rem;
-  color: var(--text);
+  color: var(--white);
   font-weight: 400;
 }
 
@@ -1955,7 +1957,7 @@ a:focus-visible {
   position: absolute;
   top: 1rem;
   left: 1.5rem;
-  color: var(--text);
+  color: var(--white);
   transition: var(--transition);
   pointer-events: none;
   font-size: 1rem;
@@ -2052,7 +2054,7 @@ a:focus-visible {
 
 .icon-item span {
   font-size: 0.8rem;
-  color: var(--text);
+  color: var(--white);
 }
 
 .submit-btn {
@@ -2115,7 +2117,7 @@ a:focus-visible {
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.9rem;
-  color: var(--text);
+  color: var(--white);
 }
 
 .form-notification {
@@ -2524,7 +2526,7 @@ a:focus-visible {
 }
 
 .add-review-btn:hover {
-  background: var(--text);
+  background: var(--white);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px var(--accent);
 }
@@ -2658,7 +2660,7 @@ a:focus-visible {
 }
 
 .submit-btn:hover {
-  background: var(--text);
+  background: var(--brown);
 }
 
 .cancel-btn {
@@ -3087,7 +3089,7 @@ a:focus-visible {
 
 .footer-column ul li a:hover {
   color: var(--white);
-  background-color: var(--text);
+  background-color: var(--pale-orange);
 }
 
 .footer-column p,

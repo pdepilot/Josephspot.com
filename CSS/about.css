@@ -22,7 +22,7 @@
 
 body {
   font-family: "Poppins", sans-serif;
-  color: var(--text);
+  color: var(--brown);
   line-height: 1.6;
   overflow-x: hidden;
   background-color: var(--pale-orange);
@@ -128,7 +128,7 @@ body {
 }
 
 .social a {
-  color: var(--text);
+  color: var(--brown);
   transition: var(--transition);
   font-size: 1.1rem;
 }
@@ -542,7 +542,7 @@ body {
 
 .footer-column ul li a:hover {
   color: var(--white);
-  background-color: var(--text);
+  background-color: var(--brown);
 }
 
 .footer-column p,
@@ -637,7 +637,7 @@ body {
   position: fixed;
   bottom: 80px;
   right: 20px;
-  background: var(--brown-dark);
+  background: var(--brown);
   color: var(--white);
   border: none;
   width: 45px;
@@ -848,7 +848,7 @@ body {
   }
 
   .nav-links a.active {
-    color: var(--text);
+    color: var(--pale-orange);
   }
 
   /* Staggered animations */
