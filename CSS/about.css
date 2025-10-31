@@ -109,7 +109,7 @@ body {
 }
 
 .nav-links a.active {
-  color: var(--brown);
+  color: var(--brown-dark);
 }
 
 .nav-links a.active::after {
@@ -836,6 +836,7 @@ body {
   .nav-links a {
     opacity: 0;
     transform: translateY(15px);
+    color: var(--white);
     transition: all 0.3s ease;
     font-size: 1.2rem;
     padding: 10px 20px;
