@@ -394,7 +394,6 @@ body {
   padding-left: 5px;
 }
 
-
 .qr-container {
   text-align: center;
   padding: 20px;
@@ -481,6 +480,160 @@ body {
   transition: var(--transition);
 }
 
+/* QR Code Animation Styles */
+.qr-container {
+  text-align: center;
+  padding: 20px;
+  background: var(--white);
+  border-radius: 10px;
+  max-width: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.qr-code {
+  position: relative;
+  transition: transform 0.5s ease;
+}
+
+.qr-code img {
+  width: 100%;
+  border-radius: 5px;
+  transition: all 0.5s ease;
+  filter: drop-shadow(0 5px 15px rgba(139, 69, 19, 0.2));
+}
+
+/* Hover animation */
+.qr-container:hover .qr-code {
+  transform: scale(1.05);
+}
+
+.qr-container:hover .qr-code img {
+  filter: drop-shadow(0 8px 20px rgba(139, 69, 19, 0.4));
+}
+
+/* Subtle pulse animation */
+@keyframes qrPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(139, 69, 19, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(139, 69, 19, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(139, 69, 19, 0);
+  }
+}
+
+.qr-code::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 5px;
+  animation: qrPulse 3s infinite;
+  pointer-events: none;
+}
+
+/* Subtle floating animation */
+@keyframes qrFloat {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.qr-code {
+  animation: qrFloat 6s ease-in-out infinite;
+}
+
+/* QR code scanning effect */
+@keyframes qrScan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0.7;
+  }
+}
+
+.qr-code::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--brown),
+    transparent
+  );
+  animation: qrScan 3s linear infinite;
+  opacity: 0;
+  border-radius: 2px;
+}
+
+.qr-container:hover .qr-code::after {
+  opacity: 0.7;
+}
+
+.qr-text {
+  margin-top: 10px;
+  color: var(--brown);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.qr-container:hover .qr-text {
+  color: var(--brown-light);
+  transform: translateY(-2px);
+}
+
+/* Corner decorations */
+.qr-container::before,
+.qr-container::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--brown);
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+
+.qr-container::before {
+  top: 10px;
+  left: 10px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.qr-container::after {
+  bottom: 10px;
+  right: 10px;
+  border-left: none;
+  border-top: none;
+}
+
+.qr-container:hover::before,
+.qr-container:hover::after {
+  opacity: 1;
+}
+
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -550,18 +703,18 @@ body {
     left: 0;
   }
 
-   .nav-links a.active {
+  .nav-links a.active {
     color: rgb(5, 5, 5);
   }
 
   .nav-links a.active::after {
-  width: 100%;
-  background-color: #000000;
-}
+    width: 100%;
+    background-color: #000000;
+  }
 
-.nav-links a:hover::after {
-  width: 100%;
-}
+  .nav-links a:hover::after {
+    width: 100%;
+  }
 
   .nav-links a {
     color: var(--white);
