@@ -1984,7 +1984,7 @@ window.addEventListener("load", () => {
       setTimeout(() => {
         preloader.style.display = "none";
         content.style.opacity = "1";
-      }, 1000);
+      }, 2000);
     }
   }, 25);
 });
