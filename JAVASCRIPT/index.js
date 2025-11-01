@@ -1962,3 +1962,29 @@ if (micBtn) {
     if (micBtn) micBtn.style.display = "none";
   }
 }
+
+
+window.addEventListener("load", () => {
+  const preloader = document.querySelector(".preloader");
+  const content = document.querySelector(".content");
+  const progressBar = document.getElementById("progress-bar");
+  const percentage = document.getElementById("percentage");
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    if (progress < 100) {
+      progress++;
+      progressBar.style.width = progress + "%";
+      percentage.textContent = progress + "%";
+    } else {
+      clearInterval(interval);
+      preloader.style.transition = "opacity 1s ease";
+      preloader.style.opacity = "0";
+
+      setTimeout(() => {
+        preloader.style.display = "none";
+        content.style.opacity = "1";
+      }, 1000);
+    }
+  }, 25);
+});
