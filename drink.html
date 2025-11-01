@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Joseph's Pot - Liquid Heritage</title>
-   <link rel="stylesheet" href="./CSS/drink.css">
     <link rel="icon" href="./images/logo3.png">
     <link rel="stylesheet" href="./fontawesome-free-6.7.2-web/css/all.min.css">
     <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/CSS/drink.css">
 </head>
 <body>
 
@@ -16,14 +16,14 @@
      <header class="navbar" id="navbar">
         <div class="container">
           <div class="logo">
-            <a href=""><img src="./images/logo3.png" alt="logo"></a>
+            <a href="index.html"><img src="./images/logo3.png" alt="Joseph's Pot Logo"></a>
           </div>
           <nav class="nav-links">
             <a href="index.html">Home</a>
             <a href="about.html">About</a>
             <a href="menu.html" class="active">Menu</a>
             <a href="gallery.html">Gallery</a>
-             <a href="index.html#eventContainer">Events</a>
+            <a href="index.html#eventContainer">Events</a>
             <a href="contact.html">Contact</a>
             <a href="order online.html">Order Online</a>
           </nav>
@@ -191,48 +191,39 @@
             </div>
         </div>
 
-    <footer>
-    <div style="text-align: center; margin-bottom: 1.5rem; position: relative;">
-        <!-- QR Code Container with Pulse Animation -->
-        <div style="display: inline-block; background: white; padding: 10px; border-radius: 10px;
-                    animation: qr-pulse 2.5s infinite ease-in-out; position: relative;">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://josephspotowerri.com/drinks-menu" 
-                 alt="Digital Drinks Menu"
-                 width="120" 
-                 height="120"
-                 style="display: block;">
-            
-            <!-- Camera Icon -->
-            <svg style="position: absolute; right: -8px; bottom: -8px; width: 24px; height: 24px; 
-                        fill: var(--gold); filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));"
-                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
-                <circle cx="12" cy="12" r="3"/>
-            </svg>
+        <!-- QR Code Section -->
+        <div class="qr-section">
+            <div class="qr-container">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://josephspotowerri.com/drinks-menu" 
+                     alt="Digital Drinks Menu"
+                     width="120" 
+                     height="120">
+                <svg class="camera-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+            </div>
+            <div class="qr-text">SCAN WITH YOUR CAMERA</div>
         </div>
-        
-        <!-- Scan Text -->
-        <p style="margin-top: 12px; font-size: 0.9rem; color: var(--gold); 
-                  font-family: 'Cinzel', serif; letter-spacing: 0.5px;">
-            SCAN WITH YOUR CAMERA
-        </p>
+
+        <div class="menu-footer">
+            <p>Ask about our <strong>Heritage Cocktail Pairings</strong> for your meal</p>
+            <p>© Joseph's Pot Owerri 2025 | #IgboLiquidHeritage</p>
+        </div>
     </div>
-    
-    <p>Ask about our <strong>Heritage Cocktail Pairings</strong> for your meal</p>
-    <p>© Joseph's Pot Owerri 2023 | #IgboLiquidHeritage</p>
-    
+
     <footer class="footer">
         <div class="footer-glass">
             <div class="footer-glass-inner">
                 <div class="footer-content">
                     <div class="footer-column">
-                         <img src="./images/logo.jpg" alt="" width="80px"/>
+                         <img src="./images/logo.jpg" alt="Joseph's Pot Logo" width="80px"/>
                         <p>Authentic taste, unforgettable experience.<br>Serving happiness from Owerri, Nigeria.</p>
                         <div class="social-links">
-                            <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                            <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-                            <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
-                            <a href="https://tiktok.com" target="_blank"><i class="fab fa-tiktok"></i></a>
+                            <a href="https://facebook.com/@cruisewithjoe" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://instagram.com/@cruisewithjoe" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="https://twitter.com/@cruisewithjoe" target="_blank"><i class="fab fa-twitter"></i></a>
+                            <a href="https://youtube.com/@cruisewithjoe" target="_blank"><i class="fab fa-youtube"></i></a>
                         </div>
                     </div>
   
@@ -244,7 +235,7 @@
                             <li><a href="menu.html">Menu</a></li>
                             <li><a href="contact.html">Contact us</a></li>
                             <li><a href="gallery.html">Gallery</a></li>
-                             <a href="index.html#eventContainer">Events</a>
+                            <li><a href="index.html#eventContainer">Events</a></li>
                             <li><a href="order online.html">Order Online</a></li>
                         </ul>
                     </div>
@@ -264,9 +255,7 @@
                              Plot 120,<br>
                           Ikenegbu Layout by Maris Junction, Owerri<br>
                           Imo State, Nigeria<br>
-                            <a href="https://maps.google.com?q=Joseph's Pot Owerri" target="_blank">📍 <span>
-                                    Get Directions</span></a>
-  
+                            <a href="https://maps.google.com?q=Joseph's Pot Owerri" target="_blank">📍 <span>Get Directions</span></a>
                         </p>
                     </div>
                 </div>
@@ -279,7 +268,7 @@
     </footer>
   
     <button id="scrollTopBtn" aria-label="Scroll to Top">
-      ↑</i>
+      ↑
     </button>
   
     <!-- WhatsApp Chat Bubble -->
@@ -289,10 +278,7 @@
         alt="WhatsApp"
       />
     </a>
-  
-      <script defer src="./JAVASCRIPT/drink.js"></script>
-</footer>
 
-    </div>
+    <script src="/CSS/drink.css"></script>
 </body>
 </html>
