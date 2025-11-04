@@ -1055,7 +1055,7 @@ body::before {
       rgba(0, 0, 0, 0.568),
       rgba(0, 0, 0, 0.404)
     ),
-    url("/images/instagram image3.jpg") no-repeat center center/cover;
+    url("../images/instagram image3.jpg") no-repeat center center/cover;
   display: flex;
   justify-content: center;
   align-items: center;
