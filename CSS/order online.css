@@ -236,7 +236,7 @@ body {
       rgba(139, 69, 19, 0.7),
       rgba(101, 67, 33, 0.7)
     ),
-    url("/images/IM16.jpg") no-repeat center center/cover;
+    url("../images/IM16.jpg") no-repeat center center/cover;
   height: 50vh;
   background-attachment: fixed;
   display: flex;
