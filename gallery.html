@@ -350,6 +350,31 @@
             background: rgba(139, 69, 19, 0.9);
         }
 
+        /* Mute/Unmute Button */
+        .mute-btn {
+            position: absolute;
+            top: 30px;
+            right: 100px;
+            font-size: 1.5rem;
+            color: var(--white);
+            cursor: pointer;
+            z-index: 10000;
+            transition: var(--transition);
+            background: rgba(139, 69, 19, 0.7);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none; /* Hidden by default, shown for videos */
+        }
+
+        .mute-btn:hover {
+            transform: scale(1.2);
+            background: rgba(139, 69, 19, 0.9);
+        }
+
         /* Enhanced Lightbox with Labels */
         .lightbox-label {
             position: absolute;
@@ -680,6 +705,22 @@
                 bottom: 150px;
                 right: 20px;
             }
+
+            .mute-btn {
+                top: 20px;
+                right: 80px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .close-btn {
+                top: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+                font-size: 2rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -714,11 +755,19 @@
             }
 
             .close-btn {
-                top: 20px;
-                right: 20px;
-                font-size: 2rem;
-                width: 40px;
-                height: 40px;
+                top: 15px;
+                right: 15px;
+                font-size: 1.8rem;
+                width: 35px;
+                height: 35px;
+            }
+
+            .mute-btn {
+                top: 15px;
+                right: 65px;
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
             }
         }
     </style>
@@ -1461,6 +1510,7 @@
     <!-- Lightbox Modal -->
     <div class="lightbox" id="lightbox">
         <span class="close-btn" onclick="closeLightbox()">&times;</span>
+        <span class="mute-btn" id="muteBtn" onclick="toggleMute()"><i class="fas fa-volume-mute"></i></span>
         <div class="lightbox-content">
             <img id="lightbox-img" src="" alt="Full Image" />
             <video id="lightbox-video" controls autoplay muted loop></video>
@@ -1602,6 +1652,7 @@
             const lightboxTitle = document.getElementById('lightbox-title');
             const lightboxDescription = document.getElementById('lightbox-description');
             const lightboxLabel = document.getElementById('lightbox-label');
+            const muteBtn = document.getElementById('muteBtn');
 
             // Get the label content from the clicked item
             const label = element.querySelector('.gallery-label');
@@ -1625,11 +1676,17 @@
                 lightboxImg.setAttribute('src', imgSrc);
                 lightboxImg.style.display = 'block';
                 lightboxVideo.style.display = 'none';
+                muteBtn.style.display = 'none'; // Hide mute button for images
             } else if (element.querySelector('video')) {
                 const videoSrc = element.querySelector('video').getAttribute('src');
                 lightboxVideo.setAttribute('src', videoSrc);
                 lightboxVideo.style.display = 'block';
                 lightboxImg.style.display = 'none';
+                muteBtn.style.display = 'flex'; // Show mute button for videos
+                
+                // Reset mute state
+                lightboxVideo.muted = true;
+                updateMuteButton();
             }
 
             lightbox.style.display = 'flex';
@@ -1641,6 +1698,24 @@
             
             lightbox.style.display = 'none';
             lightboxVideo.pause();
+        }
+
+        // Mute/Unmute functionality
+        function toggleMute() {
+            const lightboxVideo = document.getElementById('lightbox-video');
+            lightboxVideo.muted = !lightboxVideo.muted;
+            updateMuteButton();
+        }
+
+        function updateMuteButton() {
+            const lightboxVideo = document.getElementById('lightbox-video');
+            const muteBtn = document.getElementById('muteBtn');
+            
+            if (lightboxVideo.muted) {
+                muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+            } else {
+                muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+            }
         }
 
         // Add click event to gallery items
