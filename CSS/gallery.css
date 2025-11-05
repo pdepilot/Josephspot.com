@@ -158,9 +158,10 @@ body {
   padding: 150px 20px 60px;
   text-align: center;
   background: linear-gradient(rgba(139, 69, 19, 0.8), rgba(139, 69, 19, 0.9)),
-    url("./images/IM17.jpg") center/cover no-repeat;
+    url("/images/IM17.jpg") center/cover no-repeat;
   background-attachment: fixed;
   color: var(--white);
+  background-attachment: fixed;
 }
 
 .gallery-header h1 {
