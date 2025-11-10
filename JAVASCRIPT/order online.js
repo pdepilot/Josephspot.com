@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
     {
       id: 1,
       title: "Ofe Owerri",
-      description: "Filled With Snails, Stockfishes, Dryfishes, Lots of Protein",
+      description: "Filled With Snails, Stockfishes, Dryfishes, Lots of Protein comes with a complimentary swallow",
       price: 27000,
       category: "soups",
       image: "./images/instagram image1.jpg",

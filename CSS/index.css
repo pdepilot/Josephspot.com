@@ -2526,7 +2526,7 @@ a:focus-visible {
 }
 
 .add-review-btn:hover {
-  background: var(--white);
+  background: var(--pale-orange);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px var(--accent);
 }
