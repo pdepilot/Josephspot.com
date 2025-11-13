@@ -304,11 +304,11 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     {
       id: 20,
-      title: "Heineken, G.Stout, Despirado Beer",
+      title: "Heineken",
       description: "Iced or Cold Heineken, G.Stout, Despirado Beer drink",
       price: 3500,
       category: "drinks",
-      image: "./images/IM45.png",
+      image: "https://res.cloudinary.com/dl4hjr1p2/image/upload/v1762852049/heineken_lbukim.jpg",
     },
 
     {
