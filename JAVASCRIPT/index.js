@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // ultra-fast progress simulation
   let progress = 0;
   const interval = setInterval(() => {
-    progress += Math.random() * 20 + 10; 
+    progress += Math.random() * 20 + 10;
     if (progress >= 100) {
       progress = 100;
       clearInterval(interval);
@@ -19,12 +19,12 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
           preloader.style.display = "none";
           content.style.display = "block";
-        }, 2000); 
+        }, 2000);
       }, 2000);
     }
     progressBar.style.width = progress + "%";
     percentage.textContent = Math.round(progress) + "%";
-  }, 80); 
+  }, 80);
 
   // Chop effect simulation (unchanged)
   setInterval(() => {
@@ -86,6 +86,33 @@ document.addEventListener("DOMContentLoaded", function () {
     if (name.includes("Onion")) return "rgba(180,80,180,0.8)";
     return "rgba(255,255,255,0.8)";
   }
+});
+
+// Scroll reveal functionality
+document.addEventListener("DOMContentLoaded", function () {
+  const revealElements = document.querySelectorAll(".reveal-on-scroll");
+
+  function checkScroll() {
+    const windowHeight = window.innerHeight;
+    const revealPoint = 150;
+
+    revealElements.forEach((element) => {
+      const elementTop = element.getBoundingClientRect().top;
+
+      if (elementTop < windowHeight - revealPoint) {
+        element.classList.add("revealed");
+      }
+    });
+  }
+
+  // Initial check
+  checkScroll();
+
+  // Check on scroll
+  window.addEventListener("scroll", checkScroll);
+
+  // Check on resize
+  window.addEventListener("resize", checkScroll);
 });
 
 // BACKGROUND SLIDER – VERTICAL / DIAGONAL ENTRY
@@ -1148,7 +1175,7 @@ document.addEventListener("DOMContentLoaded", () => {
         rating: Array.from(element.querySelectorAll(".edit-star")).filter(
           (star) => star.textContent === "★"
         ).length,
-        approved: isPending ? true : review.approved, 
+        approved: isPending ? true : review.approved,
       };
       updateReview(updatedReview);
     });
@@ -1201,7 +1228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loadPendingReviews();
       }
     }
-    loadSavedReviews(); 
+    loadSavedReviews();
   }
 });
 // WhatsApp link
@@ -1234,113 +1261,160 @@ if (!openBtn) console.warn("aiChat-open-btn not found");
 if (!liveBtn) console.warn("ai-start-live not found");
 
 // --- Sounds ---
-const openSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-game-notification-alert-1075.mp3");
-const messageSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-echo-3157.mp3");
+const openSound = new Audio(
+  "https://assets.mixkit.co/sfx/preview/mixkit-game-notification-alert-1075.mp3"
+);
+const messageSound = new Audio(
+  "https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-echo-3157.mp3"
+);
 
 // ====== SMALL-TALK DICTIONARY ======
 const smallTalkDictionary = {
   // Greetings
-  "hello": ["Hello there!", "Hi!", "Hey! How can I help you today?"],
-  "hi": ["Hello!", "Hi there!", "Hey! What can I do for you?"],
-  "hey": ["Hello!", "Hi there!", "Hey! How can I assist you?"],
-  "good morning": ["Good morning! How are you today?", "Morning! Ready for some delicious food?"],
-  "good afternoon": ["Good afternoon! How's your day going?", "Afternoon! What can I get for you?"],
-  "good evening": ["Good evening! How was your day?", "Evening! Ready to order some tasty food?"],
-  
+  hello: ["Hello there!", "Hi!", "Hey! How can I help you today?"],
+  hi: ["Hello!", "Hi there!", "Hey! What can I do for you?"],
+  hey: ["Hello!", "Hi there!", "Hey! How can I assist you?"],
+  "good morning": [
+    "Good morning! How are you today?",
+    "Morning! Ready for some delicious food?",
+  ],
+  "good afternoon": [
+    "Good afternoon! How's your day going?",
+    "Afternoon! What can I get for you?",
+  ],
+  "good evening": [
+    "Good evening! How was your day?",
+    "Evening! Ready to order some tasty food?",
+  ],
+
   // How are you
-  "how are you": ["I'm doing great, thanks for asking! Ready to help you with your order.", 
-                 "I'm wonderful! Excited to help you get some delicious food.", 
-                 "I'm doing well, thank you! How about you?"],
-  
+  "how are you": [
+    "I'm doing great, thanks for asking! Ready to help you with your order.",
+    "I'm wonderful! Excited to help you get some delicious food.",
+    "I'm doing well, thank you! How about you?",
+  ],
+
   // Who are you
-  "who are you": ["I'm Joseph's Pot assistant! I'm here to help you order delicious Nigerian cuisine.", 
-                 "I'm your friendly food assistant at Joseph's Pot. I can help you place orders and answer questions.", 
-                 "I'm an AI assistant created to help you enjoy the best food from Joseph's Pot!"],
-  
+  "who are you": [
+    "I'm Joseph's Pot assistant! I'm here to help you order delicious Nigerian cuisine.",
+    "I'm your friendly food assistant at Joseph's Pot. I can help you place orders and answer questions.",
+    "I'm an AI assistant created to help you enjoy the best food from Joseph's Pot!",
+  ],
+
   // What can you do
-  "what can you do": ["I can help you order food, answer questions about our menu, tell you about specials, and more!",
-                     "I can take your order, suggest menu items, help with checkout, and answer any questions you have about Joseph's Pot.",
-                     "I'm here to help you browse our menu, place orders, and make your food experience delightful!"],
-  
+  "what can you do": [
+    "I can help you order food, answer questions about our menu, tell you about specials, and more!",
+    "I can take your order, suggest menu items, help with checkout, and answer any questions you have about Joseph's Pot.",
+    "I'm here to help you browse our menu, place orders, and make your food experience delightful!",
+  ],
+
   // Thank you
-  "thank you": ["You're welcome!", "My pleasure!", "Happy to help!", "Anytime!"],
-  "thanks": ["You're welcome!", "No problem!", "Happy to assist!"],
-  
+  "thank you": [
+    "You're welcome!",
+    "My pleasure!",
+    "Happy to help!",
+    "Anytime!",
+  ],
+  thanks: ["You're welcome!", "No problem!", "Happy to assist!"],
+
   // Goodbye
-  "bye": ["Goodbye! Hope to see you again soon.", "Bye! Come back whenever you're hungry!", "See you later!"],
-  "goodbye": ["Goodbye! Enjoy your day!", "Farewell! Don't hesitate to return if you need anything."],
-  
+  bye: [
+    "Goodbye! Hope to see you again soon.",
+    "Bye! Come back whenever you're hungry!",
+    "See you later!",
+  ],
+  goodbye: [
+    "Goodbye! Enjoy your day!",
+    "Farewell! Don't hesitate to return if you need anything.",
+  ],
+
   // Compliments
-  "you are helpful": ["Thank you! I'm here to make your ordering experience easy and enjoyable.", 
-                     "I appreciate that! Making your food journey smooth is my goal."],
-  "you are smart": ["Thank you! I'm always learning to serve you better.", 
-                   "That's kind of you to say! I try my best to be helpful."],
-  
+  "you are helpful": [
+    "Thank you! I'm here to make your ordering experience easy and enjoyable.",
+    "I appreciate that! Making your food journey smooth is my goal.",
+  ],
+  "you are smart": [
+    "Thank you! I'm always learning to serve you better.",
+    "That's kind of you to say! I try my best to be helpful.",
+  ],
+
   // Menu questions
-  "what do you serve": ["We serve authentic Nigerian cuisine like Nkwobi, Abacha, Nsala, Asun Rice, Ofe Owerri, and more!",
-                       "Our menu features delicious Nigerian dishes including Nkwobi, Abacha, Jollof rice, Palm Wine, and various drinks."],
-  "what is on the menu": ["Our menu includes Nigerian favorites like Nkwobi, Abacha, Nsala, Asun Rice, Ofe Owerri, Palm Wine, Drinks, and Jollof rice.",
-                         "You can choose from various Nigerian dishes: Nkwobi, Abacha, Nsala, Asun Rice, Ofe Owerri, plus drinks and Palm Wine."],
-  
+  "what do you serve": [
+    "We serve authentic Nigerian cuisine like Nkwobi, Abacha, Nsala, Asun Rice, Ofe Owerri, and more!",
+    "Our menu features delicious Nigerian dishes including Nkwobi, Abacha, Jollof rice, Palm Wine, and various drinks.",
+  ],
+  "what is on the menu": [
+    "Our menu includes Nigerian favorites like Nkwobi, Abacha, Nsala, Asun Rice, Ofe Owerri, Palm Wine, Drinks, and Jollof rice.",
+    "You can choose from various Nigerian dishes: Nkwobi, Abacha, Nsala, Asun Rice, Ofe Owerri, plus drinks and Palm Wine.",
+  ],
+
   // Restaurant info
-  "where are you located": ["Joseph's Pot is located at [Your Address Here]. We offer delivery and pickup options!",
-                           "You can find us at [Your Address Here]. Would you like delivery or pickup?"],
-  "what are your hours": ["We're open [Your Hours Here]. Feel free to order anytime through our website!",
-                         "Our operating hours are [Your Hours Here]. You can place orders for delivery or pickup during these times."],
-  
+  "where are you located": [
+    "Joseph's Pot is located at [Your Address Here]. We offer delivery and pickup options!",
+    "You can find us at [Your Address Here]. Would you like delivery or pickup?",
+  ],
+  "what are your hours": [
+    "We're open [Your Hours Here]. Feel free to order anytime through our website!",
+    "Our operating hours are [Your Hours Here]. You can place orders for delivery or pickup during these times.",
+  ],
+
   // Special requests
-  "do you have vegan options": ["We offer some plant-based Nigerian dishes. Let me check what's available for you!",
-                               "While traditional Nigerian cuisine often includes meat, we do have some vegan-friendly options. Let me help you find something!"],
-  "do you deliver": ["Yes, we deliver! Please provide your address so we can check if you're in our delivery area.",
-                    "We certainly deliver! Let me know your location and I'll check our delivery coverage."]
+  "do you have vegan options": [
+    "We offer some plant-based Nigerian dishes. Let me check what's available for you!",
+    "While traditional Nigerian cuisine often includes meat, we do have some vegan-friendly options. Let me help you find something!",
+  ],
+  "do you deliver": [
+    "Yes, we deliver! Please provide your address so we can check if you're in our delivery area.",
+    "We certainly deliver! Let me know your location and I'll check our delivery coverage.",
+  ],
 };
 
 // Enhanced pattern matching for small talk
 function matchSmallTalk(input) {
   const lowerInput = input.toLowerCase().trim();
-  
+
   // Exact matches
   if (smallTalkDictionary[lowerInput]) {
     const responses = smallTalkDictionary[lowerInput];
     return responses[Math.floor(Math.random() * responses.length)];
   }
-  
+
   // Pattern matches
   for (const [pattern, responses] of Object.entries(smallTalkDictionary)) {
     if (lowerInput.includes(pattern)) {
       return responses[Math.floor(Math.random() * responses.length)];
     }
   }
-  
+
   // Special cases with more complex matching
   if (/how('s| is) it going/.test(lowerInput)) {
     return "It's going well, thank you! How about you?";
   }
-  
+
   if (/what('s| is) up/.test(lowerInput)) {
     return "Not much, just here to help you with your food order! What can I get for you?";
   }
-  
+
   if (/how('s| is) your day/.test(lowerInput)) {
     return "My day is great so far! How's yours going?";
   }
-  
+
   if (/(nice|good|great) to meet you/.test(lowerInput)) {
     return "Likewise! I'm excited to help you discover our delicious food options.";
   }
-  
+
   if (/what('s| is) new/.test(lowerInput)) {
     return "We have some delicious specials today! Would you like to hear about them?";
   }
-  
+
   if (/what('s| is) cooking/.test(lowerInput)) {
     return "Lots of delicious Nigerian dishes are cooking! Would you like to hear about our menu?";
   }
-  
+
   if (/i'm (hungry|starving)/.test(lowerInput)) {
     return "You've come to the right place! Let me show you some delicious options.";
   }
-  
+
   return null;
 }
 
@@ -1352,12 +1426,22 @@ let pendingSpeech = null;
 let speechUnlocked = false;
 
 function loadVoices() {
-  voicesList = window.speechSynthesis && window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-  preferredVoice = voicesList.find(v => /ng/i.test(v.lang || "") && /female/i.test((v.name || "").toLowerCase()));
+  voicesList =
+    window.speechSynthesis && window.speechSynthesis.getVoices
+      ? window.speechSynthesis.getVoices()
+      : [];
+  preferredVoice = voicesList.find(
+    (v) =>
+      /ng/i.test(v.lang || "") && /female/i.test((v.name || "").toLowerCase())
+  );
   if (!preferredVoice) {
-    preferredVoice = voicesList.find(v => /ng/i.test(v.lang || ""));
-    if (!preferredVoice) preferredVoice = voicesList.find(v => /female/i.test((v.name || "").toLowerCase()));
-    if (!preferredVoice) preferredVoice = voicesList.find(v => /en/i.test(v.lang || ""));
+    preferredVoice = voicesList.find((v) => /ng/i.test(v.lang || ""));
+    if (!preferredVoice)
+      preferredVoice = voicesList.find((v) =>
+        /female/i.test((v.name || "").toLowerCase())
+      );
+    if (!preferredVoice)
+      preferredVoice = voicesList.find((v) => /en/i.test(v.lang || ""));
   }
   voicesLoaded = voicesList.length > 0;
 }
@@ -1373,7 +1457,8 @@ function speakBot(text) {
     if (!voicesLoaded) loadVoices();
     const utter = new SpeechSynthesisUtterance(text);
     if (preferredVoice) utter.voice = preferredVoice;
-    utter.lang = (preferredVoice && preferredVoice.lang) ? preferredVoice.lang : "en-NG";
+    utter.lang =
+      preferredVoice && preferredVoice.lang ? preferredVoice.lang : "en-NG";
     utter.rate = 1;
     utter.pitch = 1;
     window.speechSynthesis.speak(utter);
@@ -1387,12 +1472,15 @@ function speakBot(text) {
 function trySpeak(text) {
   try {
     if (typeof text === "string") {
-      const isCartConfirmation = /added[\s\S]*\b(cart|to your cart|to cart)\b/i.test(text)
-                               || /\badded to your cart\b/i.test(text)
-                               || /\badded to cart\b/i.test(text);
+      const isCartConfirmation =
+        /added[\s\S]*\b(cart|to your cart|to cart)\b/i.test(text) ||
+        /\badded to your cart\b/i.test(text) ||
+        /\badded to cart\b/i.test(text);
       if (isCartConfirmation) return;
     }
-  } catch (e) { console.warn("trySpeak cart-suppression check error:", e); }
+  } catch (e) {
+    console.warn("trySpeak cart-suppression check error:", e);
+  }
   if (speechUnlocked) {
     const ok = speakBot(text);
     if (!ok) pendingSpeech = text;
@@ -1436,26 +1524,26 @@ let lastOrder = JSON.parse(localStorage.getItem("aiChat-lastOrder") || "[]");
 
 // === Map chat food names -> your real menu item IDs (update IDs to match your menuItems) ===
 const chatFoodMap = {
-  "Nkwobi": 1,
-  "Abacha": 2,
-  "Nsala": 3,
+  Nkwobi: 1,
+  Abacha: 2,
+  Nsala: 3,
   "Asun Rice": 4,
   "Ofe Owerri": 5,
   "Palm Wine": 6,
-  "Drinks": 7,
-  "Jollof": 8
+  Drinks: 7,
+  Jollof: 8,
 };
 
 // --- Basic price map used for checkout summary (edit prices as you like) ---
 const menuPrices = {
-  "nkwobi": 3000,
-  "abacha": 1500,
-  "nsala": 2500,
+  nkwobi: 3000,
+  abacha: 1500,
+  nsala: 2500,
   "asun rice": 3500,
   "ofe owerri": 3200,
   "palm wine": 800,
-  "drinks": 500,
-  "jollof": 2500
+  drinks: 500,
+  jollof: 2500,
 };
 
 // --- helper to get local widget cart (used for checkout summary) ---
@@ -1492,13 +1580,21 @@ function safeAddToCart(itemId, itemName) {
 function appendBubble(type, msg, isTyping = false) {
   if (!messagesDiv) return;
   const p = document.createElement("p");
-  p.className = isTyping ? "bot-bubble typing-indicator" : (type === "bot" ? "bot-bubble" : "user-bubble");
+  p.className = isTyping
+    ? "bot-bubble typing-indicator"
+    : type === "bot"
+    ? "bot-bubble"
+    : "user-bubble";
   p.textContent = msg;
   messagesDiv.appendChild(p);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
   if (type === "bot" && !isTyping) {
-    try { messageSound.play(); } catch (e) { /* ignore autoplay errors */ }
+    try {
+      messageSound.play();
+    } catch (e) {
+      /* ignore autoplay errors */
+    }
     // speak selectively using trySpeak elsewhere
   }
 }
@@ -1509,7 +1605,7 @@ function showFoodSuggestions() {
 
   // remove existing suggestion blocks so we don't duplicate
   const prev = messagesDiv.querySelectorAll(".chat-suggestions");
-  prev.forEach(el => el.remove());
+  prev.forEach((el) => el.remove());
 
   const suggestionDiv = document.createElement("div");
   suggestionDiv.className = "chat-suggestions";
@@ -1518,7 +1614,7 @@ function showFoodSuggestions() {
   suggestionDiv.style.gap = "8px";
   suggestionDiv.style.margin = "8px 0";
 
-  Object.keys(chatFoodMap).forEach(food => {
+  Object.keys(chatFoodMap).forEach((food) => {
     const btn = document.createElement("button");
     btn.className = "chat-suggestion-btn";
     btn.setAttribute("data-name", food);
@@ -1564,11 +1660,16 @@ function showCartSummary() {
   const localCart = getLocalWidgetCart();
   const count = localCart.length;
   let total = 0;
-  localCart.forEach(it => {
+  localCart.forEach((it) => {
     const key = (it.name || "").toLowerCase();
-    total += (menuPrices[key] || 0);
+    total += menuPrices[key] || 0;
   });
-  appendBubble("bot", `🛒 You have ${count} item${count === 1 ? "" : "s"} in your cart.\n💰 Total: ₦${total.toLocaleString()}`);
+  appendBubble(
+    "bot",
+    `🛒 You have ${count} item${
+      count === 1 ? "" : "s"
+    } in your cart.\n💰 Total: ₦${total.toLocaleString()}`
+  );
 }
 
 // --- event delegation for suggestion button clicks (keeps code small and robust) ---
@@ -1597,10 +1698,15 @@ if (messagesDiv) {
     if (cartClickCount >= 3) {
       // remove old suggestion blocks (so checkout options are visible)
       const prevBlocks = messagesDiv.querySelectorAll(".chat-suggestions");
-      prevBlocks.forEach(el => el.remove());
+      prevBlocks.forEach((el) => el.remove());
 
-      appendBubble("bot", `🛒 You've added ${cartClickCount} items. Would you like to checkout now or keep adding more?`);
-      trySpeak(`You have added ${cartClickCount} items. Would you like to checkout now or keep adding more?`);
+      appendBubble(
+        "bot",
+        `🛒 You've added ${cartClickCount} items. Would you like to checkout now or keep adding more?`
+      );
+      trySpeak(
+        `You have added ${cartClickCount} items. Would you like to checkout now or keep adding more?`
+      );
 
       const choiceDiv = document.createElement("div");
       choiceDiv.className = "chat-suggestions";
@@ -1614,11 +1720,17 @@ if (messagesDiv) {
         // show widget summary AND try to open site cart
         showCartSummary();
         trySpeak("Opening your cart. Please review and proceed to payment.");
-        const cartIcon = document.getElementById("cart-icon") || document.querySelector(".cart-toggle") || document.querySelector(".open-cart");
+        const cartIcon =
+          document.getElementById("cart-icon") ||
+          document.querySelector(".cart-toggle") ||
+          document.querySelector(".open-cart");
         if (cartIcon) {
           cartIcon.click();
         } else {
-          appendBubble("bot", "If your cart didn't open automatically, please open it from the page header.");
+          appendBubble(
+            "bot",
+            "If your cart didn't open automatically, please open it from the page header."
+          );
         }
       };
 
@@ -1640,7 +1752,10 @@ if (messagesDiv) {
     } else {
       // After short delay confirm and show suggestions again
       setTimeout(() => {
-        appendBubble("bot", "Would you like to add another? Here are some options:");
+        appendBubble(
+          "bot",
+          "Would you like to add another? Here are some options:"
+        );
         showFoodSuggestions();
       }, 700);
     }
@@ -1649,7 +1764,10 @@ if (messagesDiv) {
 
 // --- Ask for order (bot prompt that triggers suggestions) ---
 function askForOrder() {
-  appendBubble("bot", "Would you like Nkwobi, Abacha, Nsala, Asun Rice, Ofe Owerri, Palm Wine, Drinks, or Jollof today?");
+  appendBubble(
+    "bot",
+    "Would you like Nkwobi, Abacha, Nsala, Asun Rice, Ofe Owerri, Palm Wine, Drinks, or Jollof today?"
+  );
   showFoodSuggestions();
 }
 
@@ -1662,13 +1780,18 @@ async function getFallbackAnswer(query) {
   }
 
   // small helper to return gracefully
-  const generic = "🤔 I'm not sure about that. Can you rephrase or ask something else?";
+  const generic =
+    "🤔 I'm not sure about that. Can you rephrase or ask something else?";
 
   // 1) dictionaryapi.dev for single-word definitions (best-effort)
   try {
     // only attempt dictionary for single tokens or short words
     if (typeof query === "string" && query.trim().split(/\s+/).length <= 2) {
-      const dRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(query)}`);
+      const dRes = await fetch(
+        `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(
+          query
+        )}`
+      );
       if (dRes.ok) {
         const dData = await dRes.json();
         if (Array.isArray(dData) && dData[0]?.meanings?.length) {
@@ -1683,14 +1806,21 @@ async function getFallbackAnswer(query) {
 
   // 2) DuckDuckGo Instant Answer (abstract)
   try {
-    const ddgRes = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1&no_html=1`);
+    const ddgRes = await fetch(
+      `https://api.duckduckgo.com/?q=${encodeURIComponent(
+        query
+      )}&format=json&no_redirect=1&no_html=1`
+    );
     if (ddgRes.ok) {
       const ddgData = await ddgRes.json();
       if (ddgData?.AbstractText) {
         return `🔎 ${ddgData.AbstractText}`;
       }
       // if RelatedTopics contains a snippet, use it
-      if (Array.isArray(ddgData?.RelatedTopics) && ddgData.RelatedTopics.length) {
+      if (
+        Array.isArray(ddgData?.RelatedTopics) &&
+        ddgData.RelatedTopics.length
+      ) {
         const topic = ddgData.RelatedTopics[0];
         if (topic?.Text) return `🔎 ${topic.Text}`;
       }
@@ -1701,7 +1831,11 @@ async function getFallbackAnswer(query) {
 
   // 3) Wikipedia summary
   try {
-    const wpRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
+    const wpRes = await fetch(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(
+        query
+      )}`
+    );
     if (wpRes.ok) {
       const wpData = await wpRes.json();
       if (wpData?.extract) return wpData.extract;
@@ -1719,8 +1853,12 @@ window.addEventListener("load", () => {
   // Delay so page finishes rendering — consistent with previous behavior
   setTimeout(() => {
     if (chatContainer) {
-      chatContainer.style.display = "flex";                // popup chat
-      try { openSound.play(); } catch(e) { /* ignore */ }
+      chatContainer.style.display = "flex"; // popup chat
+      try {
+        openSound.play();
+      } catch (e) {
+        /* ignore */
+      }
     }
     // show welcome choices if welcomeBox exists
     if (welcomeBox) welcomeBox.style.display = "flex";
@@ -1740,7 +1878,9 @@ if (openBtn) {
     if (chatContainer) chatContainer.style.display = "flex";
     if (welcomeBox) welcomeBox.style.display = "flex";
     if (inputArea) inputArea.style.display = "none";
-    try { openSound.play(); } catch(e) {}
+    try {
+      openSound.play();
+    } catch (e) {}
     // If speech was queued, opening the chat counts as a user gesture — unlock and flush
     unlockSpeech();
   });
@@ -1763,19 +1903,35 @@ if (liveBtn) {
     savedAddress = localStorage.getItem("aiChat-address") || null;
 
     if (savedName && savedAddress) {
-      appendBubble("bot", `Welcome back ${savedName}! I have your delivery address as "${savedAddress}". What would you like to order today?`);
+      appendBubble(
+        "bot",
+        `Welcome back ${savedName}! I have your delivery address as "${savedAddress}". What would you like to order today?`
+      );
       // show last order suggestion (if any)
-      const stored = JSON.parse(localStorage.getItem("aiChat-lastOrder") || "[]");
+      const stored = JSON.parse(
+        localStorage.getItem("aiChat-lastOrder") || "[]"
+      );
       if (stored && stored.length > 0) {
-        appendBubble("bot", `Last time you ordered: ${stored.join(", ")}. Would you like the same or modify it?`);
+        appendBubble(
+          "bot",
+          `Last time you ordered: ${stored.join(
+            ", "
+          )}. Would you like the same or modify it?`
+        );
       }
       askForOrder();
       if (!suggestionShown) {
-        appendBubble("bot", 'Tip: If you want to update your details, just type "change my details".');
+        appendBubble(
+          "bot",
+          'Tip: If you want to update your details, just type "change my details".'
+        );
         suggestionShown = true;
       }
     } else if (savedName && !savedAddress) {
-      appendBubble("bot", `Welcome back ${savedName}! Please provide your delivery address:`);
+      appendBubble(
+        "bot",
+        `Welcome back ${savedName}! Please provide your delivery address:`
+      );
       awaitingAddress = true;
     } else {
       appendBubble("bot", "Great! Let's chat. May I have your name please?");
@@ -1804,7 +1960,7 @@ if (userInput) {
 
 if (sendBtn) {
   sendBtn.addEventListener("click", async () => {
-    const text = (userInput && userInput.value) ? userInput.value.trim() : "";
+    const text = userInput && userInput.value ? userInput.value.trim() : "";
     if (!text) return;
 
     appendBubble("user", text);
@@ -1818,7 +1974,10 @@ if (sendBtn) {
       localStorage.setItem("aiChat-name", text);
       awaitingName = false;
       awaitingAddress = true;
-      appendBubble("bot", `Thanks ${text}! Please enter your delivery address:`);
+      appendBubble(
+        "bot",
+        `Thanks ${text}! Please enter your delivery address:`
+      );
       return;
     }
     if (awaitingAddress) {
@@ -1827,7 +1986,10 @@ if (sendBtn) {
       appendBubble("bot", "Great! What would you like to order?");
       askForOrder();
       if (!suggestionShown) {
-        appendBubble("bot", 'Tip: If you want to update your details, just type "change my details".');
+        appendBubble(
+          "bot",
+          'Tip: If you want to update your details, just type "change my details".'
+        );
         suggestionShown = true;
       }
       return;
@@ -1840,13 +2002,20 @@ if (sendBtn) {
       savedName = null;
       savedAddress = null;
       awaitingName = true;
-      appendBubble("bot", "Alright — let's update your details. What's your name?");
+      appendBubble(
+        "bot",
+        "Alright — let's update your details. What's your name?"
+      );
       return;
     }
 
     // Clear order via typed command (keeps previous behavior)
-    if (text.toLowerCase().includes("clear order") || text.toLowerCase().includes("reset")) {
-      if (!confirm("Are you sure you want to clear your order history?")) return;
+    if (
+      text.toLowerCase().includes("clear order") ||
+      text.toLowerCase().includes("reset")
+    ) {
+      if (!confirm("Are you sure you want to clear your order history?"))
+        return;
       localStorage.removeItem("aiChat-lastOrder");
       lastOrder = [];
       setLocalWidgetCart([]);
@@ -1856,7 +2025,9 @@ if (sendBtn) {
     }
 
     // If user typed a food item explicitly, try to map and add
-    const typedFood = Object.keys(chatFoodMap).find(f => text.toLowerCase().includes(f.toLowerCase()));
+    const typedFood = Object.keys(chatFoodMap).find((f) =>
+      text.toLowerCase().includes(f.toLowerCase())
+    );
     if (typedFood) {
       const itemId = chatFoodMap[typedFood];
       // use safeAddToCart so we don't display "(addToCart not found)"
@@ -1867,7 +2038,10 @@ if (sendBtn) {
       // save last order already handled in safeAddToCart
       cartClickCount++;
       if (cartClickCount >= 3) {
-        appendBubble("bot", `🛒 You've added ${cartClickCount} items. Checkout or add more?`);
+        appendBubble(
+          "bot",
+          `🛒 You've added ${cartClickCount} items. Checkout or add more?`
+        );
         // show checkout/add more choices
         const div = document.createElement("div");
         div.className = "chat-suggestions";
@@ -1876,19 +2050,29 @@ if (sendBtn) {
         cBtn.onclick = () => {
           // show summary and try open site cart
           showCartSummary();
-          const cartIcon = document.getElementById("cart-icon")
-            || document.querySelector(".cart-toggle")
-            || document.querySelector(".open-cart");
+          const cartIcon =
+            document.getElementById("cart-icon") ||
+            document.querySelector(".cart-toggle") ||
+            document.querySelector(".open-cart");
           if (cartIcon) cartIcon.click();
-          else appendBubble("bot", "Please open the cart to proceed to checkout.");
+          else
+            appendBubble("bot", "Please open the cart to proceed to checkout.");
         };
         const mBtn = document.createElement("button");
         mBtn.textContent = "Add More";
-        mBtn.onclick = () => { cartClickCount = 0; appendBubble("bot", "Here are more options:"); showFoodSuggestions(); };
-        div.appendChild(cBtn); div.appendChild(mBtn);
+        mBtn.onclick = () => {
+          cartClickCount = 0;
+          appendBubble("bot", "Here are more options:");
+          showFoodSuggestions();
+        };
+        div.appendChild(cBtn);
+        div.appendChild(mBtn);
         messagesDiv.appendChild(div);
       } else {
-        setTimeout(() => { appendBubble("bot", "Would you like to add another?"); showFoodSuggestions(); }, 600);
+        setTimeout(() => {
+          appendBubble("bot", "Would you like to add another?");
+          showFoodSuggestions();
+        }, 600);
       }
       return;
     }
@@ -1909,7 +2093,8 @@ if (sendBtn) {
 
 // --- Optional: Microphone toggle (robust) ---
 if (micBtn) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SpeechRecognition) {
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
@@ -1937,7 +2122,11 @@ if (micBtn) {
     });
 
     recognition.onresult = (ev) => {
-      const transcript = ev.results && ev.results[0] && ev.results[0][0] && ev.results[0][0].transcript;
+      const transcript =
+        ev.results &&
+        ev.results[0] &&
+        ev.results[0][0] &&
+        ev.results[0][0].transcript;
       if (transcript) {
         if (userInput) userInput.value = transcript;
         if (sendBtn) sendBtn.click();
@@ -1962,7 +2151,6 @@ if (micBtn) {
     if (micBtn) micBtn.style.display = "none";
   }
 }
-
 
 window.addEventListener("load", () => {
   const preloader = document.querySelector(".preloader");
