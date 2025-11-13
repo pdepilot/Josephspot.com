@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./images/logo3.png">
+    <title>Menu Management - Joseph's Pot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8b4513;
+            --primary-light: #a0522d;
+            --primary-dark: #654321;
+            --secondary: #d2691e;
+            --accent: #ff7b54;
+            --light: #fff8dc;
+            --dark: #333333;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #F44336;
+            --info: #2196F3;
+            --gray: #f5f5f5;
+            --gray-dark: #e0e0e0;
+            --text: #333333;
+            --text-light: #666666;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            transition: var(--transition);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        /* Mobile Sidebar Behavior */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                transform: translateX(0);
+            }
+            
+            .sidebar .logo-area h1, 
+            .sidebar .admin-details, 
+            .sidebar .menu-label,
+            .sidebar .menu-item span {
+                display: none;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .sidebar .admin-info {
+                justify-content: center;
+                padding: 15px 10px;
+            }
+            
+            .sidebar .menu-item a {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .sidebar .menu-item i {
+                margin-right: 0;
+            }
+            
+            /* Hover effect for mobile */
+            .sidebar:hover {
+                width: 260px;
+            }
+            
+            .sidebar:hover .logo-area h1, 
+            .sidebar:hover .admin-details, 
+            .sidebar:hover .menu-label,
+            .sidebar:hover .menu-item span {
+                display: block;
+                opacity: 1;
+            }
+            
+            .sidebar:hover .admin-info {
+                justify-content: flex-start;
+                padding: 15px 20px;
+            }
+            
+            .sidebar:hover .menu-item a {
+                justify-content: flex-start;
+                padding: 12px 15px;
+            }
+            
+            .sidebar:hover .menu-item i {
+                margin-right: 12px;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .logo-area img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-area h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 15px 20px;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .admin-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .admin-details h3 {
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .admin-details p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .menu-items {
+            list-style: none;
+            padding: 0 15px;
+        }
+
+        .menu-item {
+            margin-bottom: 5px;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .menu-item a:hover, .menu-item a.active {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 20px 15px 10px;
+            opacity: 0.7;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 25px;
+        }
+
+        .header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: none;
+            border-radius: 30px;
+            background: white;
+            box-shadow: var(--shadow);
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        /* Menu Management Styles */
+        .menu-management {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .menu-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .add-item-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .add-item-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .menu-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--gray);
+            margin-bottom: 25px;
+        }
+
+        .menu-tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .menu-tab.active {
+            color: var(--primary);
+        }
+
+        .menu-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .menu-tab:hover {
+            color: var(--primary);
+        }
+
+        .menu-content {
+            display: none;
+        }
+
+        .menu-content.active {
+            display: block;
+        }
+
+        .menu-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-item-card {
+            background: var(--gray);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .menu-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .menu-item-image {
+            height: 180px;
+            background: var(--primary-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .menu-item-card:hover .menu-item-image img {
+            transform: scale(1.05);
+        }
+
+        .menu-item-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .menu-item-details {
+            padding: 20px;
+        }
+
+        .menu-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .menu-item-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .menu-item-price {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .menu-item-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .menu-item-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+
+        .menu-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .edit-btn {
+            background: var(--info);
+            color: white;
+        }
+
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-dark);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-dark);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--gray-dark);
+        }
+
+        .empty-state h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .menu-items-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu-items-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box input {
+                width: 180px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .menu-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .menu-tab {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo-area">
+                <img src="./images/logo3.png" alt="Joseph's Pot Logo">
+                <h1>Admin Panel</h1>
+            </div>
+            
+            <div class="admin-info">
+                <div class="admin-avatar">AJ</div>
+                <div class="admin-details">
+                    <h3>Admin Joseph</h3>
+                    <p>Super Admin</p>
+                </div>
+            </div>
+            
+            <ul class="menu-items">
+                <li class="menu-label">Main</li>
+                <li class="menu-item">
+                    <a href="dashboard.html">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="active">
+                        <i class="fas fa-utensils"></i>
+                        <span>Menu Management</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="reservations.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Reservations</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="orders.html">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#">
+                        <i class="fas fa-car"></i>
+                        <span>Order-Online Menu</span>
+                    </a>
+                </li>
+                
+                <li class="menu-label">Content</li>
+                <li class="menu-item">
+                    <a href="customers.html">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="reviews.html">
+                        <i class="fas fa-star"></i>
+                        <span>Reviews</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="gallery.html">
+                        <i class="fas fa-image"></i>
+                        <span>Gallery</span>
+                    </a>
+                </li>
+                
+                <li class="menu-label">Settings</li>
+                <li class="menu-item">
+                    <a href="settings.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2>Menu Management</h2>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search menu items...">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Menu Management Section -->
+            <div class="menu-management">
+                <div class="menu-header">
+                    <h3>Restaurant Menu</h3>
+                    <button class="add-item-btn" id="addItemBtn">
+                        <i class="fas fa-plus"></i>
+                        Add New Item
+                    </button>
+                </div>
+                
+                <div class="menu-tabs">
+                    <button class="menu-tab active" data-tab="breakfast">Breakfast</button>
+                    <button class="menu-tab" data-tab="lunch">Lunch</button>
+                    <button class="menu-tab" data-tab="dinner">Dinner</button>
+                    <button class="menu-tab" data-tab="drinks">Drinks</button>
+                </div>
+                
+                <!-- Breakfast Menu -->
+                <div class="menu-content active" id="breakfast">
+                    <div class="menu-items-grid" id="breakfastItems">
+                        <!-- Breakfast items will be dynamically added here -->
+                    </div>
+                </div>
+                
+                <!-- Lunch Menu -->
+                <div class="menu-content" id="lunch">
+                    <div class="menu-items-grid" id="lunchItems">
+                        <!-- Lunch items will be dynamically added here -->
+                    </div>
+                </div>
+                
+                <!-- Dinner Menu -->
+                <div class="menu-content" id="dinner">
+                    <div class="menu-items-grid" id="dinnerItems">
+                        <!-- Dinner items will be dynamically added here -->
+                    </div>
+                </div>
+                
+                <!-- Drinks Menu -->
+                <div class="menu-content" id="drinks">
+                    <div class="menu-items-grid" id="drinksItems">
+                        <!-- Drink items will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Item Modal -->
+    <div class="modal" id="itemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Menu Item</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="itemForm">
+                    <div class="form-group">
+                        <label for="itemName">Item Name</label>
+                        <input type="text" id="itemName" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="itemDescription">Description</label>
+                        <textarea id="itemDescription" class="form-control" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="itemPrice">Price (₦)</label>
+                            <input type="number" id="itemPrice" class="form-control" min="0" step="0.01" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="itemCategory">Category</label>
+                            <select id="itemCategory" class="form-control" required>
+                                <option value="">Select Category</option>
+                                <option value="breakfast">Breakfast</option>
+                                <option value="lunch">Lunch</option>
+                                <option value="dinner">Dinner</option>
+                                <option value="drinks">Drinks</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="itemPrepTime">Preparation Time (mins)</label>
+                            <input type="number" id="itemPrepTime" class="form-control" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="itemCalories">Calories</label>
+                            <input type="number" id="itemCalories" class="form-control" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="itemImage">Image URL</label>
+                        <input type="text" id="itemImage" class="form-control" placeholder="https://example.com/image.jpg">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="itemIngredients">Ingredients (comma separated)</label>
+                        <input type="text" id="itemIngredients" class="form-control" placeholder="Ingredient 1, Ingredient 2, ...">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample menu data
+        const menuData = {
+            breakfast: [
+                {
+                    id: 1,
+                    name: "Yam and Egg Sauce",
+                    description: "Freshly pounded yam served with specially prepared egg sauce with tomatoes and peppers.",
+                    price: 2500,
+                    prepTime: 20,
+                    calories: 420,
+                    image: "./images/breakfast1.jpg",
+                    ingredients: "Yam, Eggs, Tomatoes, Onions, Pepper, Oil"
+                },
+                {
+                    id: 2,
+                    name: "Akara and Pap",
+                    description: "Freshly made bean cakes served with traditional corn pap.",
+                    price: 1500,
+                    prepTime: 15,
+                    calories: 320,
+                    image: "./images/breakfast2.jpg",
+                    ingredients: "Beans, Pepper, Onions, Corn Pap, Milk"
+                }
+            ],
+            lunch: [
+                {
+                    id: 3,
+                    name: "Ofe Owerri Special",
+                    description: "Traditional Igbo soup made with assorted meats, fish, and fresh vegetables.",
+                    price: 3200,
+                    prepTime: 35,
+                    calories: 380,
+                    image: "./images/lunch1.jpg",
+                    ingredients: "Assorted Meat, Stockfish, Ugwu, Bitterleaf, Palm Oil"
+                },
+                {
+                    id: 4,
+                    name: "Jollof Rice with Chicken",
+                    description: "Flavorful Nigerian jollof rice served with grilled chicken and plantains.",
+                    price: 2800,
+                    prepTime: 30,
+                    calories: 450,
+                    image: "./images/lunch2.jpg",
+                    ingredients: "Rice, Tomatoes, Chicken, Plantains, Spices"
+                }
+            ],
+            dinner: [
+                {
+                    id: 5,
+                    name: "Nkwobi",
+                    description: "Spicy cow foot delicacy served with palm wine onions.",
+                    price: 3500,
+                    prepTime: 25,
+                    calories: 520,
+                    image: "./images/dinner1.jpg",
+                    ingredients: "Cow Foot, Utazi, Palm Oil, Spices, Onions"
+                },
+                {
+                    id: 6,
+                    name: "Grilled Fish with Vegetables",
+                    description: "Fresh fish grilled to perfection with assorted vegetables.",
+                    price: 4200,
+                    prepTime: 40,
+                    calories: 380,
+                    image: "./images/dinner2.jpg",
+                    ingredients: "Fresh Fish, Bell Peppers, Onions, Tomatoes, Spices"
+                }
+            ],
+            drinks: [
+                {
+                    id: 7,
+                    name: "Palm Wine",
+                    description: "Fresh traditional palm wine served chilled in calabash.",
+                    price: 800,
+                    prepTime: 5,
+                    calories: 180,
+                    image: "./images/drink1.jpg",
+                    ingredients: "Palm Wine"
+                },
+                {
+                    id: 8,
+                    name: "Zobo Drink",
+                    description: "Refreshing hibiscus drink with pineapple and ginger.",
+                    price: 500,
+                    prepTime: 10,
+                    calories: 120,
+                    image: "./images/drink2.jpg",
+                    ingredients: "Hibiscus, Pineapple, Ginger, Sugar"
+                }
+            ]
+        };
+
+        // DOM Elements
+        const menuTabs = document.querySelectorAll('.menu-tab');
+        const menuContents = document.querySelectorAll('.menu-content');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const itemModal = document.getElementById('itemModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const itemForm = document.getElementById('itemForm');
+        const modalTitle = document.getElementById('modalTitle');
+
+        // Tab switching functionality
+        menuTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.getAttribute('data-tab');
+                
+                // Update active tab
+                menuTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                menuContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === targetTab) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // Modal functionality
+        addItemBtn.addEventListener('click', () => {
+            modalTitle.textContent = 'Add Menu Item';
+            itemForm.reset();
+            itemModal.style.display = 'flex';
+        });
+
+        closeModal.addEventListener('click', () => {
+            itemModal.style.display = 'none';
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            itemModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === itemModal) {
+                itemModal.style.display = 'none';
+            }
+        });
+
+        // Form submission
+        itemForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('itemName').value;
+            const description = document.getElementById('itemDescription').value;
+            const price = parseFloat(document.getElementById('itemPrice').value);
+            const category = document.getElementById('itemCategory').value;
+            const prepTime = parseInt(document.getElementById('itemPrepTime').value) || 0;
+            const calories = parseInt(document.getElementById('itemCalories').value) || 0;
+            const image = document.getElementById('itemImage').value;
+            const ingredients = document.getElementById('itemIngredients').value;
+            
+            // Create new item
+            const newItem = {
+                id: Date.now(), // Simple ID generation
+                name,
+                description,
+                price,
+                prepTime,
+                calories,
+                image: image || './images/default-food.jpg',
+                ingredients
+            };
+            
+            // Add to menu data
+            menuData[category].push(newItem);
+            
+            // Update UI
+            renderMenuItems();
+            
+            // Close modal
+            itemModal.style.display = 'none';
+            
+            // Show success message
+            alert(`"${name}" has been added to the ${category} menu!`);
+        });
+
+        // Render menu items
+        function renderMenuItems() {
+            // Clear existing items
+            document.querySelectorAll('.menu-items-grid').forEach(grid => {
+                grid.innerHTML = '';
+            });
+            
+            // Render items for each category
+            Object.keys(menuData).forEach(category => {
+                const container = document.getElementById(`${category}Items`);
+                
+                if (menuData[category].length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-utensils"></i>
+                            <h4>No ${category} items yet</h4>
+                            <p>Add your first ${category} item to get started</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                menuData[category].forEach(item => {
+                    const itemCard = document.createElement('div');
+                    itemCard.className = 'menu-item-card';
+                    itemCard.innerHTML = `
+                        <div class="menu-item-image">
+                            <img src="${item.image}" alt="${item.name}">
+                            <div class="menu-item-badge">${category.charAt(0).toUpperCase() + category.slice(1)}</div>
+                        </div>
+                        <div class="menu-item-details">
+                            <div class="menu-item-header">
+                                <div class="menu-item-name">${item.name}</div>
+                                <div class="menu-item-price">₦${item.price.toLocaleString()}</div>
+                            </div>
+                            <div class="menu-item-description">${item.description}</div>
+                            <div class="menu-item-meta">
+                                <span><i class="fas fa-clock"></i> ${item.prepTime} mins</span>
+                                <span><i class="fas fa-fire"></i> ${item.calories} kcal</span>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="action-btn edit-btn" data-id="${item.id}" data-category="${category}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="action-btn delete-btn" data-id="${item.id}" data-category="${category}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(itemCard);
+                });
+            });
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const category = btn.getAttribute('data-category');
+                    editMenuItem(id, category);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const category = btn.getAttribute('data-category');
+                    deleteMenuItem(id, category);
+                });
+            });
+        }
+
+        // Edit menu item
+        function editMenuItem(id, category) {
+            const item = menuData[category].find(item => item.id === id);
+            if (!item) return;
+            
+            // Fill form with item data
+            document.getElementById('itemName').value = item.name;
+            document.getElementById('itemDescription').value = item.description;
+            document.getElementById('itemPrice').value = item.price;
+            document.getElementById('itemCategory').value = category;
+            document.getElementById('itemPrepTime').value = item.prepTime;
+            document.getElementById('itemCalories').value = item.calories;
+            document.getElementById('itemImage').value = item.image;
+            document.getElementById('itemIngredients').value = item.ingredients;
+            
+            // Update modal title
+            modalTitle.textContent = 'Edit Menu Item';
+            
+            // Store the item being edited
+            itemForm.setAttribute('data-editing-id', id);
+            itemForm.setAttribute('data-editing-category', category);
+            
+            // Show modal
+            itemModal.style.display = 'flex';
+        }
+
+        // Delete menu item
+        function deleteMenuItem(id, category) {
+            if (confirm('Are you sure you want to delete this menu item?')) {
+                menuData[category] = menuData[category].filter(item => item.id !== id);
+                renderMenuItems();
+                alert('Menu item deleted successfully!');
+            }
+        }
+
+        // Update form submission to handle edits
+        itemForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const editingId = itemForm.getAttribute('data-editing-id');
+            const editingCategory = itemForm.getAttribute('data-editing-category');
+            
+            if (editingId) {
+                // Editing existing item
+                const itemIndex = menuData[editingCategory].findIndex(item => item.id === parseInt(editingId));
+                if (itemIndex !== -1) {
+                    // Get form values
+                    const name = document.getElementById('itemName').value;
+                    const description = document.getElementById('itemDescription').value;
+                    const price = parseFloat(document.getElementById('itemPrice').value);
+                    const category = document.getElementById('itemCategory').value;
+                    const prepTime = parseInt(document.getElementById('itemPrepTime').value) || 0;
+                    const calories = parseInt(document.getElementById('itemCalories').value) || 0;
+                    const image = document.getElementById('itemImage').value;
+                    const ingredients = document.getElementById('itemIngredients').value;
+                    
+                    // Update item
+                    menuData[editingCategory][itemIndex] = {
+                        id: parseInt(editingId),
+                        name,
+                        description,
+                        price,
+                        prepTime,
+                        calories,
+                        image: image || './images/default-food.jpg',
+                        ingredients
+                    };
+                    
+                    // If category changed, move item to new category
+                    if (category !== editingCategory) {
+                        const item = menuData[editingCategory][itemIndex];
+                        menuData[editingCategory].splice(itemIndex, 1);
+                        menuData[category].push(item);
+                    }
+                    
+                    // Update UI
+                    renderMenuItems();
+                    
+                    // Close modal and reset form
+                    itemModal.style.display = 'none';
+                    itemForm.reset();
+                    itemForm.removeAttribute('data-editing-id');
+                    itemForm.removeAttribute('data-editing-category');
+                    
+                    // Show success message
+                    alert(`"${name}" has been updated successfully!`);
+                }
+            } else {
+                // Adding new item (existing code)
+                // Get form values
+                const name = document.getElementById('itemName').value;
+                const description = document.getElementById('itemDescription').value;
+                const price = parseFloat(document.getElementById('itemPrice').value);
+                const category = document.getElementById('itemCategory').value;
+                const prepTime = parseInt(document.getElementById('itemPrepTime').value) || 0;
+                const calories = parseInt(document.getElementById('itemCalories').value) || 0;
+                const image = document.getElementById('itemImage').value;
+                const ingredients = document.getElementById('itemIngredients').value;
+                
+                // Create new item
+                const newItem = {
+                    id: Date.now(), // Simple ID generation
+                    name,
+                    description,
+                    price,
+                    prepTime,
+                    calories,
+                    image: image || './images/default-food.jpg',
+                    ingredients
+                };
+                
+                // Add to menu data
+                menuData[category].push(newItem);
+                
+                // Update UI
+                renderMenuItems();
+                
+                // Close modal
+                itemModal.style.display = 'none';
+                
+                // Show success message
+                alert(`"${name}" has been added to the ${category} menu!`);
+            }
+        });
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMenuItems();
+        });
+    </script>
+</body>
+</html>

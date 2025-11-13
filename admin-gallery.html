@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./images/logo3.png">
+    <title>Gallery Management - Joseph's Pot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8b4513;
+            --primary-light: #a0522d;
+            --primary-dark: #654321;
+            --secondary: #d2691e;
+            --accent: #ff7b54;
+            --light: #fff8dc;
+            --dark: #333333;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #F44336;
+            --info: #2196F3;
+            --gray: #f5f5f5;
+            --gray-dark: #e0e0e0;
+            --text: #333333;
+            --text-light: #666666;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            transition: var(--transition);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transform: translateX(0);
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar.collapsed .logo-area h1, 
+        .sidebar.collapsed .admin-details, 
+        .sidebar.collapsed .menu-label,
+        .sidebar.collapsed .menu-item span {
+            display: none;
+        }
+        
+        .sidebar.collapsed .admin-info {
+            justify-content: center;
+            padding: 15px 10px;
+        }
+        
+        .sidebar.collapsed .menu-item a {
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .sidebar.collapsed .menu-item i {
+            margin-right: 0;
+        }
+
+        /* Mobile Sidebar Slide Effect */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                transform: translateX(0);
+            }
+            
+            .sidebar .logo-area h1, 
+            .sidebar .admin-details, 
+            .sidebar .menu-label,
+            .sidebar .menu-item span {
+                display: none;
+            }
+            
+            .sidebar .admin-info {
+                justify-content: center;
+                padding: 15px 10px;
+            }
+            
+            .sidebar .menu-item a {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .sidebar .menu-item i {
+                margin-right: 0;
+            }
+            
+            .sidebar:hover {
+                width: 260px;
+                transform: translateX(0);
+            }
+            
+            .sidebar:hover .logo-area h1, 
+            .sidebar:hover .admin-details, 
+            .sidebar:hover .menu-label,
+            .sidebar:hover .menu-item span {
+                display: block;
+            }
+            
+            .sidebar:hover .admin-info {
+                justify-content: flex-start;
+                padding: 15px 20px;
+            }
+            
+            .sidebar:hover .menu-item a {
+                justify-content: flex-start;
+                padding: 12px 15px;
+            }
+            
+            .sidebar:hover .menu-item i {
+                margin-right: 12px;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .logo-area img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-area h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 15px 20px;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .admin-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .admin-details h3 {
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .admin-details p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .menu-items {
+            list-style: none;
+            padding: 0 15px;
+        }
+
+        .menu-item {
+            margin-bottom: 5px;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .menu-item a:hover, .menu-item a.active {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 20px 15px 10px;
+            opacity: 0.7;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 25px;
+        }
+
+        .header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: none;
+            border-radius: 30px;
+            background: white;
+            box-shadow: var(--shadow);
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .notification-icon, .user-menu {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-icon i, .user-menu i {
+            font-size: 1.3rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .notification-icon:hover i, .user-menu:hover i {
+            color: var(--secondary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .stat-card.total::before {
+            background: var(--info);
+        }
+
+        .stat-card.food::before {
+            background: var(--success);
+        }
+
+        .stat-card.restaurant::before {
+            background: var(--warning);
+        }
+
+        .stat-card.events::before {
+            background: var(--danger);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .stat-card.total i {
+            color: var(--info);
+        }
+
+        .stat-card.food i {
+            color: var(--success);
+        }
+
+        .stat-card.restaurant i {
+            color: var(--warning);
+        }
+
+        .stat-card.events i {
+            color: var(--danger);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Gallery Controls */
+        .gallery-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .gallery-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            background: white;
+            color: var(--text);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            font-weight: 500;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .filter-btn:hover:not(.active) {
+            background: var(--gray);
+        }
+
+        .upload-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .upload-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .gallery-item-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-item-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover .gallery-item-overlay {
+            opacity: 1;
+        }
+
+        .gallery-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .gallery-action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .gallery-action-btn.view {
+            background: var(--info);
+        }
+
+        .gallery-action-btn.edit {
+            background: var(--warning);
+        }
+
+        .gallery-action-btn.delete {
+            background: var(--danger);
+        }
+
+        .gallery-action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .gallery-item-info {
+            padding: 15px;
+        }
+
+        .gallery-item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .gallery-item-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .gallery-item-category {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .category-food {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+        }
+
+        .category-restaurant {
+            background: rgba(255, 152, 0, 0.2);
+            color: var(--warning);
+        }
+
+        .category-events {
+            background: rgba(244, 67, 54, 0.2);
+            color: var(--danger);
+        }
+
+        .category-staff {
+            background: rgba(33, 150, 243, 0.2);
+            color: var(--info);
+        }
+
+        /* Upload Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--gray-dark);
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(139, 69, 19, 0.05);
+        }
+
+        .upload-area i {
+            font-size: 3rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+
+        .upload-area h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .upload-area p {
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+
+        .upload-btn-browse {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .upload-btn-browse:hover {
+            background: var(--primary-dark);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--gray-dark);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .preview-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-dark);
+        }
+
+        /* Image View Modal */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .image-modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .image-modal-img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .image-modal-info {
+            position: absolute;
+            bottom: -60px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+        }
+
+        .image-modal-title {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .image-modal-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--gray-dark);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .search-box input {
+                width: 180px;
+            }
+            
+            .gallery-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .gallery-filters {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .gallery-filters {
+                flex-direction: column;
+            }
+            
+            .filter-btn {
+                width: 100%;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Scroll Reveal Animation Styles */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .reveal-delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .reveal-delay-3 {
+            transition-delay: 0.3s;
+        }
+
+        .reveal-delay-4 {
+            transition-delay: 0.4s;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo-area">
+                <img src="./images/logo3.png" alt="Joseph's Pot Logo">
+                <h1>Admin Panel</h1>
+            </div>
+            
+            <div class="admin-info">
+                <div class="admin-avatar">AJ</div>
+                <div class="admin-details">
+                    <h3>Admin Joseph</h3>
+                    <p>Super Admin</p>
+                </div>
+            </div>
+            
+            <ul class="menu-items">
+                <li class="menu-label">Main</li>
+                <li class="menu-item">
+                    <a href="admin-dashboard.html">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-menu-management.html">
+                        <i class="fas fa-utensils"></i>
+                        <span>Menu Management</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-reservation.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Reservations</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-order.html">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="admin-order-online-menu.html">
+                        <i class="fas fa-car"></i>
+                        <span>Order-Online Menu</span>
+                    </a>
+                </li>
+                
+                <li class="menu-label">Content</li>
+                <li class="menu-item">
+                    <a href="admin-customers.html">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-reviews.html">
+                        <i class="fas fa-star"></i>
+                        <span>Reviews</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="gallery.html" class="active">
+                        <i class="fas fa-image"></i>
+                        <span>Gallery</span>
+                    </a>
+                </li>
+                <!-- <li class="menu-item">
+                    <a href="#">
+                        <i class="fas fa-newspaper"></i>
+                        <span>Blog</span>
+                    </a>
+                </li> -->
+                
+                <li class="menu-label">Settings</li>
+                <li class="menu-item">
+                    <a href="admin-settings.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-logout.html">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <div class="header">
+                <h2>Gallery Management</h2>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search images...">
+                    </div>
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-menu">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card total reveal">
+                    <i class="fas fa-images"></i>
+                    <div class="stat-value">142</div>
+                    <div class="stat-label">Total Images</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 12 new this week
+                    </div>
+                </div>
+                
+                <div class="stat-card food reveal reveal-delay-1">
+                    <i class="fas fa-utensils"></i>
+                    <div class="stat-value">84</div>
+                    <div class="stat-label">Food Images</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 5 new this week
+                    </div>
+                </div>
+                
+                <div class="stat-card restaurant reveal reveal-delay-2">
+                    <i class="fas fa-store"></i>
+                    <div class="stat-value">32</div>
+                    <div class="stat-label">Restaurant Photos</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 2 new this week
+                    </div>
+                </div>
+                
+                <div class="stat-card events reveal reveal-delay-3">
+                    <i class="fas fa-calendar"></i>
+                    <div class="stat-value">26</div>
+                    <div class="stat-label">Event Photos</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 3 new this week
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gallery Controls -->
+            <div class="gallery-controls">
+                <div class="gallery-filters">
+                    <button class="filter-btn active" data-filter="all">All Images</button>
+                    <button class="filter-btn" data-filter="food">Food</button>
+                    <button class="filter-btn" data-filter="restaurant">Restaurant</button>
+                    <button class="filter-btn" data-filter="events">Events</button>
+                    <button class="filter-btn" data-filter="staff">Staff</button>
+                </div>
+                <button class="upload-btn" id="uploadImageBtn">
+                    <i class="fas fa-plus"></i>
+                    Upload Image
+                </button>
+            </div>
+            
+            <!-- Gallery Grid -->
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Gallery items will be dynamically added here -->
+            </div>
+            
+            <div class="footer">
+                <p>&copy; 2025 Joseph's Pot Admin Dashboard. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Image Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload New Image</h3>
+                <button class="close-modal" id="closeUploadModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h4>Upload Your Image</h4>
+                    <p>Drag & drop your image here or click to browse</p>
+                    <button class="upload-btn-browse">Browse Files</button>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                </div>
+                
+                <div class="preview-container">
+                    <img id="imagePreview" class="preview-image" alt="Image Preview">
+                </div>
+                
+                <form id="imageForm">
+                    <div class="form-group">
+                        <label for="imageTitle">Image Title</label>
+                        <input type="text" id="imageTitle" placeholder="Enter image title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="imageDescription">Description</label>
+                        <textarea id="imageDescription" placeholder="Enter image description"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="imageCategory">Category</label>
+                        <select id="imageCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="food">Food</option>
+                            <option value="restaurant">Restaurant</option>
+                            <option value="events">Events</option>
+                            <option value="staff">Staff</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="imageTags">Tags</label>
+                        <input type="text" id="imageTags" placeholder="Enter tags separated by commas">
+                    </div>
+                </form>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="cancelUploadBtn">Cancel</button>
+                    <button class="btn btn-primary" id="saveImageBtn">
+                        <i class="fas fa-save"></i>
+                        Save Image
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image View Modal -->
+    <div class="image-modal" id="imageViewModal">
+        <div class="image-modal-content">
+            <img class="image-modal-img" id="modalImageView" alt="Full Size Image">
+            <button class="image-modal-close" id="closeImageViewModal">&times;</button>
+            <div class="image-modal-info">
+                <div class="image-modal-title" id="modalImageTitle">Image Title</div>
+                <div class="image-modal-description" id="modalImageDescription">Image description goes here</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample gallery data
+        const galleryItems = [
+            {
+                id: 1,
+                title: 'Ofe Owerri Special',
+                description: 'Our signature Ofe Owerri soup served with pounded yam',
+                category: 'food',
+                tags: ['soup', 'pounded yam', 'traditional', 'signature'],
+                imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmlnZXJpYW4lMjBmb29kfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60',
+                uploadDate: '2025-03-15',
+                size: '2.4 MB',
+                dimensions: '1200x800'
+            },
+            {
+                id: 2,
+                title: 'Restaurant Interior',
+                description: 'Warm and inviting dining area with traditional decor',
+                category: 'restaurant',
+                tags: ['interior', 'dining', 'decor', 'ambiance'],
+                imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmVzdGF1cmFudHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                uploadDate: '2025-03-14',
+                size: '3.1 MB',
+                dimensions: '1600x1200'
+            },
+            {
+                id: 3,
+                title: 'Nkwobi Delight',
+                description: 'Spicy cow foot delicacy served with palm wine',
+                category: 'food',
+                tags: ['spicy', 'cow foot', 'appetizer', 'traditional'],
+                imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bmlnZXJpYW4lMjBmb29kfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60',
+                uploadDate: '2025-03-14',
+                size: '2.8 MB',
+                dimensions: '1400x900'
+            },
+            {
+                id: 4,
+                title: 'Cultural Night Event',
+                description: 'Live music and cultural performances during our monthly event',
+                category: 'events',
+                tags: ['event', 'cultural', 'music', 'performance'],
+                imageUrl: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZXZlbnQlMjByZXN0YXVyYW50fGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60',
+                uploadDate: '2025-03-12',
+                size: '4.2 MB',
+                dimensions: '2000x1500'
+            },
+            {
+                id: 5,
+                title: 'Chef Joseph Cooking',
+                description: 'Our head chef preparing traditional dishes',
+                category: 'staff',
+                tags: ['chef', 'cooking', 'kitchen', 'preparation'],
+                imageUrl: 'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y2hlZnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                uploadDate: '2025-03-10',
+                size: '2.9 MB',
+                dimensions: '1300x900'
+            },
+            {
+                id: 6,
+                title: 'Jollof Rice Feast',
+                description: 'Party-style jollof rice with assorted meat',
+                category: 'food',
+                tags: ['jollof', 'rice', 'party', 'celebration'],
+                imageUrl: 'https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG5pZ2VyaWFuJTIwZm9vZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                uploadDate: '2025-03-08',
+                size: '3.5 MB',
+                dimensions: '1500x1000'
+            },
+            {
+                id: 7,
+                title: 'Outdoor Seating',
+                description: 'Beautiful patio area for outdoor dining',
+                category: 'restaurant',
+                tags: ['outdoor', 'patio', 'seating', 'ambiance'],
+                imageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cmVzdGF1cmFudHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                uploadDate: '2025-03-05',
+                size: '3.8 MB',
+                dimensions: '1800x1200'
+            },
+            {
+                id: 8,
+                title: 'Cooking Class',
+                description: 'Customers learning to make traditional dishes',
+                category: 'events',
+                tags: ['cooking class', 'workshop', 'learning', 'interactive'],
+                imageUrl: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNvb2tpbmclMjBjbGFzc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                uploadDate: '2025-03-03',
+                size: '4.1 MB',
+                dimensions: '1900x1200'
+            }
+        ];
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const galleryGrid = document.getElementById('galleryGrid');
+        const uploadModal = document.getElementById('uploadModal');
+        const imageViewModal = document.getElementById('imageViewModal');
+        const closeUploadModal = document.getElementById('closeUploadModal');
+        const closeImageViewModal = document.getElementById('closeImageViewModal');
+        const uploadImageBtn = document.getElementById('uploadImageBtn');
+        const cancelUploadBtn = document.getElementById('cancelUploadBtn');
+        const saveImageBtn = document.getElementById('saveImageBtn');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const imageForm = document.getElementById('imageForm');
+        const modalImageView = document.getElementById('modalImageView');
+        const modalImageTitle = document.getElementById('modalImageTitle');
+        const modalImageDescription = document.getElementById('modalImageDescription');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const searchBox = document.querySelector('.search-box input');
+
+        // Filter gallery items
+        function filterGallery(filter) {
+            let filteredItems = galleryItems;
+            
+            if (filter !== 'all') {
+                filteredItems = galleryItems.filter(item => item.category === filter);
+            }
+            
+            renderGallery(filteredItems);
+        }
+
+        // Render gallery items
+        function renderGallery(itemsToRender) {
+            galleryGrid.innerHTML = '';
+            
+            itemsToRender.forEach(item => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item reveal';
+                
+                // Format date
+                const uploadDate = new Date(item.uploadDate);
+                const formattedDate = uploadDate.toLocaleDateString();
+                
+                // Category class
+                let categoryClass = '';
+                switch(item.category) {
+                    case 'food':
+                        categoryClass = 'category-food';
+                        break;
+                    case 'restaurant':
+                        categoryClass = 'category-restaurant';
+                        break;
+                    case 'events':
+                        categoryClass = 'category-events';
+                        break;
+                    case 'staff':
+                        categoryClass = 'category-staff';
+                        break;
+                }
+                
+                galleryItem.innerHTML = `
+                    <img src="${item.imageUrl}" alt="${item.title}" class="gallery-item-img">
+                    <div class="gallery-item-overlay">
+                        <div class="gallery-item-actions">
+                            <button class="gallery-action-btn view" data-id="${item.id}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="gallery-action-btn edit" data-id="${item.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="gallery-action-btn delete" data-id="${item.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="gallery-item-info">
+                        <span class="gallery-item-category ${categoryClass}">${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</span>
+                        <div class="gallery-item-title">${item.title}</div>
+                        <div class="gallery-item-meta">
+                            <span>${formattedDate}</span>
+                            <span>${item.size}</span>
+                        </div>
+                    </div>
+                `;
+                
+                galleryGrid.appendChild(galleryItem);
+            });
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.gallery-action-btn.view').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const itemId = parseInt(this.getAttribute('data-id'));
+                    viewImage(itemId);
+                });
+            });
+            
+            document.querySelectorAll('.gallery-action-btn.edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const itemId = parseInt(this.getAttribute('data-id'));
+                    editImage(itemId);
+                });
+            });
+            
+            document.querySelectorAll('.gallery-action-btn.delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const itemId = parseInt(this.getAttribute('data-id'));
+                    deleteImage(itemId);
+                });
+            });
+        }
+
+        // View image in modal
+        function viewImage(itemId) {
+            const item = galleryItems.find(i => i.id === itemId);
+            
+            if (!item) return;
+            
+            modalImageView.src = item.imageUrl;
+            modalImageTitle.textContent = item.title;
+            modalImageDescription.textContent = item.description;
+            
+            imageViewModal.style.display = 'flex';
+        }
+
+        // Edit image (placeholder function)
+        function editImage(itemId) {
+            const item = galleryItems.find(i => i.id === itemId);
+            alert(`Editing image: ${item.title}`);
+        }
+
+        // Delete image
+        function deleteImage(itemId) {
+            const item = galleryItems.find(i => i.id === itemId);
+            
+            if (confirm(`Are you sure you want to delete "${item.title}"?`)) {
+                const index = galleryItems.findIndex(i => i.id === itemId);
+                galleryItems.splice(index, 1);
+                renderGallery(galleryItems);
+                alert('Image deleted successfully!');
+            }
+        }
+
+        // Upload area click handler
+        uploadArea.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        // File input change handler
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // Save image handler
+        saveImageBtn.addEventListener('click', function() {
+            if (!fileInput.files[0]) {
+                alert('Please select an image to upload');
+                return;
+            }
+            
+            const title = document.getElementById('imageTitle').value;
+            const description = document.getElementById('imageDescription').value;
+            const category = document.getElementById('imageCategory').value;
+            const tags = document.getElementById('imageTags').value.split(',').map(tag => tag.trim());
+            
+            if (!title || !category) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Create new gallery item
+            const newItem = {
+                id: galleryItems.length + 1,
+                title: title,
+                description: description,
+                category: category,
+                tags: tags,
+                imageUrl: imagePreview.src,
+                uploadDate: new Date().toISOString().split('T')[0],
+                size: '2.5 MB',
+                dimensions: '1200x800'
+            };
+            
+            galleryItems.unshift(newItem);
+            renderGallery(galleryItems);
+            
+            // Reset form and close modal
+            imageForm.reset();
+            imagePreview.style.display = 'none';
+            uploadModal.style.display = 'none';
+            
+            alert('Image uploaded successfully!');
+        });
+
+        // Open upload modal
+        uploadImageBtn.addEventListener('click', function() {
+            uploadModal.style.display = 'flex';
+        });
+
+        // Close modals
+        closeUploadModal.addEventListener('click', function() {
+            uploadModal.style.display = 'none';
+        });
+
+        closeImageViewModal.addEventListener('click', function() {
+            imageViewModal.style.display = 'none';
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === uploadModal) {
+                uploadModal.style.display = 'none';
+            }
+            if (event.target === imageViewModal) {
+                imageViewModal.style.display = 'none';
+            }
+        });
+
+        // Cancel upload
+        cancelUploadBtn.addEventListener('click', function() {
+            uploadModal.style.display = 'none';
+            imageForm.reset();
+            imagePreview.style.display = 'none';
+        });
+
+        // Filter buttons event listeners
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterGallery(this.getAttribute('data-filter'));
+            });
+        });
+
+        // Search functionality
+        searchBox.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const filteredItems = galleryItems.filter(item => 
+                item.title.toLowerCase().includes(searchTerm) ||
+                item.description.toLowerCase().includes(searchTerm) ||
+                item.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+            );
+            renderGallery(filteredItems);
+        });
+
+        // Scroll Reveal Functionality
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('active');
+                } else {
+                    reveals[i].classList.remove('active');
+                }
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Render all gallery items initially
+            renderGallery(galleryItems);
+            
+            // Initialize scroll reveal
+            window.addEventListener('scroll', revealOnScroll);
+            // Trigger once on load to check initial position
+            revealOnScroll();
+        });
+    </script>
+</body>
+</html>

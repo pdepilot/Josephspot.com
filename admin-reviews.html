@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./images/logo3.png">
+    <title>Reviews Management - Joseph's Pot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8b4513;
+            --primary-light: #a0522d;
+            --primary-dark: #654321;
+            --secondary: #d2691e;
+            --accent: #ff7b54;
+            --light: #fff8dc;
+            --dark: #333333;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #F44336;
+            --info: #2196F3;
+            --gray: #f5f5f5;
+            --gray-dark: #e0e0e0;
+            --text: #333333;
+            --text-light: #666666;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            transition: var(--transition);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transform: translateX(0);
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar.collapsed .logo-area h1, 
+        .sidebar.collapsed .admin-details, 
+        .sidebar.collapsed .menu-label,
+        .sidebar.collapsed .menu-item span {
+            display: none;
+        }
+        
+        .sidebar.collapsed .admin-info {
+            justify-content: center;
+            padding: 15px 10px;
+        }
+        
+        .sidebar.collapsed .menu-item a {
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .sidebar.collapsed .menu-item i {
+            margin-right: 0;
+        }
+
+        /* Mobile Sidebar Slide Effect */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                transform: translateX(0);
+            }
+            
+            .sidebar .logo-area h1, 
+            .sidebar .admin-details, 
+            .sidebar .menu-label,
+            .sidebar .menu-item span {
+                display: none;
+            }
+            
+            .sidebar .admin-info {
+                justify-content: center;
+                padding: 15px 10px;
+            }
+            
+            .sidebar .menu-item a {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .sidebar .menu-item i {
+                margin-right: 0;
+            }
+            
+            .sidebar:hover {
+                width: 260px;
+                transform: translateX(0);
+            }
+            
+            .sidebar:hover .logo-area h1, 
+            .sidebar:hover .admin-details, 
+            .sidebar:hover .menu-label,
+            .sidebar:hover .menu-item span {
+                display: block;
+            }
+            
+            .sidebar:hover .admin-info {
+                justify-content: flex-start;
+                padding: 15px 20px;
+            }
+            
+            .sidebar:hover .menu-item a {
+                justify-content: flex-start;
+                padding: 12px 15px;
+            }
+            
+            .sidebar:hover .menu-item i {
+                margin-right: 12px;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .logo-area img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-area h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 15px 20px;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .admin-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .admin-details h3 {
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .admin-details p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .menu-items {
+            list-style: none;
+            padding: 0 15px;
+        }
+
+        .menu-item {
+            margin-bottom: 5px;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .menu-item a:hover, .menu-item a.active {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 20px 15px 10px;
+            opacity: 0.7;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 25px;
+        }
+
+        .header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: none;
+            border-radius: 30px;
+            background: white;
+            box-shadow: var(--shadow);
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .notification-icon, .user-menu {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-icon i, .user-menu i {
+            font-size: 1.3rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .notification-icon:hover i, .user-menu:hover i {
+            color: var(--secondary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .stat-card.total::before {
+            background: var(--info);
+        }
+
+        .stat-card.positive::before {
+            background: var(--success);
+        }
+
+        .stat-card.pending::before {
+            background: var(--warning);
+        }
+
+        .stat-card.negative::before {
+            background: var(--danger);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .stat-card.total i {
+            color: var(--info);
+        }
+
+        .stat-card.positive i {
+            color: var(--success);
+        }
+
+        .stat-card.pending i {
+            color: var(--warning);
+        }
+
+        .stat-card.negative i {
+            color: var(--danger);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Review Filters */
+        .review-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            background: white;
+            color: var(--text);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            font-weight: 500;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .filter-btn:hover:not(.active) {
+            background: var(--gray);
+        }
+
+        /* Reviews List */
+        .reviews-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .review-item {
+            display: flex;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--gray);
+            transition: var(--transition);
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-item:hover {
+            background: rgba(139, 69, 19, 0.03);
+        }
+
+        .review-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .review-content {
+            flex: 1;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .reviewer-info h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .reviewer-info p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .review-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .rating-stars i {
+            color: #ffc107;
+            font-size: 0.9rem;
+        }
+
+        .rating-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .review-text {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .review-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .review-date {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .review-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .review-action-btn {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .review-action-btn.approve {
+            background: var(--success);
+            color: white;
+        }
+
+        .review-action-btn.reject {
+            background: var(--danger);
+            color: white;
+        }
+
+        .review-action-btn.reply {
+            background: var(--info);
+            color: white;
+        }
+
+        .review-action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .review-status {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-published {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(255, 152, 0, 0.2);
+            color: var(--warning);
+        }
+
+        .status-rejected {
+            background: rgba(244, 67, 54, 0.2);
+            color: var(--danger);
+        }
+
+        /* Review Details Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .review-details-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .review-details-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .review-details-info {
+            flex: 1;
+        }
+
+        .review-details-info h4 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .review-details-info p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .review-details-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .review-details-text {
+            background: var(--gray);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .review-details-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .meta-label {
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .meta-value {
+            font-weight: 500;
+        }
+
+        .reply-section {
+            margin-top: 20px;
+        }
+
+        .reply-section h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .reply-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray-dark);
+            border-radius: 6px;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 15px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .reply-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #3d8b40;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--gray-dark);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .search-box input {
+                width: 180px;
+            }
+            
+            .review-filters {
+                justify-content: center;
+            }
+            
+            .review-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .review-details-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .review-filters {
+                flex-direction: column;
+            }
+            
+            .filter-btn {
+                width: 100%;
+            }
+            
+            .review-item {
+                flex-direction: column;
+            }
+            
+            .review-avatar {
+                margin-bottom: 10px;
+            }
+            
+            .review-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Scroll Reveal Animation Styles */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .reveal-delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .reveal-delay-3 {
+            transition-delay: 0.3s;
+        }
+
+        .reveal-delay-4 {
+            transition-delay: 0.4s;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo-area">
+                <img src="./images/logo3.png" alt="Joseph's Pot Logo">
+                <h1>Admin Panel</h1>
+            </div>
+            
+            <div class="admin-info">
+                <div class="admin-avatar">AJ</div>
+                <div class="admin-details">
+                    <h3>Admin Joseph</h3>
+                    <p>Super Admin</p>
+                </div>
+            </div>
+            
+            <ul class="menu-items">
+                <li class="menu-label">Main</li>
+                <li class="menu-item">
+                    <a href="dashboard.html">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#">
+                        <i class="fas fa-utensils"></i>
+                        <span>Menu Management</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Reservations</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="orders.html">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#">
+                        <i class="fas fa-car"></i>
+                        <span>Order-Online Menu</span>
+                    </a>
+                </li>
+                
+                <li class="menu-label">Content</li>
+                <li class="menu-item">
+                    <a href="customers.html">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="reviews.html" class="active">
+                        <i class="fas fa-star"></i>
+                        <span>Reviews</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-gallery.html">
+                        <i class="fas fa-image"></i>
+                        <span>Gallery</span>
+                    </a>
+                </li>
+                <!-- <li class="menu-item">
+                    <a href="#">
+                        <i class="fas fa-newspaper"></i>
+                        <span>Blog</span>
+                    </a>
+                </li> -->
+                
+                <li class="menu-label">Settings</li>
+                <li class="menu-item">
+                    <a href="#">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <div class="header">
+                <h2>Reviews Management</h2>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search reviews...">
+                    </div>
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">7</span>
+                    </div>
+                    <div class="user-menu">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card total reveal">
+                    <i class="fas fa-star"></i>
+                    <div class="stat-value">347</div>
+                    <div class="stat-label">Total Reviews</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 15% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card positive reveal reveal-delay-1">
+                    <i class="fas fa-thumbs-up"></i>
+                    <div class="stat-value">4.7</div>
+                    <div class="stat-label">Average Rating</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 0.2 from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card pending reveal reveal-delay-2">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Pending Reviews</div>
+                    <div class="stat-change negative">
+                        <i class="fas fa-arrow-down"></i> 5 from last week
+                    </div>
+                </div>
+                
+                <div class="stat-card negative reveal reveal-delay-3">
+                    <i class="fas fa-thumbs-down"></i>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Negative Reviews</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-down"></i> 3 from last month
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Review Filters -->
+            <div class="review-filters">
+                <button class="filter-btn active" data-filter="all">All Reviews</button>
+                <button class="filter-btn" data-filter="published">Published</button>
+                <button class="filter-btn" data-filter="pending">Pending</button>
+                <button class="filter-btn" data-filter="positive">Positive (4-5★)</button>
+                <button class="filter-btn" data-filter="negative">Negative (1-2★)</button>
+            </div>
+            
+            <!-- Reviews List -->
+            <div class="reviews-container">
+                <div id="reviewsList">
+                    <!-- Reviews will be dynamically added here -->
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>&copy; 2025 Joseph's Pot Admin Dashboard. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Details Modal -->
+    <div class="modal" id="reviewDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Review Details</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="review-details-header">
+                    <div class="review-details-avatar" id="reviewDetailsAvatar">JS</div>
+                    <div class="review-details-info">
+                        <h4 id="reviewerName">John Smith</h4>
+                        <p id="reviewerEmail">john.smith@example.com</p>
+                        <div class="review-details-rating">
+                            <div class="rating-stars" id="modalRatingStars">
+                                <!-- Stars will be dynamically added here -->
+                            </div>
+                            <span class="rating-value" id="modalRatingValue">4.5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="review-details-text" id="reviewDetailsText">
+                    The food was absolutely delicious! The Ofe Owerri Special was authentic and flavorful. Delivery was prompt and the packaging was excellent. Will definitely order again!
+                </div>
+                
+                <div class="review-details-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Order ID:</span>
+                        <span class="meta-value" id="reviewOrderId">JP-2847</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Date:</span>
+                        <span class="meta-value" id="reviewDate">March 15, 2025</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Status:</span>
+                        <span class="meta-value" id="reviewStatus">Published</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Menu Items:</span>
+                        <span class="meta-value" id="reviewItems">Ofe Owerri, Pounded Yam</span>
+                    </div>
+                </div>
+                
+                <div class="reply-section">
+                    <h4>Admin Reply</h4>
+                    <textarea class="reply-textarea" id="replyTextarea" placeholder="Type your reply here..."></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-danger" id="rejectReviewBtn">
+                        <i class="fas fa-times"></i>
+                        Reject Review
+                    </button>
+                    <button class="btn btn-success" id="approveReviewBtn">
+                        <i class="fas fa-check"></i>
+                        Approve Review
+                    </button>
+                    <button class="btn btn-primary" id="saveReplyBtn">
+                        <i class="fas fa-reply"></i>
+                        Save Reply
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample reviews data
+        const reviews = [
+            {
+                id: 1,
+                customer: {
+                    name: 'John Smith',
+                    email: 'john.smith@example.com',
+                    avatar: 'JS'
+                },
+                rating: 5,
+                text: 'The food was absolutely delicious! The Ofe Owerri Special was authentic and flavorful. Delivery was prompt and the packaging was excellent. Will definitely order again!',
+                date: '2025-03-15',
+                orderId: 'JP-2847',
+                items: 'Ofe Owerri, Pounded Yam, Palm Wine',
+                status: 'published',
+                adminReply: ''
+            },
+            {
+                id: 2,
+                customer: {
+                    name: 'Sarah Johnson',
+                    email: 'sarah.j@example.com',
+                    avatar: 'SJ'
+                },
+                rating: 4,
+                text: 'Good food overall. The Nkwobi was spicy and tasty, but the portion size was a bit small for the price. Delivery was on time and the driver was polite.',
+                date: '2025-03-14',
+                orderId: 'JP-2848',
+                items: 'Nkwobi, Jollof Rice',
+                status: 'published',
+                adminReply: 'Thank you for your feedback, Sarah! We appreciate your comments about portion size and will review our serving sizes.'
+            },
+            {
+                id: 3,
+                customer: {
+                    name: 'Michael Brown',
+                    email: 'm.brown@example.com',
+                    avatar: 'MB'
+                },
+                rating: 2,
+                text: 'Very disappointed with my order. The Egusi soup was too salty and the Eba was lumpy. Delivery was also 45 minutes late. Not sure if I will order again.',
+                date: '2025-03-14',
+                orderId: 'JP-2849',
+                items: 'Egusi Soup, Eba, Goat Meat',
+                status: 'pending',
+                adminReply: ''
+            },
+            {
+                id: 4,
+                customer: {
+                    name: 'Grace Williams',
+                    email: 'grace.w@example.com',
+                    avatar: 'GW'
+                },
+                rating: 5,
+                text: 'Exceptional quality! The Ofada rice was perfectly cooked and the accompanying sauce was delicious. This is my third time ordering and I\'ve never been disappointed.',
+                date: '2025-03-13',
+                orderId: 'JP-2850',
+                items: 'Ofada Rice, Pepper Soup',
+                status: 'published',
+                adminReply: 'We\'re thrilled to hear you enjoy our Ofada rice, Grace! Thank you for being a loyal customer.'
+            },
+            {
+                id: 5,
+                customer: {
+                    name: 'David Okonkwo',
+                    email: 'd.okonkwo@example.com',
+                    avatar: 'DO'
+                },
+                rating: 3,
+                text: 'The Banga soup was good but the starch was too soft. Delivery was faster than expected which was a plus. Average experience overall.',
+                date: '2025-03-13',
+                orderId: 'JP-2851',
+                items: 'Banga Soup, Starch, Plantain',
+                status: 'pending',
+                adminReply: ''
+            },
+            {
+                id: 6,
+                customer: {
+                    name: 'Chinwe Okafor',
+                    email: 'c.okafor@example.com',
+                    avatar: 'CO'
+                },
+                rating: 5,
+                text: 'Absolutely fantastic! The pepper soup was perfectly spiced and the fish was fresh. This brought back memories of my grandmother\'s cooking. 10/10 would recommend!',
+                date: '2025-03-12',
+                orderId: 'JP-2845',
+                items: 'Pepper Soup, Fish, Yam',
+                status: 'published',
+                adminReply: 'Thank you for the wonderful review, Chinwe! We strive to recreate that authentic homemade taste.'
+            },
+            {
+                id: 7,
+                customer: {
+                    name: 'Emmanuel Adeyemi',
+                    email: 'e.adeyemi@example.com',
+                    avatar: 'EA'
+                },
+                rating: 1,
+                text: 'Terrible experience. Food arrived cold, missing one item from my order, and the soup was watery. Very disappointed and will not order again.',
+                date: '2025-03-12',
+                orderId: 'JP-2843',
+                items: 'Egusi Soup, Semo, Beef',
+                status: 'pending',
+                adminReply: ''
+            }
+        ];
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const reviewsList = document.getElementById('reviewsList');
+        const reviewDetailsModal = document.getElementById('reviewDetailsModal');
+        const closeModal = document.getElementById('closeModal');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const searchBox = document.querySelector('.search-box input');
+
+        // Modal elements
+        const reviewDetailsAvatar = document.getElementById('reviewDetailsAvatar');
+        const reviewerName = document.getElementById('reviewerName');
+        const reviewerEmail = document.getElementById('reviewerEmail');
+        const modalRatingStars = document.getElementById('modalRatingStars');
+        const modalRatingValue = document.getElementById('modalRatingValue');
+        const reviewDetailsText = document.getElementById('reviewDetailsText');
+        const reviewOrderId = document.getElementById('reviewOrderId');
+        const reviewDate = document.getElementById('reviewDate');
+        const reviewStatus = document.getElementById('reviewStatus');
+        const reviewItems = document.getElementById('reviewItems');
+        const replyTextarea = document.getElementById('replyTextarea');
+        const rejectReviewBtn = document.getElementById('rejectReviewBtn');
+        const approveReviewBtn = document.getElementById('approveReviewBtn');
+        const saveReplyBtn = document.getElementById('saveReplyBtn');
+
+        // Filter reviews
+        function filterReviews(filter) {
+            let filteredReviews = reviews;
+            
+            if (filter !== 'all') {
+                filteredReviews = reviews.filter(review => {
+                    if (filter === 'published') {
+                        return review.status === 'published';
+                    } else if (filter === 'pending') {
+                        return review.status === 'pending';
+                    } else if (filter === 'positive') {
+                        return review.rating >= 4;
+                    } else if (filter === 'negative') {
+                        return review.rating <= 2;
+                    }
+                    return review.status === filter;
+                });
+            }
+            
+            renderReviews(filteredReviews);
+        }
+
+        // Render reviews in list
+        function renderReviews(reviewsToRender) {
+            reviewsList.innerHTML = '';
+            
+            reviewsToRender.forEach(review => {
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'review-item reveal';
+                
+                // Format date
+                const reviewDate = new Date(review.date);
+                const formattedDate = reviewDate.toLocaleDateString();
+                
+                // Status badge
+                let statusClass = '';
+                let statusText = '';
+                
+                switch(review.status) {
+                    case 'published':
+                        statusClass = 'status-published';
+                        statusText = 'Published';
+                        break;
+                    case 'pending':
+                        statusClass = 'status-pending';
+                        statusText = 'Pending';
+                        break;
+                    case 'rejected':
+                        statusClass = 'status-rejected';
+                        statusText = 'Rejected';
+                        break;
+                }
+                
+                // Generate star rating
+                let starsHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= review.rating) {
+                        starsHTML += '<i class="fas fa-star"></i>';
+                    } else {
+                        starsHTML += '<i class="far fa-star"></i>';
+                    }
+                }
+                
+                reviewItem.innerHTML = `
+                    <div class="review-avatar">${review.customer.avatar}</div>
+                    <div class="review-content">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <h4>${review.customer.name}</h4>
+                                <p>${review.customer.email}</p>
+                            </div>
+                            <div class="review-rating">
+                                <div class="rating-stars">
+                                    ${starsHTML}
+                                </div>
+                                <span class="rating-value">${review.rating}.0</span>
+                                <span class="review-status ${statusClass}">${statusText}</span>
+                            </div>
+                        </div>
+                        <div class="review-text">
+                            ${review.text}
+                        </div>
+                        <div class="review-meta">
+                            <div class="review-date">
+                                ${formattedDate} • Order ${review.orderId}
+                            </div>
+                            <div class="review-actions">
+                                <button class="review-action-btn reply" data-id="${review.id}">
+                                    <i class="fas fa-reply"></i>
+                                    Reply
+                                </button>
+                                ${review.status === 'pending' ? `
+                                <button class="review-action-btn approve" data-id="${review.id}">
+                                    <i class="fas fa-check"></i>
+                                    Approve
+                                </button>
+                                <button class="review-action-btn reject" data-id="${review.id}">
+                                    <i class="fas fa-times"></i>
+                                    Reject
+                                </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                reviewsList.appendChild(reviewItem);
+            });
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.review-action-btn.reply').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const reviewId = parseInt(this.getAttribute('data-id'));
+                    showReviewDetails(reviewId);
+                });
+            });
+            
+            document.querySelectorAll('.review-action-btn.approve').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const reviewId = parseInt(this.getAttribute('data-id'));
+                    approveReview(reviewId);
+                });
+            });
+            
+            document.querySelectorAll('.review-action-btn.reject').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const reviewId = parseInt(this.getAttribute('data-id'));
+                    rejectReview(reviewId);
+                });
+            });
+        }
+
+        // Show review details in modal
+        function showReviewDetails(reviewId) {
+            const review = reviews.find(r => r.id === reviewId);
+            
+            if (!review) return;
+            
+            // Format date
+            const reviewDateObj = new Date(review.date);
+            const formattedDate = reviewDateObj.toLocaleDateString();
+            
+            // Update modal content
+            reviewDetailsAvatar.textContent = review.customer.avatar;
+            reviewerName.textContent = review.customer.name;
+            reviewerEmail.textContent = review.customer.email;
+            reviewDetailsText.textContent = review.text;
+            reviewOrderId.textContent = review.orderId;
+            reviewDate.textContent = formattedDate;
+            reviewItems.textContent = review.items;
+            
+            // Status
+            let statusText = '';
+            switch(review.status) {
+                case 'published':
+                    statusText = 'Published';
+                    break;
+                case 'pending':
+                    statusText = 'Pending Approval';
+                    break;
+                case 'rejected':
+                    statusText = 'Rejected';
+                    break;
+            }
+            reviewStatus.textContent = statusText;
+            
+            // Rating stars
+            modalRatingValue.textContent = review.rating + '.0';
+            let starsHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= review.rating) {
+                    starsHTML += '<i class="fas fa-star"></i>';
+                } else {
+                    starsHTML += '<i class="far fa-star"></i>';
+                }
+            }
+            modalRatingStars.innerHTML = starsHTML;
+            
+            // Admin reply
+            replyTextarea.value = review.adminReply || '';
+            
+            // Show modal
+            reviewDetailsModal.style.display = 'flex';
+        }
+
+        // Approve review
+        function approveReview(reviewId) {
+            const review = reviews.find(r => r.id === reviewId);
+            if (review) {
+                review.status = 'published';
+                renderReviews(reviews);
+                alert(`Review from ${review.customer.name} has been approved and published.`);
+            }
+        }
+
+        // Reject review
+        function rejectReview(reviewId) {
+            const review = reviews.find(r => r.id === reviewId);
+            if (review) {
+                review.status = 'rejected';
+                renderReviews(reviews);
+                alert(`Review from ${review.customer.name} has been rejected.`);
+            }
+        }
+
+        // Close modal
+        closeModal.addEventListener('click', function() {
+            reviewDetailsModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === reviewDetailsModal) {
+                reviewDetailsModal.style.display = 'none';
+            }
+        });
+
+        // Filter buttons event listeners
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterReviews(this.getAttribute('data-filter'));
+            });
+        });
+
+        // Search functionality
+        searchBox.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const filteredReviews = reviews.filter(review => 
+                review.customer.name.toLowerCase().includes(searchTerm) ||
+                review.customer.email.toLowerCase().includes(searchTerm) ||
+                review.text.toLowerCase().includes(searchTerm) ||
+                review.orderId.toLowerCase().includes(searchTerm)
+            );
+            renderReviews(filteredReviews);
+        });
+
+        // Modal action buttons
+        approveReviewBtn.addEventListener('click', function() {
+            alert('Review approved and published!');
+            reviewDetailsModal.style.display = 'none';
+        });
+
+        rejectReviewBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to reject this review?')) {
+                alert('Review rejected!');
+                reviewDetailsModal.style.display = 'none';
+            }
+        });
+
+        saveReplyBtn.addEventListener('click', function() {
+            alert('Reply saved successfully!');
+            reviewDetailsModal.style.display = 'none';
+        });
+
+        // Scroll Reveal Functionality
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('active');
+                } else {
+                    reveals[i].classList.remove('active');
+                }
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Render all reviews initially
+            renderReviews(reviews);
+            
+            // Initialize scroll reveal
+            window.addEventListener('scroll', revealOnScroll);
+            // Trigger once on load to check initial position
+            revealOnScroll();
+        });
+    </script>
+</body>
+</html>
