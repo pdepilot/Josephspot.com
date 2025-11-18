@@ -599,6 +599,63 @@
             background: var(--gray-dark);
         }
 
+        /* Image Upload Styles */
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .image-upload-box {
+            border: 2px dashed var(--gray-dark);
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .image-upload-box:hover {
+            border-color: var(--primary);
+            background-color: rgba(139, 69, 19, 0.05);
+        }
+
+        .image-upload-box i {
+            font-size: 2.5rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .image-upload-box p {
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .image-upload-box small {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        .image-preview {
+            display: none;
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .image-upload-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -659,6 +716,10 @@
             .search-box input {
                 width: 100%;
             }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -682,32 +743,32 @@
             <ul class="menu-items">
                 <li class="menu-label">Main</li>
                 <li class="menu-item">
-                    <a href="dashboard.html">
+                    <a href="admin-dashboard.html">
                         <i class="fas fa-home"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="active">
+                    <a href="admin-menu-management.html" class="active">
                         <i class="fas fa-utensils"></i>
                         <span>Menu Management</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="reservations.html">
+                    <a href="admin-reservation.html">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Reservations</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="orders.html">
+                    <a href="admin-orders.html">
                         <i class="fas fa-shopping-cart"></i>
                         <span>Orders</span>
                     </a>
                 </li>
 
                 <li class="menu-item">
-                    <a href="#">
+                    <a href="admin-order-online-menu.html">
                         <i class="fas fa-car"></i>
                         <span>Order-Online Menu</span>
                     </a>
@@ -715,19 +776,19 @@
                 
                 <li class="menu-label">Content</li>
                 <li class="menu-item">
-                    <a href="customers.html">
+                    <a href="admin-customers.html">
                         <i class="fas fa-users"></i>
                         <span>Customers</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="reviews.html">
+                    <a href="admin-reviews.html">
                         <i class="fas fa-star"></i>
                         <span>Reviews</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="gallery.html">
+                    <a href="admin-gallery.html">
                         <i class="fas fa-image"></i>
                         <span>Gallery</span>
                     </a>
@@ -735,13 +796,13 @@
                 
                 <li class="menu-label">Settings</li>
                 <li class="menu-item">
-                    <a href="settings.html">
+                    <a href="admin-settings.html">
                         <i class="fas fa-cog"></i>
                         <span>Settings</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="#">
+                    <a href="admin-logout.html">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a>
@@ -859,8 +920,16 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="itemImage">Image URL</label>
-                        <input type="text" id="itemImage" class="form-control" placeholder="https://example.com/image.jpg">
+                        <label for="itemImage">Image</label>
+                        <div class="image-upload-container">
+                            <div class="image-upload-box" id="imageUploadBox">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Click to upload an image</p>
+                                <small>JPG, PNG, or GIF (Max: 5MB)</small>
+                                <input type="file" id="itemImage" class="image-upload-input" accept="image/*">
+                                <img id="imagePreview" class="image-preview" src="" alt="Image preview">
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -979,6 +1048,9 @@
         const cancelBtn = document.getElementById('cancelBtn');
         const itemForm = document.getElementById('itemForm');
         const modalTitle = document.getElementById('modalTitle');
+        const imageUploadBox = document.getElementById('imageUploadBox');
+        const imageInput = document.getElementById('itemImage');
+        const imagePreview = document.getElementById('imagePreview');
 
         // Tab switching functionality
         menuTabs.forEach(tab => {
@@ -1003,6 +1075,7 @@
         addItemBtn.addEventListener('click', () => {
             modalTitle.textContent = 'Add Menu Item';
             itemForm.reset();
+            resetImagePreview();
             itemModal.style.display = 'flex';
         });
 
@@ -1021,44 +1094,188 @@
             }
         });
 
+        // Image upload functionality
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size exceeds 5MB limit. Please choose a smaller file.');
+                    resetImagePreview();
+                    return;
+                }
+                
+                // Check file type
+                if (!file.type.match('image.*')) {
+                    alert('Please select an image file (JPG, PNG, or GIF).');
+                    resetImagePreview();
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Reset image preview
+        function resetImagePreview() {
+            imagePreview.src = '';
+            imagePreview.style.display = 'none';
+            imageInput.value = '';
+        }
+
         // Form submission
         itemForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            // Get form values
-            const name = document.getElementById('itemName').value;
-            const description = document.getElementById('itemDescription').value;
-            const price = parseFloat(document.getElementById('itemPrice').value);
-            const category = document.getElementById('itemCategory').value;
-            const prepTime = parseInt(document.getElementById('itemPrepTime').value) || 0;
-            const calories = parseInt(document.getElementById('itemCalories').value) || 0;
-            const image = document.getElementById('itemImage').value;
-            const ingredients = document.getElementById('itemIngredients').value;
+            const editingId = itemForm.getAttribute('data-editing-id');
+            const editingCategory = itemForm.getAttribute('data-editing-category');
             
-            // Create new item
-            const newItem = {
-                id: Date.now(), // Simple ID generation
+            if (editingId) {
+                // Editing existing item
+                const itemIndex = menuData[editingCategory].findIndex(item => item.id === parseInt(editingId));
+                if (itemIndex !== -1) {
+                    // Get form values
+                    const name = document.getElementById('itemName').value;
+                    const description = document.getElementById('itemDescription').value;
+                    const price = parseFloat(document.getElementById('itemPrice').value);
+                    const category = document.getElementById('itemCategory').value;
+                    const prepTime = parseInt(document.getElementById('itemPrepTime').value) || 0;
+                    const calories = parseInt(document.getElementById('itemCalories').value) || 0;
+                    const ingredients = document.getElementById('itemIngredients').value;
+                    
+                    // Handle image
+                    let image = menuData[editingCategory][itemIndex].image; // Keep existing image by default
+                    if (imageInput.files && imageInput.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            image = e.target.result;
+                            
+                            // Update item with new image
+                            updateMenuItem(
+                                editingId, editingCategory, itemIndex,
+                                name, description, price, category, 
+                                prepTime, calories, image, ingredients
+                            );
+                        };
+                        reader.readAsDataURL(imageInput.files[0]);
+                    } else {
+                        // No new image, update without changing image
+                        updateMenuItem(
+                            editingId, editingCategory, itemIndex,
+                            name, description, price, category, 
+                            prepTime, calories, image, ingredients
+                        );
+                    }
+                }
+            } else {
+                // Adding new item
+                // Get form values
+                const name = document.getElementById('itemName').value;
+                const description = document.getElementById('itemDescription').value;
+                const price = parseFloat(document.getElementById('itemPrice').value);
+                const category = document.getElementById('itemCategory').value;
+                const prepTime = parseInt(document.getElementById('itemPrepTime').value) || 0;
+                const calories = parseInt(document.getElementById('itemCalories').value) || 0;
+                const ingredients = document.getElementById('itemIngredients').value;
+                
+                // Handle image
+                if (imageInput.files && imageInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const image = e.target.result;
+                        
+                        // Create new item
+                        const newItem = {
+                            id: Date.now(), // Simple ID generation
+                            name,
+                            description,
+                            price,
+                            prepTime,
+                            calories,
+                            image,
+                            ingredients
+                        };
+                        
+                        // Add to menu data
+                        menuData[category].push(newItem);
+                        
+                        // Update UI
+                        renderMenuItems();
+                        
+                        // Close modal
+                        itemModal.style.display = 'none';
+                        
+                        // Show success message
+                        alert(`"${name}" has been added to the ${category} menu!`);
+                    };
+                    reader.readAsDataURL(imageInput.files[0]);
+                } else {
+                    // No image provided, use default
+                    const newItem = {
+                        id: Date.now(), // Simple ID generation
+                        name,
+                        description,
+                        price,
+                        prepTime,
+                        calories,
+                        image: './images/default-food.jpg',
+                        ingredients
+                    };
+                    
+                    // Add to menu data
+                    menuData[category].push(newItem);
+                    
+                    // Update UI
+                    renderMenuItems();
+                    
+                    // Close modal
+                    itemModal.style.display = 'none';
+                    
+                    // Show success message
+                    alert(`"${name}" has been added to the ${category} menu!`);
+                }
+            }
+        });
+
+        // Helper function to update menu item
+        function updateMenuItem(id, oldCategory, itemIndex, name, description, price, newCategory, prepTime, calories, image, ingredients) {
+            // Update item
+            menuData[oldCategory][itemIndex] = {
+                id: parseInt(id),
                 name,
                 description,
                 price,
                 prepTime,
                 calories,
-                image: image || './images/default-food.jpg',
+                image,
                 ingredients
             };
             
-            // Add to menu data
-            menuData[category].push(newItem);
+            // If category changed, move item to new category
+            if (newCategory !== oldCategory) {
+                const item = menuData[oldCategory][itemIndex];
+                menuData[oldCategory].splice(itemIndex, 1);
+                menuData[newCategory].push(item);
+            }
             
             // Update UI
             renderMenuItems();
             
-            // Close modal
+            // Close modal and reset form
             itemModal.style.display = 'none';
+            itemForm.reset();
+            resetImagePreview();
+            itemForm.removeAttribute('data-editing-id');
+            itemForm.removeAttribute('data-editing-category');
             
             // Show success message
-            alert(`"${name}" has been added to the ${category} menu!`);
-        });
+            alert(`"${name}" has been updated successfully!`);
+        }
 
         // Render menu items
         function renderMenuItems() {
@@ -1144,8 +1361,15 @@
             document.getElementById('itemCategory').value = category;
             document.getElementById('itemPrepTime').value = item.prepTime;
             document.getElementById('itemCalories').value = item.calories;
-            document.getElementById('itemImage').value = item.image;
             document.getElementById('itemIngredients').value = item.ingredients;
+            
+            // Set image preview if available
+            if (item.image && item.image.startsWith('data:')) {
+                imagePreview.src = item.image;
+                imagePreview.style.display = 'block';
+            } else {
+                resetImagePreview();
+            }
             
             // Update modal title
             modalTitle.textContent = 'Edit Menu Item';
@@ -1166,96 +1390,6 @@
                 alert('Menu item deleted successfully!');
             }
         }
-
-        // Update form submission to handle edits
-        itemForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const editingId = itemForm.getAttribute('data-editing-id');
-            const editingCategory = itemForm.getAttribute('data-editing-category');
-            
-            if (editingId) {
-                // Editing existing item
-                const itemIndex = menuData[editingCategory].findIndex(item => item.id === parseInt(editingId));
-                if (itemIndex !== -1) {
-                    // Get form values
-                    const name = document.getElementById('itemName').value;
-                    const description = document.getElementById('itemDescription').value;
-                    const price = parseFloat(document.getElementById('itemPrice').value);
-                    const category = document.getElementById('itemCategory').value;
-                    const prepTime = parseInt(document.getElementById('itemPrepTime').value) || 0;
-                    const calories = parseInt(document.getElementById('itemCalories').value) || 0;
-                    const image = document.getElementById('itemImage').value;
-                    const ingredients = document.getElementById('itemIngredients').value;
-                    
-                    // Update item
-                    menuData[editingCategory][itemIndex] = {
-                        id: parseInt(editingId),
-                        name,
-                        description,
-                        price,
-                        prepTime,
-                        calories,
-                        image: image || './images/default-food.jpg',
-                        ingredients
-                    };
-                    
-                    // If category changed, move item to new category
-                    if (category !== editingCategory) {
-                        const item = menuData[editingCategory][itemIndex];
-                        menuData[editingCategory].splice(itemIndex, 1);
-                        menuData[category].push(item);
-                    }
-                    
-                    // Update UI
-                    renderMenuItems();
-                    
-                    // Close modal and reset form
-                    itemModal.style.display = 'none';
-                    itemForm.reset();
-                    itemForm.removeAttribute('data-editing-id');
-                    itemForm.removeAttribute('data-editing-category');
-                    
-                    // Show success message
-                    alert(`"${name}" has been updated successfully!`);
-                }
-            } else {
-                // Adding new item (existing code)
-                // Get form values
-                const name = document.getElementById('itemName').value;
-                const description = document.getElementById('itemDescription').value;
-                const price = parseFloat(document.getElementById('itemPrice').value);
-                const category = document.getElementById('itemCategory').value;
-                const prepTime = parseInt(document.getElementById('itemPrepTime').value) || 0;
-                const calories = parseInt(document.getElementById('itemCalories').value) || 0;
-                const image = document.getElementById('itemImage').value;
-                const ingredients = document.getElementById('itemIngredients').value;
-                
-                // Create new item
-                const newItem = {
-                    id: Date.now(), // Simple ID generation
-                    name,
-                    description,
-                    price,
-                    prepTime,
-                    calories,
-                    image: image || './images/default-food.jpg',
-                    ingredients
-                };
-                
-                // Add to menu data
-                menuData[category].push(newItem);
-                
-                // Update UI
-                renderMenuItems();
-                
-                // Close modal
-                itemModal.style.display = 'none';
-                
-                // Show success message
-                alert(`"${name}" has been added to the ${category} menu!`);
-            }
-        });
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
