@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./images/logo3.png">
+    <title>Admin Dashboard - Joseph's Pot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8b4513;
+            --primary-light: #a0522d;
+            --primary-dark: #654321;
+            --secondary: #d2691e;
+            --accent: #ff7b54;
+            --light: #fff8dc;
+            --dark: #333333;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #F44336;
+            --info: #2196F3;
+            --gray: #f5f5f5;
+            --gray-dark: #e0e0e0;
+            --text: #333333;
+            --text-light: #666666;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            transition: var(--transition);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transform: translateX(0);
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar.collapsed .logo-area h1, 
+        .sidebar.collapsed .admin-details, 
+        .sidebar.collapsed .menu-label,
+        .sidebar.collapsed .menu-item span {
+            display: none;
+        }
+        
+        .sidebar.collapsed .admin-info {
+            justify-content: center;
+            padding: 15px 10px;
+        }
+        
+        .sidebar.collapsed .menu-item a {
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .sidebar.collapsed .menu-item i {
+            margin-right: 0;
+        }
+
+        /* Mobile Sidebar Slide Effect */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                transform: translateX(0);
+            }
+            
+            .sidebar .logo-area h1, 
+            .sidebar .admin-details, 
+            .sidebar .menu-label,
+            .sidebar .menu-item span {
+                display: none;
+            }
+            
+            .sidebar .admin-info {
+                justify-content: center;
+                padding: 15px 10px;
+            }
+            
+            .sidebar .menu-item a {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .sidebar .menu-item i {
+                margin-right: 0;
+            }
+            
+            .sidebar:hover {
+                width: 260px;
+                transform: translateX(0);
+            }
+            
+            .sidebar:hover .logo-area h1, 
+            .sidebar:hover .admin-details, 
+            .sidebar:hover .menu-label,
+            .sidebar:hover .menu-item span {
+                display: block;
+            }
+            
+            .sidebar:hover .admin-info {
+                justify-content: flex-start;
+                padding: 15px 20px;
+            }
+            
+            .sidebar:hover .menu-item a {
+                justify-content: flex-start;
+                padding: 12px 15px;
+            }
+            
+            .sidebar:hover .menu-item i {
+                margin-right: 12px;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .logo-area img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-area h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 15px 20px;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .admin-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .admin-details h3 {
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .admin-details p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .menu-items {
+            list-style: none;
+            padding: 0 15px;
+        }
+
+        .menu-item {
+            margin-bottom: 5px;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .menu-item a:hover, .menu-item a.active {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 20px 15px 10px;
+            opacity: 0.7;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 25px;
+        }
+
+        .header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: none;
+            border-radius: 30px;
+            background: white;
+            box-shadow: var(--shadow);
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .notification-icon, .user-menu {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-icon i, .user-menu i {
+            font-size: 1.3rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .notification-icon:hover i, .user-menu:hover i {
+            color: var(--secondary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Real-time Clock Styles */
+        .real-time-clock {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 4px solid var(--primary);
+        }
+
+        .clock-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .clock-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .time-display {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .date-display {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .stat-card.orders::before {
+            background: var(--info);
+        }
+
+        .stat-card.revenue::before {
+            background: var(--success);
+        }
+
+        .stat-card.customers::before {
+            background: var(--warning);
+        }
+
+        .stat-card.reservations::before {
+            background: var(--danger);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .stat-card.orders i {
+            color: var(--info);
+        }
+
+        .stat-card.revenue i {
+            color: var(--success);
+        }
+
+        .stat-card.customers i {
+            color: var(--warning);
+        }
+
+        .stat-card.reservations i {
+            color: var(--danger);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-header h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .chart-actions select {
+            padding: 8px 12px;
+            border: 1px solid var(--gray-dark);
+            border-radius: 6px;
+            background: white;
+            color: var(--text);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Recent Activity */
+        .activity-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .activity-card, .top-items-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .activity-card h3, .top-items-card h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+        }
+
+        .activity-icon.order {
+            background: var(--info);
+        }
+
+        .activity-icon.reservation {
+            background: var(--danger);
+        }
+
+        .activity-icon.review {
+            background: var(--warning);
+        }
+
+        .activity-icon.payment {
+            background: var(--success);
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-details h4 {
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+
+        .activity-details p {
+            fontSize: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Top Items */
+        .top-items-list {
+            list-style: none;
+        }
+
+        .top-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .top-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-rank {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-right: 15px;
+        }
+
+        .item-rank.rank-1 {
+            background: gold;
+            color: var(--dark);
+        }
+
+        .item-rank.rank-2 {
+            background: silver;
+            color: var(--dark);
+        }
+
+        .item-rank.rank-3 {
+            background: #cd7f32;
+            color: white;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-details h4 {
+            font-size: 0.95rem;
+            margin-bottom: 3px;
+        }
+
+        .item-details p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .item-sales {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        /* Admin Management Section */
+        .admin-management {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-top: 30px;
+        }
+
+        .admin-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .admin-management-header h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .add-admin-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .add-admin-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .admins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .admin-card {
+            background: var(--gray);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-card-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .admin-card-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .admin-card-role {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .admin-card-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .admin-card-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .admin-card-btn.edit {
+            background: var(--info);
+            color: white;
+        }
+
+        .admin-card-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .admin-card-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--gray-dark);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-dark);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--gray-dark);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .charts-section, .activity-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .search-box input {
+                width: 180px;
+            }
+            
+            .admins-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .real-time-clock {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .admins-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll Reveal Animation Styles */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .reveal-delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .reveal-delay-3 {
+            transition-delay: 0.3s;
+        }
+
+        .reveal-delay-4 {
+            transition-delay: 0.4s;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo-area">
+                <img src="../images/logo3.png" alt="Joseph's Pot Logo">
+                <h1>Admin Panel</h1>
+            </div>
+            
+            <div class="admin-info">
+                <div class="admin-avatar">AJ</div>
+                <div class="admin-details">
+                    <h3>Admin Joseph</h3>
+                    <p>Super Admin</p>
+                </div>
+            </div>
+            
+            <ul class="menu-items">
+                <li class="menu-label">Main</li>
+                <li class="menu-item">
+                    <a href="admin-dashboard.html" class="active">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-menu-management.html">
+                        <i class="fas fa-utensils"></i>
+                        <span>Menu Management</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-reservation.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Reservations</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-orders.html">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-order-online-menu.html">
+                        <i class="fas fa-car"></i>
+                        <span>Order-Online Menu</span>
+                    </a>
+                </li>
+                
+                
+                <li class="menu-label">Content</li>
+                <li class="menu-item">
+                    <a href="admin-customers.html">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-reviews.html">
+                        <i class="fas fa-star"></i>
+                        <span>Reviews</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-gallery.html">
+                        <i class="fas fa-image"></i>
+                        <span>Gallery</span>
+                    </a>
+                </li>
+                
+                <li class="menu-label">Settings</li>
+                <li class="menu-item">
+                    <a href="admin-settings.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="admin-logout.php">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Real-time Clock -->
+            <div class="real-time-clock reveal">
+                <div class="clock-container">
+                    <i class="fas fa-clock clock-icon"></i>
+                    <div>
+                        <div class="time-display" id="currentTime">Loading...</div>
+                        <div class="date-display" id="currentDate">Loading...</div>
+                    </div>
+                </div>
+                <div class="location-info">
+                    <i class="fas fa-map-marker-alt"></i> Owerri, Nigeria
+                </div>
+            </div>
+            
+            <div class="header">
+                <h2>Dashboard Overview</h2>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">5</span>
+                    </div>
+                    <div class="user-menu">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card orders reveal">
+                    <i class="fas fa-shopping-bag"></i>
+                    <div class="stat-value">142</div>
+                    <div class="stat-label">Today's Orders</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 12% from yesterday
+                    </div>
+                </div>
+                
+                <div class="stat-card revenue reveal reveal-delay-1">
+                    <i class="fa-solid fa-naira-sign"></i>
+                    <div class="stat-value">₦324,580</div>
+                    <div class="stat-label">Total Revenue</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 8% from last week
+                    </div>
+                </div>
+                
+                <div class="stat-card customers reveal reveal-delay-2">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-value">2,847</div>
+                    <div class="stat-label">Total Customers</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 5% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card reservations reveal reveal-delay-3">
+                    <i class="fas fa-calendar-check"></i>
+                    <div class="stat-value">38</div>
+                    <div class="stat-label">Today's Reservations</div>
+                    <div class="stat-change negative">
+                        <i class="fas fa-arrow-down"></i> 3% from yesterday
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <div class="chart-card reveal">
+                    <div class="chart-header">
+                        <h3>Revenue Overview</h3>
+                        <div class="chart-actions">
+                            <select>
+                                <option>Last 7 Days</option>
+                                <option>Last 30 Days</option>
+                                <option>Last 3 Months</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <!-- Chart would be rendered here with a library like Chart.js -->
+                        <div style="display: flex; align-items: flex-end; height: 100%; gap: 10px; padding: 20px 0;">
+                            <div style="flex: 1; background: linear-gradient(to top, var(--info), #a8d8ff); height: 40%; border-radius: 5px;"></div>
+                            <div style="flex: 1; background: linear-gradient(to top, var(--info), #a8d8ff); height: 60%; border-radius: 5px;"></div>
+                            <div style="flex: 1; background: linear-gradient(to top, var(--info), #a8d8ff); height: 80%; border-radius: 5px;"></div>
+                            <div style="flex: 1; background: linear-gradient(to top, var(--success), #a8f0b0); height: 100%; border-radius: 5px;"></div>
+                            <div style="flex: 1; background: linear-gradient(to top, var(--success), #a8f0b0); height: 70%; border-radius: 5px;"></div>
+                            <div style="flex: 1; background: linear-gradient(to top, var(--success), #a8f0b0); height: 90%; border-radius: 5px;"></div>
+                            <div style="flex: 1; background: linear-gradient(to top, var(--warning), #ffd8a8); height: 50%; border-radius: 5px;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-card reveal reveal-delay-1">
+                    <div class="chart-header">
+                        <h3>Order Status</h3>
+                    </div>
+                    <div class="chart-container">
+                        <!-- Pie chart would be rendered here -->
+                        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                            <div style="width: 200px; height: 200px; border-radius: 50%; background: conic-gradient(var(--success) 0% 65%, var(--warning) 65% 85%, var(--danger) 85% 100%);"></div>
+                        </div>
+                        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 12px; height: 12px; background: var(--success); border-radius: 50%; margin-right: 5px;"></div>
+                                <span>Completed (65%)</span>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 12px; height: 12px; background: var(--warning); border-radius: 50%; margin-right: 5px;"></div>
+                                <span>Pending (20%)</span>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 12px; height: 12px; background: var(--danger); border-radius: 50%; margin-right: 5px;"></div>
+                                <span>Cancelled (15%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Section -->
+            <div class="activity-section">
+                <div class="activity-card reveal">
+                    <h3>Recent Activity</h3>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-icon order">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>New Order Received</h4>
+                                <p>Order #JP-2847 for 2 people</p>
+                            </div>
+                            <div class="activity-time">10 min ago</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon reservation">
+                                <i class="fas fa-calendar-plus"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>Table Reservation</h4>
+                                <p>John Smith reserved a table for 4</p>
+                            </div>
+                            <div class="activity-time">25 min ago</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon review">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>New Review Posted</h4>
+                                <p>Sarah Johnson rated 5 stars</p>
+                            </div>
+                            <div class="activity-time">1 hour ago</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon payment">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>Payment Received</h4>
+                                <p>₦12,500 for Order #JP-2841</p>
+                            </div>
+                            <div class="activity-time">2 hours ago</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon order">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>Order Completed</h4>
+                                <p>Order #JP-2839 marked as delivered</p>
+                            </div>
+                            <div class="activity-time">3 hours ago</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="top-items-card reveal reveal-delay-1">
+                    <h3>Top Menu Items</h3>
+                    <ul class="top-items-list">
+                        <li class="top-item">
+                            <div class="item-rank rank-1">1</div>
+                            <div class="item-details">
+                                <h4>Ofe Owerri Special</h4>
+                                <p>Traditional Igbo soup</p>
+                            </div>
+                            <div class="item-sales">142 sales</div>
+                        </li>
+                        <li class="top-item">
+                            <div class="item-rank rank-2">2</div>
+                            <div class="item-details">
+                                <h4>Nkwobi</h4>
+                                <p>Spicy cow foot</p>
+                            </div>
+                            <div class="item-sales">128 sales</div>
+                        </li>
+                        <li class="top-item">
+                            <div class="item-rank rank-3">3</div>
+                            <div class="item-details">
+                                <h4>Egusi Delight</h4>
+                                <p>Melon seed soup</p>
+                            </div>
+                            <div class="item-sales">115 sales</div>
+                        </li>
+                        <li class="top-item">
+                            <div class="item-rank">4</div>
+                            <div class="item-details">
+                                <h4>Palm Wine</h4>
+                                <p>Traditional drink</p>
+                            </div>
+                            <div class="item-sales">98 sales</div>
+                        </li>
+                        <li class="top-item">
+                            <div class="item-rank">5</div>
+                            <div class="item-details">
+                                <h4>Jollof Rice</h4>
+                                <p>Party special</p>
+                            </div>
+                            <div class="item-sales">87 sales</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Admin Management Section -->
+            <div class="admin-management reveal">
+                <div class="admin-management-header">
+                    <h3>Admin Management</h3>
+                    <button class="add-admin-btn" id="addAdminBtn">
+                        <i class="fas fa-plus"></i>
+                        Add New Admin
+                    </button>
+                </div>
+                <div class="admins-grid" id="adminsGrid">
+                    <!-- Admin cards will be dynamically added here -->
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>&copy; 2025 Joseph's Pot Admin Dashboard. All rights reserved | Developed By ERIBS tech</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Admin Modal -->
+    <div class="modal" id="addAdminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Admin</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <form id="adminForm">
+                <div class="form-group">
+                    <label for="adminName">Full Name</label>
+                    <input type="text" id="adminName" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminEmail">Email Address</label>
+                    <input type="email" id="adminEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminRole">Role</label>
+                    <select id="adminRole" required>
+                        <option value="">Select Role</option>
+                        <option value="Super Admin">Super Admin</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Content Manager">Content Manager</option>
+                        <option value="Support">Support</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="adminPermissions">Permissions</label>
+                    <select id="adminPermissions" required>
+                        <option value="">Select Permissions</option>
+                        <option value="Full Access">Full Access</option>
+                        <option value="Limited Access">Limited Access</option>
+                        <option value="View Only">View Only</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Admin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Real-time Clock Functionality
+        function updateClock() {
+            const now = new Date();
+            
+            // Format time
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            
+            // Convert to 12-hour format
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            
+            // Add leading zeros
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            
+            // Format date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('en-US', options);
+            
+            // Update the DOM
+            document.getElementById('currentTime').textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+            document.getElementById('currentDate').textContent = dateString;
+        }
+        
+        // Update the clock immediately and then every second
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Sample admin data
+        const admins = [
+            { id: 1, name: 'Admin Joseph', role: 'Super Admin', avatar: 'AJ' },
+            { id: 2, name: 'Manager David', role: 'Manager', avatar: 'MD' },
+            { id: 3, name: 'Content Sarah', role: 'Content Manager', avatar: 'CS' },
+            { id: 4, name: 'Support Mike', role: 'Support', avatar: 'SM' }
+        ];
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const addAdminBtn = document.getElementById('addAdminBtn');
+        const addAdminModal = document.getElementById('addAdminModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const adminForm = document.getElementById('adminForm');
+        const adminsGrid = document.getElementById('adminsGrid');
+
+        // Modal functionality
+        addAdminBtn.addEventListener('click', function() {
+            addAdminModal.style.display = 'flex';
+        });
+
+        closeModal.addEventListener('click', function() {
+            addAdminModal.style.display = 'none';
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            addAdminModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === addAdminModal) {
+                addAdminModal.style.display = 'none';
+            }
+        });
+
+        // Handle form submission
+        adminForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('adminName').value;
+            const role = document.getElementById('adminRole').value;
+            
+            // Generate avatar initials
+            const avatar = name.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            // Create new admin object
+            const newAdmin = {
+                id: admins.length + 1,
+                name: name,
+                role: role,
+                avatar: avatar
+            };
+            
+            // Add to admins array
+            admins.push(newAdmin);
+            
+            // Update UI
+            renderAdmins();
+            
+            // Close modal and reset form
+            addAdminModal.style.display = 'none';
+            adminForm.reset();
+            
+            // Show success message
+            alert(`Admin ${name} added successfully!`);
+        });
+
+        // Render admins in the grid
+        function renderAdmins() {
+            adminsGrid.innerHTML = '';
+            
+            admins.forEach(admin => {
+                const adminCard = document.createElement('div');
+                adminCard.className = 'admin-card';
+                adminCard.innerHTML = `
+                    <div class="admin-card-avatar">${admin.avatar}</div>
+                    <div class="admin-card-name">${admin.name}</div>
+                    <div class="admin-card-role">${admin.role}</div>
+                    <div class="admin-card-actions">
+                        <button class="admin-card-btn edit" title="Edit Admin">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="admin-card-btn delete" title="Delete Admin">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                adminsGrid.appendChild(adminCard);
+            });
+        }
+
+        // Scroll Reveal Functionality
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('active');
+                } else {
+                    reveals[i].classList.remove('active');
+                }
+            }
+        }
+
+        // Simple animation for stats cards on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const statCards = document.querySelectorAll('.stat-card');
+            
+            statCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            // Set initial state for animation
+            statCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            });
+            
+            // Initialize
+            renderAdmins();
+            
+            // Initialize scroll reveal
+            window.addEventListener('scroll', revealOnScroll);
+            // Trigger once on load to check initial position
+            revealOnScroll();
+        });
+    </script>
+</body>
+</html>
