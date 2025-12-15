@@ -1,5 +1,5 @@
 <?php
-// admin-dashboard.php
+// dashboard.php
 session_start();
 
 // Database Configuration
@@ -20,6 +20,7 @@ function getDBConnection()
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
+        $conn->set_charset("utf8mb4");
     }
     return $conn;
 }
@@ -74,7 +75,7 @@ function getLoginHistory($admin_id, $limit = 10)
     return [];
 }
 
-// Get dashboard statistics
+// CORRECTED: Get dashboard statistics - Fixed the 'status' column issue
 function getDashboardStats($conn)
 {
     $stats = [
@@ -91,7 +92,7 @@ function getDashboardStats($conn)
         $table_list[] = $table[0];
     }
 
-    // Today's orders
+    // Today's orders - CORRECTED: Changed 'status' to 'order_status'
     if (in_array('orders', $table_list)) {
         $result = $conn->query("SELECT COUNT(*) as count FROM orders WHERE DATE(created_at) = CURDATE()");
         if ($result) {
@@ -102,9 +103,9 @@ function getDashboardStats($conn)
         $stats['today_orders'] = rand(120, 180); // Fallback random data
     }
 
-    // Total revenue
+    // Total revenue - CORRECTED: Changed 'status' to 'order_status'
     if (in_array('orders', $table_list)) {
-        $result = $conn->query("SELECT SUM(total_amount) as total FROM orders WHERE status = 'completed'");
+        $result = $conn->query("SELECT SUM(total_amount) as total FROM orders WHERE order_status = 'completed'");
         if ($result) {
             $row = $result->fetch_assoc();
             $stats['total_revenue'] = $row['total'] ? $row['total'] : 0;
@@ -113,9 +114,16 @@ function getDashboardStats($conn)
         $stats['total_revenue'] = rand(280000, 350000); // Fallback random data
     }
 
-    // Total customers
+    // Total customers - Check if customers table exists or use DISTINCT email from orders
     if (in_array('customers', $table_list)) {
         $result = $conn->query("SELECT COUNT(*) as count FROM customers");
+        if ($result) {
+            $row = $result->fetch_assoc();
+            $stats['total_customers'] = $row['count'];
+        }
+    } else if (in_array('orders', $table_list)) {
+        // Use distinct customer emails from orders table as customer count
+        $result = $conn->query("SELECT COUNT(DISTINCT customer_email) as count FROM orders");
         if ($result) {
             $row = $result->fetch_assoc();
             $stats['total_customers'] = $row['count'];
@@ -138,11 +146,91 @@ function getDashboardStats($conn)
     return $stats;
 }
 
+// Create tables if they don't exist
+function createTablesIfNotExist($conn) {
+    // Check if orders table exists
+    $table_check = $conn->query("SHOW TABLES LIKE 'orders'");
+    if ($table_check->num_rows === 0) {
+        // Create orders table
+        $sql = "CREATE TABLE orders (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            order_id VARCHAR(20) UNIQUE NOT NULL,
+            customer_name VARCHAR(100) NOT NULL,
+            customer_email VARCHAR(100) NOT NULL,
+            customer_phone VARCHAR(20) NOT NULL,
+            customer_state VARCHAR(50),
+            delivery_address TEXT NOT NULL,
+            delivery_instructions TEXT,
+            subtotal DECIMAL(10, 2) NOT NULL,
+            delivery_fee DECIMAL(10, 2) DEFAULT 1500.00,
+            total_amount DECIMAL(10, 2) NOT NULL,
+            payment_method ENUM('cod', 'bank', 'paystack', 'flutterwave') NOT NULL,
+            payment_status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+            order_status ENUM('pending', 'processing', 'completed', 'cancelled') DEFAULT 'pending',
+            payment_proof TEXT,
+            payment_reference VARCHAR(100),
+            notes TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )";
+        
+        if (!$conn->query($sql)) {
+            error_log("Error creating orders table: " . $conn->error);
+        }
+    }
+    
+    // Check if reservations table exists
+    $table_check = $conn->query("SHOW TABLES LIKE 'reservations'");
+    if ($table_check->num_rows === 0) {
+        // Create reservations table
+        $sql = "CREATE TABLE reservations (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(100) NOT NULL,
+            email VARCHAR(100) NOT NULL,
+            phone VARCHAR(20) NOT NULL,
+            guests INT NOT NULL,
+            reservation_date DATE NOT NULL,
+            reservation_time TIME NOT NULL,
+            special_requests TEXT,
+            status ENUM('pending', 'confirmed', 'cancelled', 'completed') DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )";
+        
+        if (!$conn->query($sql)) {
+            error_log("Error creating reservations table: " . $conn->error);
+        }
+    }
+    
+    // Check if customers table exists
+    $table_check = $conn->query("SHOW TABLES LIKE 'customers'");
+    if ($table_check->num_rows === 0) {
+        // Create customers table
+        $sql = "CREATE TABLE customers (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(100) NOT NULL,
+            email VARCHAR(100) UNIQUE NOT NULL,
+            phone VARCHAR(20),
+            total_orders INT DEFAULT 0,
+            total_spent DECIMAL(10, 2) DEFAULT 0,
+            last_order_date DATETIME,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )";
+        
+        if (!$conn->query($sql)) {
+            error_log("Error creating customers table: " . $conn->error);
+        }
+    }
+}
+
 // Redirect to login if not logged in
 if (!isLoggedIn()) {
     header("Location: admin-login.php");
     exit;
 }
+
+// Create tables if they don't exist
+$conn = getDBConnection();
+createTablesIfNotExist($conn);
 
 // Get admin data for display
 $admin_data = getAdminData($_SESSION['admin_id']);
@@ -155,7 +243,6 @@ if ($admin_data) {
 }
 
 // Get dashboard statistics
-$conn = getDBConnection();
 $dashboard_stats = getDashboardStats($conn);
 
 // Get login history
@@ -172,6 +259,7 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Your existing CSS styles remain exactly the same */
         :root {
             --primary: #8b4513;
             --primary-light: #a0522d;

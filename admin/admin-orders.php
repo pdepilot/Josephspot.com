@@ -846,15 +846,9 @@
             <ul class="menu-items">
                 <li class="menu-label">Main</li>
                 <li class="menu-item">
-                    <a href="dashboard.php">
+                    <a href="admin-dashboard.php">
                         <i class="fas fa-home"></i>
                         <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="admin-contact-messages.php">
-                        <i class="fas fa-envelope"></i>
-                        <span>Contact Messages</span>
                     </a>
                 </li>
                 <li class="menu-item">
@@ -894,12 +888,6 @@
                     <a href="admin-reviews.php">
                         <i class="fas fa-star"></i>
                         <span>Reviews</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="admin-events.php">
-                        <i class="fa-solid fa-calendar"></i>
-                        <span>Events</span>
                     </a>
                 </li>
                 <li class="menu-item">

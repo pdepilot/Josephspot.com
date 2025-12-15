@@ -3,9 +3,9 @@
 
 $files_to_delete = [
     'test-save.php',
-    'test-form.html',
+    'test-form.php',
     'test-contact.php',
-    'test-simple.html',
+    'test-simple.php',
     'test-db.php',
     'debug-save.php',
     'insert-test.php',
