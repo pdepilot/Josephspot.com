@@ -1790,12 +1790,12 @@ function formatTime($date) {
                 </li>
 
                 <li class="menu-label">Content</li>
-                <li class="menu-item">
+                <!-- <li class="menu-item">
                     <a href="admin-customers.php">
                         <i class="fas fa-users"></i>
                         <span>Customers</span>
                     </a>
-                </li>
+                </li> -->
                 <li class="menu-item">
                     <a href="admin-reviews.php">
                         <i class="fas fa-star"></i>
