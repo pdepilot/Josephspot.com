@@ -54,11 +54,11 @@
         </div>
 
         <!-- Add this to your navbar -->
-        <div class="admin-login-button">
+        <!-- <div class="admin-login-button">
           <button id="adminLoginBtn" class="admin-login-btn">
             <i class="fas fa-user-cog"></i>
           </button>
-        </div>
+        </div> -->
 
         <span class="menu-toggle" onclick="toggleMenu()"
           ><i class="fa-solid fa-utensils"></i
@@ -491,17 +491,17 @@
             </div>
           </div>
 
-          <div class="admin-actions">
+          <!-- <div class="admin-actions">
             <button class="btn btn-logout" id="adminLogout">
               <i class="fas fa-sign-out-alt"></i> Logout
             </button>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
 
     <!-- Admin Password Modal -->
-    <div class="admin-password-modal" id="adminPasswordModal">
+    <!-- <div class="admin-password-modal" id="adminPasswordModal">
       <div class="admin-password-container">
         <div class="admin-password-header">
           <h2>Admin Verification</h2>
@@ -521,7 +521,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Footer Section -->
     <footer class="footer">

@@ -1085,7 +1085,9 @@ $user_initials = 'AJ';
                     <button class="filter-btn" data-filter="available">Available</button>
                     <button class="filter-btn" data-filter="out-of-stock">Out of Stock</button>
                     <button class="filter-btn" data-filter="soups">Soups</button>
-                    <button class="filter-btn" data-filter="main">Main Dishes</button>
+                    <button class="filter-btn" data-filter="starters">Starters</button>
+                    <button class="filter-btn" data-filter="main">Main Courses</button>
+                    <button class="filter-btn" data-filter="noodles">Noodles</button>
                     <button class="filter-btn" data-filter="drinks">Drinks</button>
                 </div>
                 
