@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joseph's Pot - Royal Dinner Experience</title>
+    <link rel="icon" href="../images/logo3.png">
+    <link rel="stylesheet" href="./fontawesome-free-6.7.2-web/css/all.min.css"/>
+    <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./CSS/dinner.css">
+</head>
+<body>
+
+     <!-- Navbar -->
+     <header class="navbar" id="navbar">
+        <div class="container">
+          <div class="logo">
+            <a href="index.php"><img src="./images/logo3.png" alt="Joseph's Pot Logo"></a>
+          </div>
+          <nav class="nav-links">
+            <a href="index.php">Home</a>
+            <a href="about.php">About</a>
+            <a href="menu.php" class="active">Menu</a>
+            <a href="gallery.php">Gallery</a>
+            <a href="contact.php">Contact</a>
+            <a href="order-online.php">Order Online</a>
+          </nav>
+          <div class="social">
+            <a href="https://www.facebook.com/@cruisewithjoe"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.x.com/@cruisewithjoe"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://www.youtube.com/@cruisewithjoe"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/@cruisewithjoe"><i class="fab fa-instagram"></i></a>
+          </div>
+          <span class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-utensils"></i></span>
+        </div>
+      </header>
+
+    <div class="menu-container">
+        <header class="menu-header">
+            <h1>JOSEPH'S POT OWERRI</h1>
+            <div class="subtitle">An Evening of Igbo Royalty</div>
+        </header>
+
+        <!-- STARTERS -->
+        <h2 class="course-title">NKWỌLỊ | STARTERS</h2>
+        
+        <div class="menu-item">
+            <div class="item-name">Smoked Ugba & Quail Egg <span class="signature-badge">Signature</span></div>
+            <div class="item-description">
+                Fermented oil bean seed paired with tea-smoked quail eggs, served on banana leaf with crushed utazi gel.
+            </div>
+            <div class="wine-pairing">
+                <strong>Sommelier's Pair:</strong> 2021 Domaine Marcel Deiss Alsace Riesling (Notes of lime zest complement the fermentation tang)
+            </div>
+        </div>
+
+        <!-- MAIN COURSE -->
+        <h2 class="course-title">ISI NRI | MAIN</h2>
+        
+        <div class="menu-item">
+            <div class="item-name">Ofe Owerri Royale <span class="signature-badge">Chef's Legacy</span></div>
+            <div class="item-description">
+                Deconstructed royal soup: 7-meat consommé, cocoyam silk, crispy oha leaf, and smoked crayfish dust. 
+                Served with three-texture pounded yam.
+            </div>
+            <div class="wine-pairing">
+                <strong>Sommelier's Pair:</strong> 2016 Château Lynch-Bages Pauillac (Tannins cut through the rich meats)
+            </div>
+            <div class="story-card">
+                <p>Our meats are blessed by <strong>Eze Nri priests</strong>, while the cocoyam is stone-ground by <strong>Umuoji village elders</strong> using 200-year-old techniques.</p>
+            </div>
+        </div>
+
+        <!-- QR CODE SECTION -->
+        <div class="qr-section">
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://josephspotowerri.com/wine-pairing-guide" 
+                     alt="Scan for Interactive Wine Guide"
+                     width="150" 
+                     height="150">
+            </div>
+            <div class="qr-text">SCAN TO EXPLORE OUR CELLAR COLLECTION</div>
+        </div>
+
+        <!-- DESSERTS -->
+        <h2 class="course-title">IHE ỤTỌ | SWEET ENDINGS</h2>
+        
+        <div class="menu-item">
+            <div class="item-name">Ube Crème Brûlée</div>
+            <div class="item-description">
+                Purple yam custard with palm sugar caramel, served with coconut foam and garden egg crisps.
+            </div>
+            <div class="wine-pairing">
+                <strong>Sommelier's Pair:</strong> 2015 Château d'Yquem Sauternes (Honeyed notes enhance the ube)
+            </div>
+        </div>
+
+        <div class="menu-footer">
+            <p>Ask about our <strong>Grand Cru Pairing Experience</strong> (₦25,000 supplement)</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-glass">
+            <div class="footer-glass-inner">
+                <div class="footer-content">
+                    <div class="footer-column">
+                         <img src="./images/logo.jpg" alt="Joseph's Pot Logo" width="80px"/>
+                        <p>Authentic taste, unforgettable experience.<br>Serving happiness from Owerri, Nigeria.</p>
+                        <div class="social-links">
+                            <a href="https://facebook.com/@cruisewithjoe" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://instagram.com/@cruisewithjoe" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="https://twitter.com/@cruisewithjoe" target="_blank"><i class="fab fa-twitter"></i></a>
+                            <a href="https://youtube.com/@cruisewithjoe" target="_blank"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+  
+                    <div class="footer-column">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="index.php">Home</a></li>
+                            <li><a href="about.php">About</a></li>
+                            <li><a href="menu.php">Menu</a></li>
+                            <li><a href="contact.php">Contact us</a></li>
+                            <li><a href="index.php#eventContainer">Events</a></li>
+                            <li><a href="order online.php">Order Online</a></li>
+                        </ul>
+                    </div>
+  
+                    <div class="footer-column">
+                        <h4><i class="fas fa-clock"></i> Opening Hours</h4>
+                        <p>
+                            Monday – Friday: 08:30 AM – 9:00 PM<br>
+                            Saturday: 08:00 AM – 09:00 PM<br>
+                            Sunday: 12:00 PM – 09:00 PM
+                        </p>
+                    </div>
+  
+                    <div class="footer-column">
+                        <h4><i class="fas fa-map-marker-alt"></i> Visit Us</h4>
+                        <p>
+                             Plot 120,<br>
+                          Ikenegbu Layout by Maris Junction, Owerri<br>
+                          Imo State, Nigeria<br>
+                            <a href="https://maps.google.com?q=Joseph's Pot Owerri" target="_blank">📍 <span>Get Directions</span></a>
+                        </p>
+                    </div>
+                </div>
+  
+                <div class="footer-bottom">
+                    <p>&copy; 2025 Joseph's Pot. All Rights Reserved | Developed by ERIBS Tech</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+  
+    <button id="scrollTopBtn" aria-label="Scroll to Top">
+      ↑
+    </button>
+  
+    <!-- WhatsApp Chat Bubble -->
+    <a href="https://wa.me/2348104344994" class="whatsapp-chat" target="_blank">
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/124/124034.png"
+        alt="WhatsApp"
+      />
+    </a>
+
+    <script src="/JAVASCRIPT/dinner.js"></script>
+</body>
+</html>

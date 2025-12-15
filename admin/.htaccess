@@ -1,0 +1,20 @@
+# admin/.htaccess
+# Prevent direct access to sensitive files
+<Files "db-connection.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<FilesMatch "\.(sql|ini|log)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Allow PHP execution but protect directory
+Options -Indexes
+
+# Password protect admin area (optional but recommended)
+# AuthType Basic
+# AuthName "Restricted Area"
+# AuthUserFile /path/to/.htpasswd
+# Require valid-user

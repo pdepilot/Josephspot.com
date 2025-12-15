@@ -1,4 +1,6 @@
-// PRE-LOADER
+// ============================================
+// PRE-LOADER SECTION STARTS HERE
+// ============================================
 document.addEventListener("DOMContentLoaded", function () {
   const progressBar = document.getElementById("progress-bar");
   const percentage = document.getElementById("percentage");
@@ -87,8 +89,13 @@ document.addEventListener("DOMContentLoaded", function () {
     return "rgba(255,255,255,0.8)";
   }
 });
+// ============================================
+// PRE-LOADER SECTION ENDS HERE
+// ============================================
 
-// Scroll reveal functionality
+// ============================================
+// SCROLL REVEAL SECTION STARTS HERE
+// ============================================
 document.addEventListener("DOMContentLoaded", function () {
   const revealElements = document.querySelectorAll(".reveal-on-scroll");
 
@@ -114,8 +121,13 @@ document.addEventListener("DOMContentLoaded", function () {
   // Check on resize
   window.addEventListener("resize", checkScroll);
 });
+// ============================================
+// SCROLL REVEAL SECTION ENDS HERE
+// ============================================
 
-// BACKGROUND SLIDER – VERTICAL / DIAGONAL ENTRY
+// ============================================
+// BACKGROUND SLIDER SECTION STARTS HERE
+// ============================================
 document.addEventListener("DOMContentLoaded", function () {
   const images = [
     "./images/IM4.jpg",
@@ -151,8 +163,13 @@ document.addEventListener("DOMContentLoaded", function () {
   slider.classList.add("slide-from-top", "active");
   setInterval(nextSlide, 5000);
 });
+// ============================================
+// BACKGROUND SLIDER SECTION ENDS HERE
+// ============================================
 
-// NAVBAR COLOR ON SCROLL
+// ============================================
+// NAVBAR SCROLL SECTION STARTS HERE
+// ============================================
 window.addEventListener("scroll", function () {
   const navbar = document.getElementById("navbar");
   if (window.scrollY > 50) {
@@ -161,14 +178,24 @@ window.addEventListener("scroll", function () {
     navbar.classList.remove("scrolled");
   }
 });
+// ============================================
+// NAVBAR SCROLL SECTION ENDS HERE
+// ============================================
 
-// Mobile menu toggle function
+// ============================================
+// MOBILE MENU SECTION STARTS HERE
+// ============================================
 function toggleMenu() {
   const navLinks = document.querySelector(".nav-links");
   navLinks.classList.toggle("active");
 }
+// ============================================
+// MOBILE MENU SECTION ENDS HERE
+// ============================================
 
-// Scroll To Top Button
+// ============================================
+// SCROLL TO TOP SECTION STARTS HERE
+// ============================================
 const scrollBtn = document.getElementById("scrollTopBtn");
 window.onscroll = function () {
   if (
@@ -183,8 +210,13 @@ window.onscroll = function () {
 scrollBtn.onclick = function () {
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
+// ============================================
+// SCROLL TO TOP SECTION ENDS HERE
+// ============================================
 
-// ABOUT US SECTION OF HOW WE STARTED
+// ============================================
+// TYPING ANIMATION SECTION STARTS HERE
+// ============================================
 const phrases = [
   "Where Tradition Meets Taste...",
   "Bold Flavours. Rich Culture.",
@@ -263,8 +295,13 @@ document.addEventListener("DOMContentLoaded", () => {
     typingElement.classList.add("mobile-typing");
   }
 });
+// ============================================
+// TYPING ANIMATION SECTION ENDS HERE
+// ============================================
 
-// OUR MENU FLIP CARD
+// ============================================
+// FLIP CARD MENU SECTION STARTS HERE
+// ============================================
 function toggleFlip(card) {
   card.classList.toggle("flipped");
 
@@ -348,148 +385,583 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 });
+// ============================================
+// FLIP CARD MENU SECTION ENDS HERE
+// ============================================
 
-// UPCOMING EVENTS SECTION - MODERN VERSION
-const events = [
-  {
-    title: "Birthday Celebration for Princeton (AKA, Pricelesshacker1)",
-    description:
-      "Join us for an exclusive evening of fine dine-in Birthday celebration of our amiable friend a brother  paired with gourmet dishes and arabian.",
-    date: "2025-10-10T19:00:00",
-    eventImage: "./images/IM41.jpg",
-  },
-  {
-    title: "Cultural Night Experience",
-    description:
-      "Celebrate Igbo heritage through Oringo Friday featuring music, dance, comedy and many more.",
-    date: "2025-10-30T19:00:00",
-    eventImage: "./images/oringo friday.jpeg",
-  },
-  {
-    title: "Palm Wine & Poetry",
-    description:
-      "An intimate evening of locally sourced palm wine tasting accompanied by live poetry readings under the stars in our garden terrace.",
-    date: "2025-11-30T19:30:00",
-    eventImage: "./images/weding1.jpeg",
-  },
-];
-
+// ============================================
+// UPCOMING EVENTS SECTION STARTS HERE (DYNAMIC)
+// ============================================
+let events = [];
 let currentEventIndex = 0;
-let countdownInterval;
-let autoRotateInterval;
+let countdownInterval = null;
+let autoRotateInterval = null;
+let isAnimating = false;
+let autoRotateEnabled = true; // Will be set from database
+let rotationInterval = 10000; // 10 seconds
+
+// Fetch events and settings from database
+async function fetchEventsFromDatabase() {
+    try {
+        const response = await fetch('fetch-events.php?t=' + Date.now());
+        if (!response.ok) {
+            throw new Error('Failed to fetch events');
+        }
+        const data = await response.json();
+        
+        events = data.events || [];
+        autoRotateEnabled = data.settings?.auto_rotate !== false; // Default to true
+        rotationInterval = data.settings?.interval || 5000;
+        
+        // If no events from database, use fallback
+        if (events.length === 0 || (events.length === 1 && events[0].title === 'No Upcoming Events')) {
+            events = [{
+                title: 'No Upcoming Events',
+                description: 'Check back soon for upcoming culinary experiences at Joseph\'s Pot!',
+                date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                eventImage: './images/IM41.jpg',
+                status: 'upcoming'
+            }];
+        }
+        
+        // Initialize events display
+        updateEventDisplay(0, 'next');
+        
+        // Show auto-rotation status (optional - add to your HTML)
+        // updateRotationStatus();
+        
+        // Start auto-rotation if enabled
+        if (autoRotateEnabled && events.length > 1) {
+            startAutoRotation();
+        }
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        events = [{
+            title: 'No Events Available',
+            description: 'We\'re currently preparing amazing events for you! Please check back later.',
+            date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            eventImage: './images/IM41.jpg',
+            status: 'upcoming'
+        }];
+        updateEventDisplay(0, 'next');
+        updateRotationStatus();
+    }
+}
+
+// Update rotation status display (optional)
+function updateRotationStatus() {
+    const statusElement = document.getElementById('rotationStatus');
+    if (!statusElement) {
+        // Create status element if it doesn't exist
+        const controls = document.querySelector('.event-controls');
+        if (controls) {
+            const statusDiv = document.createElement('div');
+            statusDiv.id = 'rotationStatus';
+            statusDiv.className = 'rotation-status';
+            statusDiv.style.cssText = `
+                font-size: 0.9rem;
+                color: ${autoRotateEnabled ? '#4CAF50' : '#FF9800'};
+                margin-top: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            `;
+            
+            const icon = document.createElement('i');
+            icon.className = autoRotateEnabled ? 'fas fa-play-circle' : 'fas fa-pause-circle';
+            
+            const text = document.createElement('span');
+            text.textContent = autoRotateEnabled ? 
+                'Auto-rotation: ON (slides every 10 seconds)' : 
+                'Auto-rotation: OFF';
+            
+            statusDiv.appendChild(icon);
+            statusDiv.appendChild(text);
+            controls.appendChild(statusDiv);
+        }
+    } else {
+        // Update existing status
+        const icon = statusElement.querySelector('i');
+        const text = statusElement.querySelector('span');
+        
+        if (icon) icon.className = autoRotateEnabled ? 'fas fa-play-circle' : 'fas fa-pause-circle';
+        if (text) {
+            text.textContent = autoRotateEnabled ? 
+                'Auto-rotation: ON (slides every 10 seconds)' : 
+                'Auto-rotation: OFF';
+        }
+        statusElement.style.color = autoRotateEnabled ? '#4CAF50' : '#FF9800';
+    }
+}
 
 // Format date as "15 Aug"
 function formatShortDate(dateStr) {
-  const options = { day: "numeric", month: "short" };
-  return new Date(dateStr).toLocaleDateString("en-US", options);
+    const options = { day: "numeric", month: "short" };
+    return new Date(dateStr).toLocaleDateString("en-US", options);
 }
 
-function updateEventDisplay(index) {
-  const event = events[index];
-  const eventDate = new Date(event.date);
-
-  document.getElementById("eventTitle").textContent = event.title;
-  document.getElementById("eventDesc").textContent = event.description;
-  document.getElementById("eventImage").src = event.eventImage;
-  document.getElementById("eventDay").textContent = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ][eventDate.getDay()];
-  document.getElementById("eventDate").textContent = formatShortDate(
-    event.date
-  );
-  // Update countdown immediately and then every second
-  clearInterval(countdownInterval);
-  updateCountdown(event.date);
-  countdownInterval = setInterval(() => updateCountdown(event.date), 1000);
+function updateEventDisplay(index, direction = 'next') {
+    if (isAnimating || events.length === 0) return;
+    isAnimating = true;
+    
+    const event = events[index];
+    const eventDate = new Date(event.event_date || event.date);
+    const eventCard = document.querySelector('.event-card');
+    
+    // Clear any existing interval first
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+    
+    // Add slide animation class
+    if (eventCard) {
+        eventCard.classList.add(`slide-${direction}`);
+    }
+    
+    // After animation, update content
+    setTimeout(() => {
+        // Update all event content
+        const eventTitle = document.getElementById("eventTitle");
+        const eventDesc = document.getElementById("eventDesc");
+        const eventImage = document.getElementById("eventImage");
+        const eventDay = document.getElementById("eventDay");
+        const eventDateElement = document.getElementById("eventDate");
+        
+        if (eventTitle) eventTitle.textContent = event.title;
+        if (eventDesc) eventDesc.textContent = event.description;
+        if (eventImage) {
+            eventImage.src = event.image_url || event.eventImage || './images/IM41.jpg';
+            // Add fade-in animation for image
+            eventImage.style.opacity = '0';
+            setTimeout(() => {
+                eventImage.style.opacity = '1';
+                eventImage.style.transition = 'opacity 0.5s ease';
+            }, 100);
+        }
+        if (eventDay) eventDay.textContent = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ][eventDate.getDay()];
+        if (eventDateElement) eventDateElement.textContent = formatShortDate(event.event_date || event.date);
+        
+        // Remove animation class
+        if (eventCard) {
+            setTimeout(() => {
+                eventCard.classList.remove(`slide-${direction}`);
+            }, 500);
+        }
+        
+        // Update and start countdown for this event
+        updateCountdown(event.event_date || event.date);
+        countdownInterval = setInterval(() => updateCountdown(event.event_date || event.date), 1000);
+        
+        isAnimating = false;
+        currentEventIndex = index;
+    }, 500);
 }
 
 function updateCountdown(eventDateStr) {
-  const now = new Date();
-  const targetDate = new Date(eventDateStr);
-  const diff = targetDate - now;
+    const now = new Date();
+    const targetDate = new Date(eventDateStr);
+    const diff = targetDate - now;
 
-  if (diff <= 0) {
-    document.getElementById("countdown").innerHTML = `
-      <div class="event-started">Event in progress</div>
-    `;
-    clearInterval(countdownInterval);
-    return;
-  }
+    // Get the countdown container
+    const countdownContainer = document.getElementById("countdown");
+    if (!countdownContainer) return;
 
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / 1000) % 60);
+    if (diff <= 0) {
+        // Event has started or passed
+        countdownContainer.innerHTML = `
+            <div class="countdown-item">
+                <span class="days countdown-value">00</span>
+                <span class="countdown-label">Days</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-item">
+                <span class="hours countdown-value">00</span>
+                <span class="countdown-label">Hours</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-item">
+                <span class="minutes countdown-value">00</span>
+                <span class="countdown-label">Min</span>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-item">
+                <span class="seconds countdown-value">00</span>
+                <span class="countdown-label">Sec</span>
+            </div>
+            <div class="event-started">Event in Progress</div>
+        `;
+        
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+        return;
+    }
 
-  // Ensure countdown elements exist before updating
-  const daysElement = document.querySelector(".days");
-  const hoursElement = document.querySelector(".hours");
-  const minutesElement = document.querySelector(".minutes");
-  const secondsElement = document.querySelector(".seconds");
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
 
-  if (daysElement) daysElement.textContent = days.toString().padStart(2, "0");
-  if (hoursElement)
-    hoursElement.textContent = hours.toString().padStart(2, "0");
-  if (minutesElement)
-    minutesElement.textContent = minutes.toString().padStart(2, "0");
-  if (secondsElement)
-    secondsElement.textContent = seconds.toString().padStart(2, "0");
+    // Update the countdown values
+    const daysElement = document.querySelector('.days');
+    const hoursElement = document.querySelector('.hours');
+    const minutesElement = document.querySelector('.minutes');
+    const secondsElement = document.querySelector('.seconds');
+    
+    // Remove any "event-started" message if it exists
+    const eventStartedMsg = countdownContainer.querySelector('.event-started');
+    if (eventStartedMsg) {
+        eventStartedMsg.remove();
+    }
+    
+    // Update countdown values only if elements exist
+    if (daysElement) daysElement.textContent = days.toString().padStart(2, "0");
+    if (hoursElement) hoursElement.textContent = hours.toString().padStart(2, "0");
+    if (minutesElement) minutesElement.textContent = minutes.toString().padStart(2, "0");
+    if (secondsElement) secondsElement.textContent = seconds.toString().padStart(2, "0");
 }
-// Navigation
-document.getElementById("nextEventBtn")?.addEventListener("click", () => {
-  currentEventIndex = (currentEventIndex + 1) % events.length;
-  updateEventDisplay(currentEventIndex);
-});
-
-// Touch events for mobile
-let touchStartX = 0;
-const eventContent = document.querySelector(".event-card");
-
-eventContent?.addEventListener("touchstart", (e) => {
-  touchStartX = e.changedTouches[0].screenX;
-});
-
-eventContent?.addEventListener("touchend", (e) => {
-  const touchEndX = e.changedTouches[0].screenX;
-  const threshold = 50;
-
-  if (touchEndX < touchStartX - threshold) {
-    currentEventIndex = (currentEventIndex + 1) % events.length;
-  } else if (touchEndX > touchStartX + threshold) {
-    currentEventIndex = (currentEventIndex - 1 + events.length) % events.length;
-  } else {
-    return;
-  }
-
-  updateEventDisplay(currentEventIndex);
-});
 
 // Initialize auto-rotation
 function startAutoRotation() {
-  autoRotateInterval = setInterval(() => {
-    currentEventIndex = (currentEventIndex + 1) % events.length;
-    updateEventDisplay(currentEventIndex);
-  }, 10000);
+    if (!autoRotateEnabled || events.length <= 1) {
+        stopAutoRotation();
+        return;
+    }
+    
+    if (autoRotateInterval) {
+        clearInterval(autoRotateInterval);
+    }
+    
+    autoRotateInterval = setInterval(() => {
+        if (!autoRotateEnabled || events.length <= 1) {
+            stopAutoRotation();
+            return;
+        }
+        
+        const nextIndex = (currentEventIndex + 1) % events.length;
+        updateEventDisplay(nextIndex, 'next');
+    }, rotationInterval);
 }
+
+function stopAutoRotation() {
+    if (autoRotateInterval) {
+        clearInterval(autoRotateInterval);
+        autoRotateInterval = null;
+    }
+}
+
+// Toggle auto-rotation manually (optional - add button to frontend)
+function toggleFrontendAutoRotation() {
+    autoRotateEnabled = !autoRotateEnabled;
+    updateRotationStatus();
+    
+    if (autoRotateEnabled && events.length > 1) {
+        startAutoRotation();
+    } else {
+        stopAutoRotation();
+    }
+    
+    // Optional: Save user preference to localStorage
+    localStorage.setItem('user_auto_rotate_pref', autoRotateEnabled);
+}
+
+// Navigation with proper slide animation
+document.getElementById("nextEventBtn")?.addEventListener("click", () => {
+    if (events.length <= 1) return;
+    const nextIndex = (currentEventIndex + 1) % events.length;
+    updateEventDisplay(nextIndex, 'next');
+    
+    // Reset auto-rotation timer on manual navigation
+    if (autoRotateEnabled) {
+        stopAutoRotation();
+        startAutoRotation();
+    }
+});
+
+// Add previous button if you want (optional)
+const prevBtn = document.createElement('button');
+prevBtn.id = 'prevEventBtn';
+prevBtn.className = 'event-nav-button';
+prevBtn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+`;
+prevBtn.setAttribute('aria-label', 'Previous event');
+
+prevBtn.addEventListener('click', () => {
+    if (events.length <= 1) return;
+    const prevIndex = (currentEventIndex - 1 + events.length) % events.length;
+    updateEventDisplay(prevIndex, 'prev');
+    
+    // Reset auto-rotation timer on manual navigation
+    if (autoRotateEnabled) {
+        stopAutoRotation();
+        startAutoRotation();
+    }
+});
+
+// Add previous button to controls
+const eventControls = document.querySelector('.event-controls');
+if (eventControls && !document.getElementById('prevEventBtn')) {
+    eventControls.insertBefore(prevBtn, document.getElementById('nextEventBtn'));
+}
+
 // Pause auto-rotation on hover/focus
 const eventContainer = document.getElementById("eventContainer");
-eventContainer?.addEventListener("mouseenter", () =>
-  clearInterval(autoRotateInterval)
-);
-eventContainer?.addEventListener("mouseleave", startAutoRotation);
+if (eventContainer) {
+    eventContainer.addEventListener("mouseenter", () => {
+        if (autoRotateInterval) {
+            clearInterval(autoRotateInterval);
+        }
+    });
+    
+    eventContainer.addEventListener("mouseleave", () => {
+        if (autoRotateEnabled && !autoRotateInterval && events.length > 1) {
+            startAutoRotation();
+        }
+    });
+    
+    // Also handle touch devices
+    eventContainer.addEventListener("touchstart", () => {
+        if (autoRotateInterval) {
+            clearInterval(autoRotateInterval);
+        }
+    });
+    
+    eventContainer.addEventListener("touchend", () => {
+        setTimeout(() => {
+            if (autoRotateEnabled && !autoRotateInterval && events.length > 1) {
+                startAutoRotation();
+            }
+        }, 3000);
+    });
+}
 
-// Initialize
-updateEventDisplay(currentEventIndex);
-startAutoRotation();
+// Clean up intervals when page is hidden
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+        if (autoRotateInterval) {
+            clearInterval(autoRotateInterval);
+            autoRotateInterval = null;
+        }
+    } else {
+        // Resume when page becomes visible again
+        if (!countdownInterval && events.length > 0) {
+            const currentEvent = events[currentEventIndex];
+            updateCountdown(currentEvent.event_date || currentEvent.date);
+            countdownInterval = setInterval(() => updateCountdown(currentEvent.event_date || currentEvent.date), 1000);
+        }
+        if (!autoRotateInterval && autoRotateEnabled && events.length > 1) {
+            startAutoRotation();
+        }
+    }
+});
 
-// EMAIL ALERT SECTION BOOK A TABLE
+// Initialize events when DOM is ready
+function initEventsSlider() {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchEventsFromDatabase();
+        });
+    } else {
+        fetchEventsFromDatabase();
+    }
+}
 
+// Call initialization
+initEventsSlider();
+
+// Add CSS for slide animations and status indicator
+function addEventSliderStyles() {
+    if (!document.getElementById('event-slider-styles')) {
+        const style = document.createElement('style');
+        style.id = 'event-slider-styles';
+        style.textContent = `
+            /* Animation styles */
+            .event-card {
+                transition: transform 0.5s ease, opacity 0.5s ease;
+            }
+            
+            .event-card.slide-next {
+                animation: slideNext 0.5s ease forwards;
+            }
+            
+            .event-card.slide-prev {
+                animation: slidePrev 0.5s ease forwards;
+            }
+            
+            @keyframes slideNext {
+                0% {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                100% {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slidePrev {
+                0% {
+                    transform: translateX(-100%);
+                    opacity: 0;
+                }
+                100% {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            /* Countdown pulse animation */
+            .countdown-value {
+                animation: countdownPulse 1s infinite alternate;
+            }
+            
+            @keyframes countdownPulse {
+                from {
+                    transform: scale(1);
+                }
+                to {
+                    transform: scale(1.05);
+                }
+            }
+            
+            /* Event image fade animation */
+            .event-image {
+                transition: opacity 0.5s ease;
+            }
+            
+            /* Event started indicator */
+            .event-started {
+                width: 100%;
+                text-align: center;
+                font-size: 1.5rem;
+                color: #4CAF50;
+                font-weight: bold;
+                margin-top: 10px;
+                padding: 10px;
+                background: rgba(76, 175, 80, 0.1);
+                border-radius: 5px;
+                border: 2px solid #4CAF50;
+                animation: pulse 2s infinite;
+            }
+            
+            @keyframes pulse {
+                0% {
+                    opacity: 0.7;
+                }
+                50% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0.7;
+                }
+            }
+            
+            /* Auto-rotation status indicator */
+            .rotation-status {
+                font-size: 0.9rem;
+                margin-top: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                animation: fadeIn 0.5s ease;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            /* Event controls container */
+            .event-controls {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+                margin-top: 30px;
+                flex-wrap: wrap;
+            }
+            
+            /* Navigation buttons */
+            .event-nav-button {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: #8b4513;
+                border: none;
+                color: white;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+            }
+            
+            .event-nav-button:hover {
+                background: #654321;
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(139, 69, 19, 0.5);
+            }
+            
+            .event-nav-button:active {
+                transform: scale(0.95);
+            }
+            
+            /* Hide navigation if only one event */
+            .event-controls.hidden {
+                display: none;
+            }
+            
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .event-controls {
+                    gap: 10px;
+                    margin-top: 20px;
+                }
+                
+                .event-nav-button {
+                    width: 40px;
+                    height: 40px;
+                }
+                
+                .rotation-status {
+                    font-size: 0.8rem;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Add the styles
+addEventSliderStyles();
+// ============================================
+// UPCOMING EVENTS SECTION ENDS HERE (DYNAMIC)
+// ============================================
+
+
+// ============================================
+// RESERVATION FORM SECTION STARTS HERE
+// ============================================
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("reservationForm");
   const successNotification = document.getElementById("successMessage");
@@ -577,12 +1049,14 @@ document.addEventListener("DOMContentLoaded", function () {
       submitBtn.disabled = false;
     }
   });
+
   // Enhance select elements
   document.querySelectorAll("select").forEach((select) => {
     select.addEventListener("change", function () {
       this.dispatchEvent(new Event("input"));
     });
   });
+
   // Add animation to form elements on page load
   setTimeout(() => {
     document.querySelectorAll(".form-group").forEach((el, i) => {
@@ -591,6 +1065,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }, 100);
 });
+
 // Add CSS animation
 const style = document.createElement("style");
 style.textContent = `
@@ -606,9 +1081,13 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+// ============================================
+// RESERVATION FORM SECTION ENDS HERE
+// ============================================
 
-// REVIEW SECTION
-// ================ MAIN SLIDER CODE ================
+// ============================================
+// REVIEWS SLIDER SECTION STARTS HERE
+// ============================================
 document.addEventListener("DOMContentLoaded", () => {
   let slides = [];
   const dotsContainer = document.getElementById("sliderDots");
@@ -635,99 +1114,143 @@ document.addEventListener("DOMContentLoaded", () => {
   const stars = document.querySelectorAll(".star");
   const reviewRatingInput = document.getElementById("reviewRating");
 
-  // Admin elements
-  const adminLoginBtn = document.getElementById("adminLoginBtn");
-  const adminToggle = document.getElementById("adminToggle");
-  const adminPanel = document.getElementById("adminPanel");
-  const adminTabs = document.querySelectorAll(".admin-tab");
-  const adminTabContents = document.querySelectorAll(".admin-tab-content");
-  let adminMode = false;
+  // Star rating functionality
+  stars.forEach((star) => {
+    star.addEventListener("click", () => {
+      const value = parseInt(star.getAttribute("data-value"));
+      reviewRatingInput.value = value;
+      updateStars(value);
+    });
+  });
 
-  // Initialize with sample reviews if none exist
-  function initializeSampleReviews() {
-    const sampleReviews = [
-      {
-        id: "1",
-        name: "Apama Tv",
-        text: "I blacked out after the first spoonful. I swear I don't remember finishing the plate. One bite of that egusi soup and I woke up with tears in my eyes and an empty bowl. This food doesn't play!",
-        rating: 5,
-        imageUrl: "https://randomuser.me/api/portraits/men/32.jpg",
-        approved: true,
-        date: new Date().toISOString(),
-      },
-      {
-        id: "2",
-        name: "Ken Udosi",
-        text: 'My ancestors whispered "thank you" after the meal. That okra soup must\'ve been made with palm oil straight from heaven. I felt my lineage rejoicing.',
-        rating: 4,
-        imageUrl: "https://randomuser.me/api/portraits/men/44.jpg",
-        approved: true,
-        date: new Date().toISOString(),
-      },
-      {
-        id: "3",
-        name: "Priya S",
-        text: "I ordered takeaway and ate it before I reached my car. I was meant to save it for later. That aroma seduced me in the parking lot. I never stood a chance.",
-        rating: 5,
-        imageUrl: "https://randomuser.me/api/portraits/women/63.jpg",
-        approved: true,
-        date: new Date().toISOString(),
-      },
-      {
-        id: "4",
-        name: "Alex T",
-        text: "My husband proposed again after tasting the yam porridge. We've been married 8 years. He took one bite, looked me in the eye, and said, \"Let's start over.\" It was that deep.",
-        rating: 5,
-        imageUrl: "https://randomuser.me/api/portraits/men/22.jpg",
-        approved: true,
-        date: new Date().toISOString(),
-      },
-    ];
+  function updateStars(rating) {
+    stars.forEach((star) => {
+      const value = parseInt(star.getAttribute("data-value"));
+      star.classList.toggle("active", value <= rating);
+    });
+  }
 
-    if (!localStorage.getItem("userReviews")) {
-      localStorage.setItem("userReviews", JSON.stringify(sampleReviews));
+  // Initialize with 5 stars
+  updateStars(5);
+
+  // Load reviews from database
+  async function loadReviews() {
+    try {
+      const response = await fetch('fetch-reviews.php');
+      const reviews = await response.json();
+
+      // Clear existing slides
+      reviewContainer.innerHTML = "";
+
+      if (reviews.length === 0) {
+        reviewContainer.innerHTML = "<p>No reviews yet. Be the first to review!</p>";
+        return;
+      }
+
+      reviews.forEach((review, index) => {
+        const newSlide = document.createElement("div");
+        newSlide.className = `review-slide ${
+          slideDirections[index % slideDirections.length]
+        }`;
+
+        newSlide.innerHTML = `
+          <div class="slide-image-container">
+            <img class="review-img" src="${
+              review.imageUrl ||
+              "https://randomuser.me/api/portraits/neutral/default.jpg"
+            }" alt="${review.name}" loading="lazy">
+          </div>
+          <div class="review-text">"${review.text}"</div>
+          <div class="review-stars">${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}</div>
+          <div class="review-author">– ${review.name}</div>
+          <div class="review-date">${review.date}</div>
+        `;
+
+        reviewContainer.appendChild(newSlide);
+      });
+
+      // Update slides array
+      slides = document.querySelectorAll(".review-slide");
+
+      // Start with first slide
+      if (slides.length > 0) {
+        showSlide(0);
+        startSlideShow();
+      }
+
+      updateDots();
+    } catch (error) {
+      console.error('Error loading reviews:', error);
+      // Fallback to localStorage if database fails
+      loadFromLocalStorage();
     }
   }
 
-  // Load saved reviews from localStorage
-  function loadSavedReviews() {
+  // Fallback to localStorage
+  function loadFromLocalStorage() {
+    // Initialize with sample reviews if none exist
+    function initializeSampleReviews() {
+      const sampleReviews = [
+        {
+          id: "1",
+          name: "Apama Tv",
+          text: "I blacked out after the first spoonful. I swear I don't remember finishing the plate. One bite of that egusi soup and I woke up with tears in my eyes and an empty bowl. This food doesn't play!",
+          rating: 5,
+          imageUrl: "https://randomuser.me/api/portraits/men/32.jpg",
+          date: "March 15, 2025"
+        },
+        {
+          id: "2",
+          name: "Ken Udosi",
+          text: 'My ancestors whispered "thank you" after the meal. That okra soup must\'ve been made with palm oil straight from heaven. I felt my lineage rejoicing.',
+          rating: 4,
+          imageUrl: "https://randomuser.me/api/portraits/men/44.jpg",
+          date: "March 14, 2025"
+        },
+        {
+          id: "3",
+          name: "Priya S",
+          text: "I ordered takeaway and ate it before I reached my car. I was meant to save it for later. That aroma seduced me in the parking lot. I never stood a chance.",
+          rating: 5,
+          imageUrl: "https://randomuser.me/api/portraits/women/63.jpg",
+          date: "March 13, 2025"
+        }
+      ];
+
+      if (!localStorage.getItem("userReviews")) {
+        localStorage.setItem("userReviews", JSON.stringify(sampleReviews));
+      }
+    }
+
     initializeSampleReviews();
     const savedReviews = JSON.parse(localStorage.getItem("userReviews")) || [];
 
     // Clear existing slides
     reviewContainer.innerHTML = "";
 
-    // Filter approved reviews and sort by date (newest first)
-    const approvedReviews = savedReviews
-      .filter((review) => review.approved)
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    if (approvedReviews.length === 0) {
-      reviewContainer.innerHTML =
-        "<p>No reviews yet. Be the first to review!</p>";
+    if (savedReviews.length === 0) {
+      reviewContainer.innerHTML = "<p>No reviews yet. Be the first to review!</p>";
       return;
     }
 
-    approvedReviews.forEach((review, index) => {
+    savedReviews.forEach((review, index) => {
       const newSlide = document.createElement("div");
       newSlide.className = `review-slide ${
         slideDirections[index % slideDirections.length]
       }`;
-      newSlide.dataset.id = review.id;
 
       newSlide.innerHTML = `
-                        <div class="slide-image-container">
-                            <img class="review-img" src="${
-                              review.imageUrl ||
-                              "https://randomuser.me/api/portraits/neutral/default.jpg"
-                            }" alt="${review.name}">
-                        </div>
-                        <div class="review-text">"${review.text}"</div>
-                        <div class="review-stars">${"★".repeat(
-                          review.rating
-                        )}${"☆".repeat(5 - review.rating)}</div>
-                        <div class="review-author">– ${review.name}</div>
-                    `;
+        <div class="slide-image-container">
+          <img class="review-img" src="${
+            review.imageUrl ||
+            "https://randomuser.me/api/portraits/neutral/default.jpg"
+          }" alt="${review.name}" loading="lazy">
+        </div>
+        <div class="review-text">"${review.text}"</div>
+        <div class="review-stars">${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}</div>
+        <div class="review-author">– ${review.name}</div>
+        ${review.date ? `<div class="review-date">${review.date}</div>` : ''}
+      `;
 
       reviewContainer.appendChild(newSlide);
     });
@@ -743,9 +1266,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateDots();
   }
-
-  // Call this when page loads
-  loadSavedReviews();
 
   // Toggle review form visibility
   addReviewBtn.addEventListener("click", () => {
@@ -776,22 +1296,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Star rating functionality
-  stars.forEach((star) => {
-    star.addEventListener("click", () => {
-      const value = parseInt(star.getAttribute("data-value"));
-      reviewRatingInput.value = value;
-      updateStars(value);
-    });
-  });
-
-  function updateStars(rating) {
-    stars.forEach((star) => {
-      const value = parseInt(star.getAttribute("data-value"));
-      star.classList.toggle("active", value <= rating);
-    });
-  }
-
   // Form submission
   submitReviewForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -806,66 +1310,45 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Handle image upload
-    let imageUrl = "https://randomuser.me/api/portraits/neutral/default.jpg";
+    // Create FormData object
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('review', text);
+    formData.append('rating', rating);
+    
+    // Add image if exists
     if (imageInput.files.length > 0) {
-      try {
-        imageUrl = await uploadImage(imageInput.files[0]);
-      } catch (error) {
-        console.error("Image upload error:", error);
-        showActionMessage("Error uploading image", "#f44336");
-        return;
+      formData.append('image', imageInput.files[0]);
+    }
+
+    try {
+      const response = await fetch('submit-review.php', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        // Reset form
+        submitReviewForm.reset();
+        reviewRatingInput.value = "5";
+        updateStars(5);
+        reviewFormOverlay.style.display = "none";
+        
+        // Show success message
+        showActionMessage("Review submitted successfully! It will appear after approval.", "#4CAF50");
+        
+        // Refresh reviews
+        loadReviews();
+      } else {
+        showActionMessage("Error: " + result.message, "#f44336");
       }
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      showActionMessage("Network error. Please try again.", "#f44336");
     }
-
-    // Create new review object
-    const newReview = {
-      id: Date.now().toString(),
-      name,
-      text,
-      rating,
-      imageUrl,
-      approved: false, // New reviews need admin approval
-      date: new Date().toISOString(),
-    };
-
-    // Save to localStorage
-    saveReviewToStorage(newReview);
-
-    // Reset form and hide it
-    submitReviewForm.reset();
-    reviewRatingInput.value = "5";
-    updateStars(5);
-    reviewFormOverlay.style.display = "none";
-
-    // Show success message
-    showActionMessage("Review submitted for approval", "#4CAF50");
-
-    // If admin is viewing, refresh pending reviews
-    if (adminMode) {
-      loadPendingReviews();
-    }
-
-    startSlideShow();
   });
-
-  // Save review to localStorage
-  function saveReviewToStorage(review) {
-    const savedReviews = JSON.parse(localStorage.getItem("userReviews")) || [];
-    savedReviews.unshift(review); // Add new review at beginning
-    localStorage.setItem("userReviews", JSON.stringify(savedReviews));
-  }
-
-  // Image upload simulation (in a real app, you'd upload to a server)
-  function uploadImage(file) {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        resolve(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    });
-  }
 
   // Slider functions
   function updateDots() {
@@ -936,24 +1419,26 @@ document.addEventListener("DOMContentLoaded", () => {
     currentHeading = (currentHeading + 1) % headings.length;
     setTimeout(cycleHeadings, 3000);
   }
-  cycleHeadings();
-
-  // Initialize dots if we have slides
-  if (slides.length > 0) {
-    updateDots();
-    startSlideShow();
+  
+  // Start header animation
+  if (headings.length > 0) {
+    cycleHeadings();
   }
 
   // Event listeners for navigation
-  prevBtn.addEventListener("click", () => {
-    prevSlide();
-    resetSlideShow();
-  });
+  if (prevBtn) {
+    prevBtn.addEventListener("click", () => {
+      prevSlide();
+      resetSlideShow();
+    });
+  }
 
-  nextBtn.addEventListener("click", () => {
-    nextSlide();
-    resetSlideShow();
-  });
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      nextSlide();
+      resetSlideShow();
+    });
+  }
 
   // Keyboard navigation
   document.addEventListener("keydown", (e) => {
@@ -973,274 +1458,79 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Show action message
   function showActionMessage(text, color) {
+    // Remove existing message if any
+    const existingMessage = document.querySelector('.action-message');
+    if (existingMessage) {
+      existingMessage.remove();
+    }
+
     const message = document.createElement("div");
     message.className = "action-message";
     message.textContent = text;
-    message.style.backgroundColor = color;
-    document.body.appendChild(message);
-    setTimeout(() => message.remove(), 3000);
-  }
-
-  // ================ ADMIN FUNCTIONALITY ================
-
-  // Admin login button functionality
-  adminLoginBtn.addEventListener("click", () => {
-    const password = prompt("Enter admin password:");
-    if (password === "admin1982") {
-      adminMode = !adminMode;
-      adminPanel.style.display = adminMode ? "block" : "none";
-      adminToggle.style.display = adminMode ? "block" : "none";
-      if (adminMode) {
-        loadPendingReviews();
-        const activeTab = document.querySelector(".admin-tab.active");
-        if (activeTab.dataset.tab === "approved") {
-          loadApprovedReviews();
+    message.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: ${color};
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 10000;
+      animation: slideInRight 0.3s ease, fadeOut 0.3s ease 3s forwards;
+    `;
+    
+    // Add animation styles if not already present
+    if (!document.querySelector('#action-message-styles')) {
+      const style = document.createElement('style');
+      style.id = 'action-message-styles';
+      style.textContent = `
+        @keyframes slideInRight {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
         }
-      }
-    } else if (password !== null) {
-      alert("Incorrect password");
+        @keyframes fadeOut {
+          to { opacity: 0; transform: translateX(100%); }
+        }
+      `;
+      document.head.appendChild(style);
     }
-  });
-
-  // Tab switching functionality
-  adminTabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      adminTabs.forEach((t) => t.classList.remove("active"));
-      adminTabContents.forEach((c) => c.classList.remove("active"));
-
-      // Add active class to clicked tab and corresponding content
-      tab.classList.add("active");
-      const tabContent = document.querySelector(
-        `.admin-tab-content[data-tab-content="${tab.dataset.tab}"]`
-      );
-      tabContent.classList.add("active");
-
-      // Load the appropriate content
-      if (tab.dataset.tab === "approved") {
-        loadApprovedReviews();
-      } else {
-        loadPendingReviews();
+    
+    document.body.appendChild(message);
+    setTimeout(() => {
+      if (message.parentNode) {
+        message.remove();
       }
-    });
-  });
-
-  // Load pending reviews
-  function loadPendingReviews() {
-    const pendingContainer = document.getElementById("pendingReviews");
-    pendingContainer.innerHTML = "";
-
-    const pending = getPendingReviews();
-
-    if (pending.length === 0) {
-      pendingContainer.innerHTML = "<p>No pending reviews</p>";
-      return;
-    }
-
-    pending.forEach((review) => {
-      const reviewElement = createAdminReviewElement(review, true);
-      pendingContainer.appendChild(reviewElement);
-    });
+    }, 3000);
   }
 
-  // Load approved reviews
-  function loadApprovedReviews() {
-    const approvedContainer = document.getElementById("approvedReviews");
-    approvedContainer.innerHTML = "";
-
-    const approved = getApprovedReviews();
-
-    if (approved.length === 0) {
-      approvedContainer.innerHTML = "<p>No approved reviews</p>";
-      return;
-    }
-
-    approved.forEach((review) => {
-      const reviewElement = createAdminReviewElement(review, false);
-      approvedContainer.appendChild(reviewElement);
-    });
-  }
-
-  // Get pending reviews
-  function getPendingReviews() {
-    const allReviews = JSON.parse(localStorage.getItem("userReviews")) || [];
-    return allReviews.filter((review) => !review.approved);
-  }
-
-  // Get approved reviews
-  function getApprovedReviews() {
-    const allReviews = JSON.parse(localStorage.getItem("userReviews")) || [];
-    return allReviews.filter((review) => review.approved);
-  }
-
-  // Create admin review element (for both pending and approved)
-  function createAdminReviewElement(review, isPending = true) {
-    const element = document.createElement("div");
-    element.className = isPending ? "pending-review" : "approved-review";
-    element.dataset.id = review.id;
-
-    element.innerHTML = `
-                    <div class="review-edit-fields" style="display:none">
-                        <textarea class="edit-text">${review.text}</textarea>
-                        <div class="edit-rating">
-                            ${Array(5)
-                              .fill()
-                              .map(
-                                (_, i) =>
-                                  `<span class="edit-star" data-value="${
-                                    i + 1
-                                  }">${i < review.rating ? "★" : "☆"}</span>`
-                              )
-                              .join("")}
-                        </div>
-                        <input type="text" class="edit-name" value="${
-                          review.name
-                        }">
-                        <div class="image-preview" style="margin: 10px 0;">
-                            <img src="${
-                              review.imageUrl
-                            }" style="max-width: 100px; max-height: 100px; border-radius: 50%;">
-                        </div>
-                    </div>
-                    <div class="review-display">
-                        <div class="review-text">"${review.text}"</div>
-                        <div class="review-stars">${"★".repeat(
-                          review.rating
-                        )}${"☆".repeat(5 - review.rating)}</div>
-                        <div class="review-author">– ${review.name}</div>
-                        <div class="review-date" style="font-size: 0.8em; color: #aaa; margin-top: 5px;">
-                            ${new Date(review.date).toLocaleDateString()}
-                        </div>
-                        ${
-                          isPending
-                            ? ""
-                            : '<div class="review-status" style="font-size:0.8em;color:#4CAF50;margin-top:5px;">✓ Approved</div>'
-                        }
-                    </div>
-                    <div class="admin-actions">
-                        ${
-                          isPending
-                            ? `
-                            <button class="edit-btn">Edit</button>
-                            <button class="approve-btn" style="display:none">Save & Approve</button>
-                            <button class="cancel-edit-btn" style="display:none">Cancel</button>
-                            <button class="reject-btn">Delete</button>
-                        `
-                            : `
-                            <button class="edit-btn">Edit</button>
-                            <button class="approve-btn" style="display:none">Save</button>
-                            <button class="cancel-edit-btn" style="display:none">Cancel</button>
-                            <button class="reject-btn">Delete</button>
-                        `
-                        }
-                    </div>
-                `;
-
-    // Add event listeners
-    const editBtn = element.querySelector(".edit-btn");
-    const approveBtn = element.querySelector(".approve-btn");
-    const cancelBtn = element.querySelector(".cancel-edit-btn");
-    const rejectBtn = element.querySelector(".reject-btn");
-    const editStars = element.querySelectorAll(".edit-star");
-
-    editStars.forEach((star) => {
-      star.addEventListener("click", () => {
-        const rating = parseInt(star.dataset.value);
-        editStars.forEach((s, i) => (s.textContent = i < rating ? "★" : "☆"));
-      });
-    });
-
-    editBtn.addEventListener("click", () => {
-      element.querySelector(".review-edit-fields").style.display = "block";
-      element.querySelector(".review-display").style.display = "none";
-      editBtn.style.display = "none";
-      approveBtn.style.display = "inline-block";
-      cancelBtn.style.display = "inline-block";
-      rejectBtn.style.display = "none";
-    });
-
-    cancelBtn.addEventListener("click", () => {
-      element.querySelector(".review-edit-fields").style.display = "none";
-      element.querySelector(".review-display").style.display = "block";
-      editBtn.style.display = "inline-block";
-      approveBtn.style.display = "none";
-      cancelBtn.style.display = "none";
-      rejectBtn.style.display = "inline-block";
-    });
-
-    approveBtn.addEventListener("click", () => {
-      const updatedReview = {
-        ...review,
-        text: element.querySelector(".edit-text").value,
-        name: element.querySelector(".edit-name").value,
-        rating: Array.from(element.querySelectorAll(".edit-star")).filter(
-          (star) => star.textContent === "★"
-        ).length,
-        approved: isPending ? true : review.approved,
-      };
-      updateReview(updatedReview);
-    });
-
-    rejectBtn.addEventListener("click", () => {
-      if (confirm("Are you sure you want to delete this review?")) {
-        // Fade out animation
-        element.style.transition = "opacity 0.3s";
-        element.style.opacity = "0";
-
-        setTimeout(() => {
-          deleteReview(review.id);
-        }, 300);
-      }
-    });
-
-    return element;
-  }
-
-  // Update review
-  function updateReview(updatedReview) {
-    const allReviews = JSON.parse(localStorage.getItem("userReviews")) || [];
-    const updatedReviews = allReviews.map((r) =>
-      r.id === updatedReview.id ? updatedReview : r
-    );
-    localStorage.setItem("userReviews", JSON.stringify(updatedReviews));
-    refreshUI();
-    showActionMessage(
-      updatedReview.approved ? "✓ Review approved" : "✓ Review updated",
-      "#4CAF50"
-    );
-  }
-
-  // Delete review
-  function deleteReview(id) {
-    const allReviews = JSON.parse(localStorage.getItem("userReviews")) || [];
-    const updatedReviews = allReviews.filter((review) => review.id !== id);
-    localStorage.setItem("userReviews", JSON.stringify(updatedReviews));
-    refreshUI();
-    showActionMessage("✓ Review deleted", "#f44336");
-  }
-
-  // Refresh UI
-  function refreshUI() {
-    if (adminMode) {
-      const activeTab = document.querySelector(".admin-tab.active");
-      if (activeTab.dataset.tab === "approved") {
-        loadApprovedReviews();
-      } else {
-        loadPendingReviews();
-      }
-    }
-    loadSavedReviews();
-  }
+  // Initialize the reviews slider
+  loadReviews();
 });
-// WhatsApp link
+// ============================================
+// REVIEWS SLIDER SECTION ENDS HERE
+// ============================================
+
+// ============================================
+// WHATSAPP LINK SECTION STARTS HERE
+// ============================================
 const whatsappNumber = "2349064296917";
+const message = "Hello! I'd like to place an order or ask about your menu.";
 const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
   message
 )}`;
-window.open(whatsappURL, "_blank");
 
-/* =====================================================
-   Joseph's Pot Chatbot (Menu + Hugging Face AI Assistant)
-   ===================================================== */
+// Function to open WhatsApp
+function openWhatsApp() {
+  window.open(whatsappURL, "_blank");
+}
+// ============================================
+// WHATSAPP LINK SECTION ENDS HERE
+// ============================================
+
+/* ============================================
+   AI CHATBOT SECTION STARTS HERE
+   ============================================ */
 
 const chatContainer = document.getElementById("aiChat-container");
 const messagesDiv = document.getElementById("aiChat-messages");
@@ -2151,7 +2441,13 @@ if (micBtn) {
     if (micBtn) micBtn.style.display = "none";
   }
 }
+/* ============================================
+   AI CHATBOT SECTION ENDS HERE
+   ============================================ */
 
+// ============================================
+// PAGE LOAD ANIMATION SECTION STARTS HERE
+// ============================================
 window.addEventListener("load", () => {
   const preloader = document.querySelector(".preloader");
   const content = document.querySelector(".content");
@@ -2176,3 +2472,6 @@ window.addEventListener("load", () => {
     }
   }, 25);
 });
+// ============================================
+// PAGE LOAD ANIMATION SECTION ENDS HERE
+// ============================================

@@ -1,0 +1,76 @@
+[2025-12-15 02:00:33] Attempting database connection...
+[2025-12-15 02:00:33] Database connected successfully
+[2025-12-15 02:00:33] POST request received
+[2025-12-15 02:00:33] POST Data: Array
+(
+    [customer_name] => Princeton Echefu
+    [customer_phone] => 0582024389
+    [customer_email] => pdepilot@yahoo.com
+    [reservation_date] => 2025-12-31
+    [reservation_time] => 21:00:00
+    [party_size] => 4
+    [purpose] => event
+    [special_requests] => thrri 9bu
+)
+
+[2025-12-15 02:00:33] Form data extracted
+[2025-12-15 02:00:33] Data validated, preparing to insert
+[2025-12-15 02:00:33] SQL: INSERT INTO reservations (customer_name, customer_phone, customer_email, reservation_date, reservation_time, party_size, purpose, special_requests, source, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'website', 'pending')
+[2025-12-15 02:00:33] Reservation inserted successfully. ID: 1
+[2025-12-15 02:04:02] Attempting database connection...
+[2025-12-15 02:04:02] Database connected successfully
+[2025-12-15 02:04:02] POST request received
+[2025-12-15 02:04:02] POST Data: Array
+(
+    [name] => Princeton Echefu
+    [email] => pdepilot@yahoo.com
+    [phone] => 0582024389
+    [date] => 2025-12-26
+    [time] => 20:00
+    [guests] => 8+
+    [message] => yth th rh pu p 
+)
+
+[2025-12-15 02:04:02] Form data extracted
+[2025-12-15 02:04:02] Exception: Please enter your name.
+[2025-12-15 02:10:52] Attempting database connection...
+[2025-12-15 02:10:52] Database connected successfully
+[2025-12-15 02:10:52] POST request received
+[2025-12-15 02:10:52] POST Data: Array
+(
+    [customer_name] => Princeton Echefu
+    [customer_phone] => 0582024389
+    [customer_email] => pdepilot@yahoo.com
+    [reservation_date] => 2025-12-25
+    [reservation_time] => 21:00:00
+    [party_size] => 8+
+    [purpose] => Special Event
+    [special_requests] => hthe oedfo 
+)
+
+[2025-12-15 02:10:52] Form data extracted
+[2025-12-15 02:10:52] Data validated, preparing to insert
+[2025-12-15 02:10:52] SQL: INSERT INTO reservations (customer_name, customer_phone, customer_email, reservation_date, reservation_time, party_size, purpose, special_requests, source, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'website', 'pending')
+[2025-12-15 02:10:52] Reservation inserted successfully. ID: 2
+[2025-12-15 02:14:36] Attempting database connection...
+[2025-12-15 02:14:36] Database connected successfully
+[2025-12-15 02:14:36] POST request received
+[2025-12-15 02:14:36] POST Data: Array
+(
+    [customer_name] => Princeton Echefu
+    [customer_phone] => 0582024389
+    [customer_email] => pdepilot@yahoo.com
+    [reservation_date] => 2025-12-15
+    [reservation_time] => 13:00:00
+    [party_size] => 3
+    [purpose] => Catering
+    [special_requests] => yes it works onow
+)
+
+[2025-12-15 02:14:36] Form data extracted
+[2025-12-15 02:14:36] Data validated, preparing to insert
+[2025-12-15 02:14:36] SQL: INSERT INTO reservations (customer_name, customer_phone, customer_email, reservation_date, reservation_time, party_size, purpose, special_requests, source, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'website', 'pending')
+[2025-12-15 02:14:36] Reservation inserted successfully. ID: 3

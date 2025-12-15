@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Online | Joseph's Pot</title>
+    <link
+      rel="stylesheet"
+      href="./fontawesome-free-6.7.2-web/fontawesome-free-6.7.2-web/css/all.min.css"
+    />
+    <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
+     <link rel="icon" href="./images/logo3.png">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="./CSS/order-online.css">
+  </head>
+  <body>
+
+   <!-- Navbar -->
+    <header class="navbar" id="navbar">
+      <div class="containerr">
+        <div class="logo">
+          <a href=""><img src="./images/logo3.png" alt="logo" /></a>
+        </div>
+        <nav class="nav-links">
+          <a href="index.php">Home</a>
+          <a href="about.php">About</a>
+          <a href="menu.php">Menu</a>
+          <a href="gallery.php">Gallery</a>
+          <a href="index.php#eventContainer">Events</a>
+          <a href="contact.php">Contact</a>
+          <a href="order-online.php" class="active">Order Online</a>
+        </nav>
+
+        <div class="cart-icon-container">
+          <i class="fas fa-shopping-cart" id="cartIcon"></i>
+          <span class="cart-count">0</span>
+        </div>
+        <div class="social">
+          <a href="https://www.facebook.com/@cruisewithjoe"
+            ><i class="fa-brands fa-facebook"></i
+          ></a>
+          <a href="https://www.x.com/@cruisewithjoe"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="https://www.youtube.com/@cruisewithjoe"
+            ><i class="fab fa-youtube"></i
+          ></a>
+          <a href="https://www.instagram.com/@cruisewithjoe"
+            ><i class="fab fa-instagram"></i
+          ></a>
+        </div>
+
+        <!-- Add this to your navbar -->
+        <div class="admin-login-button">
+          <button id="adminLoginBtn" class="admin-login-btn">
+            <i class="fas fa-user-cog"></i>
+          </button>
+        </div>
+
+        <span class="menu-toggle" onclick="toggleMenu()"
+          ><i class="fa-solid fa-utensils"></i
+        ></span>
+      </div>
+    </header>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Empty Cart Prompt -->
+    <div class="empty-cart-prompt" id="emptyCartPrompt">
+      <div class="empty-cart-container">
+        <i class="fas fa-shopping-cart"></i>
+        <h3>Your Cart is Empty</h3>
+        <p>Please add items to your cart before proceeding to checkout.</p>
+        <div class="empty-cart-actions">
+          <button class="btn" id="closeEmptyCart">Close</button>
+          <button class="btn" id="browseMenu">Browse Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <main class="main-content">
+      <section class="hero">
+        <div class="container">
+          <h2>Igbo Cultural Cuisines Crafted with Passion</h2>
+          <p>
+            Experience the perfect blend of tradition and innovation in every
+            bite
+          </p>
+          <a href="#menu" class="btn">Explore Menu</a>
+        </div>
+      </section>
+
+      <section id="menu" class="menu-section">
+        <div class="container">
+          <h2 class="section-title">Our Menu</h2>
+          <div class="category-buttons">
+            <button class="category-btn active" data-category="all">All</button>
+            <button class="category-btn" data-category="soups">Soups</button>
+            <button class="category-btn" data-category="starters">Starters</button>
+            <button class="category-btn" data-category="main courses">
+              Main Courses
+            </button>
+            <button class="category-btn" data-category="noodles">
+              Noodles
+            </button>
+            <button class="category-btn" data-category="drinks">Drinks</button>
+          </div>
+          <div class="menu-items" id="menuItems">
+            <!-- Menu items will be loaded here -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Checkout Modal -->
+    <div class="checkout-modal" id="checkoutModal">
+      <div class="checkout-container">
+        <div class="checkout-header">
+          <h2>Your Order</h2>
+          <button class="close-checkout">&times;</button>
+        </div>
+
+        <div class="checkout-body">
+          <div class="cart-items" id="cartItems">
+            <!-- Cart items will be loaded here -->
+          </div>
+
+          <div class="cart-summary">
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span id="subtotal">₦0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery Fee:</span>
+              <span id="deliveryFee">₦1,500.00</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total:</span>
+              <span id="totalAmount">₦1,500.00</span>
+            </div>
+
+            <div class="checkout-actions">
+              <button class="btn btn-clear" id="clearCart">Clear Cart</button>
+              <button class="btn btn-checkout" id="proceedToCheckout">
+                Checkout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="customer-details-modal" id="customerDetailsModal">
+      <div class="customer-details-container">
+        <div class="customer-details-header">
+          <h2>Customer Information</h2>
+          <button class="close-customer-details">&times;</button>
+        </div>
+
+        <form id="customerDetailsForm">
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" required />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" required />
+          </div>
+
+          <div class="form-group">
+            <label for="state">State</label>
+            <select id="state" required>
+              <option value="" disabled selected>Select your state</option>
+              <option value="Abia">Abia</option>
+              <option value="Adamawa">Adamawa</option>
+              <option value="Akwa Ibom">Akwa Ibom</option>
+              <option value="Anambra">Anambra</option>
+              <option value="Bauchi">Bauchi</option>
+              <option value="Bayelsa">Bayelsa</option>
+              <option value="Benue">Benue</option>
+              <option value="Borno">Borno</option>
+              <option value="Cross River">Cross River</option>
+              <option value="Delta">Delta</option>
+              <option value="Ebonyi">Ebonyi</option>
+              <option value="Edo">Edo</option>
+              <option value="Ekiti">Ekiti</option>
+              <option value="Enugu">Enugu</option>
+              <option value="FCT">Federal Capital Territory</option>
+              <option value="Gombe">Gombe</option>
+              <option value="Imo">Imo</option>
+              <option value="Jigawa">Jigawa</option>
+              <option value="Kaduna">Kaduna</option>
+              <option value="Kano">Kano</option>
+              <option value="Katsina">Katsina</option>
+              <option value="Kebbi">Kebbi</option>
+              <option value="Kogi">Kogi</option>
+              <option value="Kwara">Kwara</option>
+              <option value="Lagos">Lagos</option>
+              <option value="Nasarawa">Nasarawa</option>
+              <option value="Niger">Niber</option>
+              <option value="Ogun">Ogun</option>
+              <option value="Ondo">Ondo</option>
+              <option value="Osun">Osun</option>
+              <option value="Oyo">Oyo</option>
+              <option value="Plateau">Plateau</option>
+              <option value="Rivers">Rivers</option>
+              <option value="Sokoto">Sokoto</option>
+              <option value="Taraba">Taraba</option>
+              <option value="Yobe">Yobe</option>
+              <option value="Zamfara">Zamfara</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="address">Delivery Address</label>
+            <textarea id="address" rows="3" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="deliveryNotes">Delivery Instructions (Optional)</label>
+            <textarea id="deliveryNotes" rows="2"></textarea>
+          </div>
+
+          <div class="payment-methods">
+            <h3>Payment Method</h3>
+            <div class="payment-options">
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="cod" checked />
+                <span>Cash on Delivery</span>
+              </label>
+
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="bank" />
+                <span>Bank Transfer</span>
+              </label>
+
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="paystack" />
+                <span>Paystack</span>
+              </label>
+
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="flutterwave" />
+                <span>Flutterwave</span>
+              </label>
+            </div>
+
+            <div class="bank-details" id="bankDetails">
+              <h4>Bank Transfer Details</h4>
+              <div class="bank-info">
+                <p><strong>Bank Name:</strong> Zenith Bank</p>
+                <p><strong>Account Name:</strong>Joseph's Pot Ltd</p>
+                <p>
+                  <strong>Account Number:</strong>
+                  <span id="accountNumber">1012345678</span>
+                  <button class="copy-btn" id="copyAccountNumber">Copy</button>
+                </p>
+              </div>
+              <div class="proof-view-modal" id="proofViewModal">
+                <div class="proof-view-container">
+                  <div class="proof-view-header">
+                    <h2>Proof of Payment</h2>
+                    <button class="close-proof-view">&times;</button>
+                  </div>
+                  <div class="proof-view-body"> 
+                    <img id="proofImage" src="" alt="Proof of Payment" style="max-width: 100%; max-height: 70vh; object-fit: contain;" />
+                  </div>
+                </div>
+                
+              </div>
+
+              
+              
+              <div class="proof-upload">
+                <label for="proofUpload">Upload Proof of Payment:</label>
+                <input type="file" id="proofUpload" accept="image/*,.pdf" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-back" id="backToCart">
+              Back to Cart
+            </button>
+            <button type="submit" class="btn btn-submit">Submit Order</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div class="receipt-modal" id="receiptModal">
+      <div class="receipt-container">
+        <div class="receipt-header">
+          <div class="receipt-logo">
+            <img
+              src="./images/logo3.png"
+              alt="Joseph's Pot Logo"
+              class="logo-img"
+            />
+            <h2>Joseph's<span>Pot</span></h2>
+          </div>
+          <div class="receipt-meta">
+            <p>Order #<span id="receiptOrderId">GD12345</span></p>
+            <p><span id="receiptDate">July 30, 2025</span></p>
+          </div>
+        </div>
+
+        <div class="receipt-body">
+          <div class="customer-info">
+            <h3>Customer Details</h3>
+            <p>
+              <strong>Name:</strong>
+              <span id="receiptCustomerName">John Doe</span>
+            </p>
+            <p>
+              <strong>Email:</strong>
+              <span id="receiptCustomerEmail">johndoe@example.com</span>
+            </p>
+            <p>
+              <strong>Phone:</strong>
+              <span id="receiptCustomerPhone">+1234567890</span>
+            </p>
+            <p>
+              <strong>State:</strong>
+              <span id="receiptCustomerState">Lagos</span>
+            </p>
+            <p>
+              <strong>Address:</strong>
+              <span id="receiptCustomerAddress"
+                >123 Main St, City, Country</span
+              >
+            </p>
+          </div>
+
+          <div class="order-summary">
+            <h3>Order Summary</h3>
+            <table class="receipt-items" id="receiptItems">
+              <tr>
+                <th class="item-name">Item</th>
+                <th class="item-qty">Qty</th>
+                <th class="item-price">Price</th>
+              </tr>
+              <!-- Receipt items will be loaded here -->
+            </table>
+
+            <div class="receipt-totals">
+              <div class="total-row">
+                <span>Subtotal:</span>
+                <span id="receiptSubtotal">₦0.00</span>
+              </div>
+              <div class="total-row">
+                <span>Delivery Fee:</span>
+                <span id="receiptDeliveryFee">₦1,500.00</span>
+              </div>
+              <div class="total-row grand-total">
+                <span>Total:</span>
+                <span id="receiptTotal">₦1,500.00</span>
+              </div>
+            </div>
+
+            <div class="payment-info">
+              <h3>Payment Information</h3>
+              <p>
+                Method: <span id="receiptPaymentMethod">Cash on Delivery</span>
+              </p>
+              <div id="receiptPaymentDetails">
+                <!-- Payment details will be shown here -->
+              </div>
+              <div class="payment-status">
+                <div class="status-stamp paid">PAID</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="receipt-qr" id="receiptQrCode"></div>
+        </div>
+
+        <div class="receipt-footer">
+          <p class="thank-you">Thank you for your order!</p>
+          <p class="watermark">
+            Joseph's Pot © 2025 | This is a computer generated receipt
+          </p>
+
+          <div class="receipt-actions">
+            <button class="btn btn-print" id="printReceipt">
+              <i class="fas fa-print"></i> Print
+            </button>
+            <button class="btn btn-download" id="downloadReceipt">
+              <i class="fas fa-download"></i> Download
+            </button>
+            <button class="btn btn-share whatsapp" id="shareWhatsApp">
+              <i class="fab fa-whatsapp"></i> Share
+            </button>
+            <button class="btn btn-share email" id="shareEmail">
+              <i class="fas fa-envelope"></i> Email
+            </button>
+            <button class="btn btn-close" id="closeReceipt">
+              <i class="fas fa-times"></i> Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="admin-login-modal" id="adminLoginModal">
+      <div class="admin-login-container">
+        <div class="admin-login-header">
+          <h2>Admin Login</h2>
+          <button class="close-admin-login">&times;</button>
+        </div>
+        <form id="adminLoginForm">
+          <div class="form-group">
+            <label for="adminUsername">Username</label>
+            <input type="text" id="adminUsername" required />
+          </div>
+          <div class="form-group">
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" required />
+          </div>
+          <button type="submit" class="btn btn-admin-login">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Admin Dashboard Modal -->
+    <div class="admin-dashboard-modal" id="adminDashboard">
+      <div class="admin-dashboard-container">
+        <div class="admin-dashboard-header">
+          <h2>Admin Dashboard</h2>
+          <button class="close-admin-dashboard">&times;</button>
+        </div>
+        <div class="admin-dashboard-body">
+          <div class="dashboard-stats">
+            <div class="stat-card">
+              <h3>Total Orders</h3>
+              <p id="totalOrdersCount">0</p>
+            </div>
+            <div class="stat-card">
+              <h3>Pending Orders</h3>
+              <p id="pendingOrdersCount">0</p>
+            </div>
+            <div class="stat-card">
+              <h3>Revenue</h3>
+              <p id="totalRevenue">₦0.00</p>
+            </div>
+          </div>
+
+          <div class="dashboard-tabs">
+            <button class="dashboard-tab active" data-tab="pending">
+              Pending Orders
+            </button>
+            <button class="dashboard-tab" data-tab="completed">
+              Completed Orders
+            </button>
+            <button class="dashboard-tab" data-tab="all">All Orders</button>
+          </div>
+
+          <div class="recent-orders">
+            <h3 id="ordersTableTitle">Pending Orders</h3>
+            <div class="orders-table-container">
+              <table class="orders-table" id="ordersTable">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Amount</th>
+                    <th>Payment Method</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Proof</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                  <!-- Orders will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="admin-actions">
+            <button class="btn btn-logout" id="adminLogout">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Password Modal -->
+    <div class="admin-password-modal" id="adminPasswordModal">
+      <div class="admin-password-container">
+        <div class="admin-password-header">
+          <h2>Admin Verification</h2>
+          <button class="close-admin-password">&times;</button>
+        </div>
+        <div class="admin-password-body">
+          <p id="passwordPrompt">
+            Please enter your admin password to continue
+          </p>
+          <div class="form-group">
+            <label for="adminActionPassword">Admin Password</label>
+            <input type="password" id="adminActionPassword" required />
+          </div>
+          <div class="password-actions">
+            <button class="btn btn-back" id="cancelPassword">Cancel</button>
+            <button class="btn btn-submit" id="submitPassword">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+      <div class="footer-glass">
+        <div class="footer-glass-inner">
+          <div class="footer-content">
+            <div class="footer-column">
+              <img src="./images/logo.jpg" alt="" width="60px" height="60px" />
+              <p>
+                Authentic taste, unforgettable experience.<br />Serving
+                happiness from Owerri, Nigeria.
+              </p>
+              <div class="social-links">
+                <a href="https://facebook.com" target="_blank"
+                  ><i class="fab fa-facebook-f"></i
+                ></a>
+                <a href="https://instagram.com" target="_blank"
+                  ><i class="fab fa-instagram"></i
+                ></a>
+                <a href="https://twitter.com" target="_blank"
+                  ><i class="fab fa-twitter"></i
+                ></a>
+                <a href="https://tiktok.com" target="_blank"
+                  ><i class="fab fa-tiktok"></i
+                ></a>
+              </div>
+            </div>
+
+            <div class="footer-column">
+              <h4>Quick Links</h4>
+              <ul>
+                <li><a href="index.php">Home</a></li>
+                <li><a href="about.php">About</a></li>
+                <li><a href="menu.php">Menu</a></li>
+                <li><a href="GALLERY.php">Gallery</a></li>
+                <li><a href="contact.php">Contact</a></li>
+                
+              </ul>
+            </div>
+
+            <div class="footer-column">
+              <h4><i class="fas fa-clock"></i> Opening Hours</h4>
+              <p>
+                Monday – Friday: 08:30 AM – 9:00 PM<br />
+                Saturday: 08:00 AM – 09:00 PM<br />
+                Sunday: 12:00 PM – 09:00 PM
+              </p>
+            </div>
+
+            <div class="footer-column">
+              <h4><i class="fas fa-map-marker-alt"></i> Visit Us</h4>
+              <p>
+                 Plot 120,<br>
+                  Ikenegbu Layout by Maris Junction, Owerri<br>
+                  Imo State, Nigeria<br>
+                <a
+                  href="https://maps.google.com?q=Joseph's Pot Owerri"
+                  target="_blank"
+                  >📍 <span> Get Directions</span></a
+                >
+              </p>
+            </div>
+          </div>
+
+          <div class="footer-bottom">
+            <p>&copy; 2025 Joseph's Pot. All Rights Reserved | Developed by ERIBS Tech</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <button id="scrollTopBtn" aria-label="Scroll to Top">
+      ↑</i>
+    </button>
+
+    <!-- WhatsApp Chat Bubble -->
+    <a href="https://wa.me/2348104344994" class="whatsapp-chat" target="_blank">
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/124/124034.png"
+        alt="WhatsApp"
+      />
+    </a>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+
+    <script defer src="./JAVASCRIPT/order-online.js"></script>
+  </body>
+</html>
