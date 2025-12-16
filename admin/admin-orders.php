@@ -846,7 +846,7 @@
             <ul class="menu-items">
                 <li class="menu-label">Main</li>
                 <li class="menu-item">
-                    <a href="admin-dashboard.php">
+                    <a href="dashboard.php">
                         <i class="fas fa-home"></i>
                         <span>Dashboard</span>
                     </a>

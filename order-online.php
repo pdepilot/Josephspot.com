@@ -53,13 +53,6 @@
           ></a>
         </div>
 
-        <!-- Add this to your navbar -->
-        <!-- <div class="admin-login-button">
-          <button id="adminLoginBtn" class="admin-login-btn">
-            <i class="fas fa-user-cog"></i>
-          </button>
-        </div> -->
-
         <span class="menu-toggle" onclick="toggleMenu()"
           ><i class="fa-solid fa-utensils"></i
         ></span>
@@ -413,26 +406,6 @@
       </div>
     </div>
 
-    <!-- Admin Login Modal -->
-    <div class="admin-login-modal" id="adminLoginModal">
-      <div class="admin-login-container">
-        <div class="admin-login-header">
-          <h2>Admin Login</h2>
-          <button class="close-admin-login">&times;</button>
-        </div>
-        <form id="adminLoginForm">
-          <div class="form-group">
-            <label for="adminUsername">Username</label>
-            <input type="text" id="adminUsername" required />
-          </div>
-          <div class="form-group">
-            <label for="adminPassword">Password</label>
-            <input type="password" id="adminPassword" required />
-          </div>
-          <button type="submit" class="btn btn-admin-login">Login</button>
-        </form>
-      </div>
-    </div>
 
     <!-- Admin Dashboard Modal -->
     <div class="admin-dashboard-modal" id="adminDashboard">
@@ -490,38 +463,9 @@
               </table>
             </div>
           </div>
-
-          <!-- <div class="admin-actions">
-            <button class="btn btn-logout" id="adminLogout">
-              <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-          </div> -->
         </div>
       </div>
     </div>
-
-    <!-- Admin Password Modal -->
-    <!-- <div class="admin-password-modal" id="adminPasswordModal">
-      <div class="admin-password-container">
-        <div class="admin-password-header">
-          <h2>Admin Verification</h2>
-          <button class="close-admin-password">&times;</button>
-        </div>
-        <div class="admin-password-body">
-          <p id="passwordPrompt">
-            Please enter your admin password to continue
-          </p>
-          <div class="form-group">
-            <label for="adminActionPassword">Admin Password</label>
-            <input type="password" id="adminActionPassword" required />
-          </div>
-          <div class="password-actions">
-            <button class="btn btn-back" id="cancelPassword">Cancel</button>
-            <button class="btn btn-submit" id="submitPassword">Confirm</button>
-          </div>
-        </div>
-      </div>
-    </div> -->
 
     <!-- Footer Section -->
     <footer class="footer">

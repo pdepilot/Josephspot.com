@@ -961,7 +961,7 @@ addEventSliderStyles();
 
 // ============================================
 // RESERVATION FORM SECTION STARTS HERE
-// ============================================
+
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("reservationForm");
   const successNotification = document.getElementById("successMessage");
@@ -992,7 +992,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   timeInput.querySelector(`option[value="${defaultTime}"]`).selected = true;
 
-  // Form submission handler
+  // Form submission handler - UPDATED TO SAVE TO DATABASE
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -1003,42 +1003,50 @@ document.addEventListener("DOMContentLoaded", function () {
     submitBtn.disabled = true;
 
     try {
+      // Get form data
       const formData = new FormData(form);
-      // Simulate API call delay for demo
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      const response = await fetch(form.action, {
-        method: "POST",
-        body: formData,
-        headers: {
-          Accept: "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        },
+      const formObject = {};
+      formData.forEach((value, key) => {
+        formObject[key] = value;
       });
 
-      if (response.ok) {
+      // Submit to our PHP handler
+      const response = await fetch('submit-reservation.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formObject)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
         // Show success message
-        form.reset();
         successNotification.style.display = "flex";
         errorNotification.style.display = "none";
+        
+        // Optionally reset the form
+        form.reset();
+        
         // Reset floating labels
-        document
-          .querySelectorAll(
-            ".floating input, .floating textarea, .floating select"
-          )
+        document.querySelectorAll(".floating input, .floating textarea, .floating select")
           .forEach((el) => {
             el.dispatchEvent(new Event("change"));
           });
+        
         // Hide success message after 5 seconds
         setTimeout(() => {
           successNotification.style.display = "none";
         }, 5000);
       } else {
-        throw new Error("Form submission failed");
+        throw new Error(result.message || "Form submission failed");
       }
     } catch (error) {
       console.error("Error:", error);
       errorNotification.style.display = "flex";
       successNotification.style.display = "none";
+      
       // Hide error message after 5 seconds
       setTimeout(() => {
         errorNotification.style.display = "none";
@@ -1050,6 +1058,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // Rest of your existing JavaScript remains the same...
   // Enhance select elements
   document.querySelectorAll("select").forEach((select) => {
     select.addEventListener("change", function () {

@@ -1,3 +1,4 @@
+// ==================== SECTION 1: NAVIGATION BEHAVIOR ====================
 // Scroll effect for navbar
 window.addEventListener("scroll", function () {
   const navbar = document.getElementById("navbar");
@@ -37,7 +38,9 @@ document.querySelectorAll(".nav-links a").forEach((link) => {
     }
   });
 });
+// ==================== END SECTION 1: NAVIGATION BEHAVIOR ====================
 
+// ==================== SECTION 2: MAIN APPLICATION LOGIC ====================
 document.addEventListener("DOMContentLoaded", function () {
   // 1. Menu Data
   const menuItems = [
@@ -403,6 +406,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let currentAction = null;
   let currentOrderId = null;
 
+  // ==================== SECTION 3: APP INITIALIZATION ====================
   // 4. Initialize App
   function init() {
     console.log("Initializing app");
@@ -504,7 +508,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     console.log("Orders initialized:", orders);
   }
+  // ==================== END SECTION 3: APP INITIALIZATION ====================
 
+  // ==================== SECTION 4: MENU RENDERING ====================
   // 5. Render Menu Items
   function renderMenuItems(category = "all") {
     menuItemsContainer.innerHTML = "";
@@ -532,7 +538,9 @@ document.addEventListener("DOMContentLoaded", function () {
       menuItemsContainer.appendChild(menuItemElement);
     });
   }
+  // ==================== END SECTION 4: MENU RENDERING ====================
 
+  // ==================== SECTION 5: EVENT LISTENERS SETUP ====================
   // 6. Setup Event Listeners
   function setupEventListeners() {
     categoryButtons.forEach((button) => {
@@ -628,7 +636,9 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("ordersTableBody not found");
     }
   }
+  // ==================== END SECTION 5: EVENT LISTENERS SETUP ====================
 
+  // ==================== SECTION 6: ADMIN UTILITY FUNCTIONS ====================
   function updateOrdersTableTitle() {
     console.log("Updating table title for tab:", currentTab);
     switch (currentTab) {
@@ -658,7 +668,9 @@ document.addEventListener("DOMContentLoaded", function () {
         return '<span class="payment-badge">' + method + "</span>";
     }
   }
+  // ==================== END SECTION 6: ADMIN UTILITY FUNCTIONS ====================
 
+  // ==================== SECTION 7: CART MANAGEMENT FUNCTIONS ====================
   // 7. Cart Functions
   function addToCart(itemId) {
     const existingItem = cart.find((item) => item.id === itemId);
@@ -769,7 +781,9 @@ document.addEventListener("DOMContentLoaded", function () {
     subtotalElement.textContent = `₦${subtotal.toLocaleString()}`;
     totalAmountElement.textContent = `₦${total.toLocaleString()}`;
   }
+  // ==================== END SECTION 7: CART MANAGEMENT FUNCTIONS ====================
 
+  // ==================== SECTION 8: MODAL CONTROL FUNCTIONS ====================
   // 8. Modal Functions
   function openCheckoutModal() {
     checkoutModal.style.display = "flex";
@@ -876,7 +890,9 @@ document.addEventListener("DOMContentLoaded", function () {
   function handleAdminLogout() {
     closeAdminDashboardModal();
   }
+  // ==================== END SECTION 8: MODAL CONTROL FUNCTIONS ====================
 
+  // ==================== SECTION 9: PAYMENT HANDLING FUNCTIONS ====================
   // 9. Payment Handling
   function handlePaymentMethodChange(e) {
     bankDetailsSection.style.display = e.target.value === "bank" ? "block" : "none";
@@ -896,7 +912,9 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => (copyAccountNumberBtn.textContent = originalText), 2000);
     });
   }
+  // ==================== END SECTION 9: PAYMENT HANDLING FUNCTIONS ====================
 
+  // ==================== SECTION 10: FORM HANDLING FUNCTIONS ====================
   // 10. Form Handling
   async function handleFormSubmission(e) {
     e.preventDefault();
@@ -1110,7 +1128,9 @@ document.addEventListener("DOMContentLoaded", function () {
       alert(orderDetails);
     }
   }
+  // ==================== END SECTION 10: FORM HANDLING FUNCTIONS ====================
 
+  // ==================== SECTION 11: ADMIN DATA MANAGEMENT ====================
   function loadAdminData() {
     console.log("Loading admin data for tab:", currentTab);
     let orders = JSON.parse(localStorage.getItem("orders"));
@@ -1226,7 +1246,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   }
+  // ==================== END SECTION 11: ADMIN DATA MANAGEMENT ====================
 
+  // ==================== SECTION 12: RECEIPT GENERATION & SHARING ====================
   function generateReceipt(formData = {}, items = [], subtotal = 0, totalAmount = 0) {
     const orderId = "GD" + Math.floor(10000 + Math.random() * 90000);
     const now = new Date();
@@ -1404,7 +1426,9 @@ document.addEventListener("DOMContentLoaded", function () {
       "_blank"
     );
   }
+  // ==================== END SECTION 12: RECEIPT GENERATION & SHARING ====================
 
+  // ==================== SECTION 13: PAYMENT GATEWAY INTEGRATION ====================
   function processPaystackPayment(formData, subtotal, amount) {
     showProcessingState(true);
 
@@ -1515,7 +1539,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   }
+  // ==================== END SECTION 13: PAYMENT GATEWAY INTEGRATION ====================
 
+  // ==================== SECTION 14: UI UTILITY FUNCTIONS ====================
   function animateCartIcon() {
     cartIcon.style.transform = "scale(1.2)";
     setTimeout(() => {
@@ -1545,11 +1571,15 @@ document.addEventListener("DOMContentLoaded", function () {
     emptyCartPrompt.style.display = "none";
     document.body.style.overflow = "auto";
   }
+  // ==================== END SECTION 14: UI UTILITY FUNCTIONS ====================
 
+  // ==================== SECTION 15: APP FINAL INITIALIZATION ====================
   // 15. Initialize the App
   init();
 });
+// ==================== END SECTION 15: APP FINAL INITIALIZATION ====================
 
+// ==================== SECTION 16: GLOBAL UI CONTROLS ====================
 // Scroll To Top Button
 const scrollBtn = document.getElementById("scrollTopBtn");
 window.onscroll = function () {
@@ -1566,3 +1596,4 @@ scrollBtn.onclick = function () {
 // WhatsApp link
 const whatsappNumber = "2349064296917";
 const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hello, I would like to place an order")}`;
+// ==================== END SECTION 16: GLOBAL UI CONTROLS ====================

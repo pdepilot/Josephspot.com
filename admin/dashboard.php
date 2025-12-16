@@ -81,7 +81,7 @@ function getDashboardStats($conn)
     $stats = [
         'today_orders' => 0,
         'total_revenue' => 0,
-        'total_customers' => 0,
+        'active_orders' => 0, // Changed from total_customers to active_orders
         'today_reservations' => 0
     ];
 
@@ -114,22 +114,15 @@ function getDashboardStats($conn)
         $stats['total_revenue'] = rand(280000, 350000); // Fallback random data
     }
 
-    // Total customers - Check if customers table exists or use DISTINCT email from orders
-    if (in_array('customers', $table_list)) {
-        $result = $conn->query("SELECT COUNT(*) as count FROM customers");
+    // Active Orders - Count orders with status 'pending' or 'processing'
+    if (in_array('orders', $table_list)) {
+        $result = $conn->query("SELECT COUNT(*) as count FROM orders WHERE order_status IN ('pending', 'processing')");
         if ($result) {
             $row = $result->fetch_assoc();
-            $stats['total_customers'] = $row['count'];
-        }
-    } else if (in_array('orders', $table_list)) {
-        // Use distinct customer emails from orders table as customer count
-        $result = $conn->query("SELECT COUNT(DISTINCT customer_email) as count FROM orders");
-        if ($result) {
-            $row = $result->fetch_assoc();
-            $stats['total_customers'] = $row['count'];
+            $stats['active_orders'] = $row['count'];
         }
     } else {
-        $stats['total_customers'] = rand(2500, 3000); // Fallback random data
+        $stats['active_orders'] = rand(15, 25); // Fallback random data
     }
 
     // Today's reservations
@@ -571,6 +564,87 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             color: var(--secondary);
         }
 
+        /* User Menu Dropdown Styles */
+        .user-menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: none;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .user-menu-dropdown.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .user-menu-header {
+            padding: 15px;
+            background: var(--gray);
+            border-bottom: 1px solid var(--gray-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-menu-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .user-menu-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .user-menu-info p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .user-menu-items {
+            list-style: none;
+        }
+
+        .user-menu-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-menu-item:hover {
+            background: var(--gray);
+        }
+
+        .user-menu-item i {
+            font-size: 1rem;
+            color: var(--text-light);
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-menu-item span {
+            font-size: 0.9rem;
+        }
+
         .notification-badge {
             position: absolute;
             top: -2px;
@@ -772,7 +846,7 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             background: var(--success);
         }
 
-        .stat-card.customers::before {
+        .stat-card.active-orders::before { /* Changed from customers to active-orders */
             background: var(--warning);
         }
 
@@ -794,7 +868,7 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             color: var(--success);
         }
 
-        .stat-card.customers i {
+        .stat-card.active-orders i { /* Changed from customers to active-orders */
             color: var(--warning);
         }
 
@@ -1418,6 +1492,14 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                 width: auto;
                 max-height: 60vh;
             }
+            
+            .user-menu-dropdown {
+                position: fixed;
+                top: 70px;
+                right: 15px;
+                left: 15px;
+                width: auto;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1516,6 +1598,12 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             }
             
             .notification-dropdown {
+                width: calc(100% - 30px);
+                left: 15px;
+                right: 15px;
+            }
+            
+            .user-menu-dropdown {
                 width: calc(100% - 30px);
                 left: 15px;
                 right: 15px;
@@ -1689,8 +1777,32 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                                 </ul>
                             </div>
                         </div>
-                        <div class="user-menu">
+                        <div class="user-menu" id="userMenuBtn">
                             <i class="fas fa-user-circle"></i>
+                            <!-- User Menu Dropdown -->
+                            <div class="user-menu-dropdown" id="userMenuDropdown">
+                                <div class="user-menu-header">
+                                    <div class="user-menu-avatar"><?php echo $user_initials; ?></div>
+                                    <div class="user-menu-info">
+                                        <h4><?php echo htmlspecialchars($username); ?></h4>
+                                        <p>Super Admin</p>
+                                    </div>
+                                </div>
+                                <ul class="user-menu-items">
+                                    <li class="user-menu-item" onclick="window.location.href='admin-settings.php'">
+                                        <i class="fas fa-user-cog"></i>
+                                        <span>Profile Settings</span>
+                                    </li>
+                                    <li class="user-menu-item" onclick="window.location.href='admin-settings.php'">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Account Settings</span>
+                                    </li>
+                                    <li class="user-menu-item" onclick="window.location.href='admin-logout.php'">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1716,12 +1828,13 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                     </div>
                 </div>
 
-                <div class="stat-card customers reveal reveal-delay-2">
-                    <i class="fas fa-users"></i>
-                    <div class="stat-value"><?php echo $dashboard_stats['total_customers']; ?></div>
-                    <div class="stat-label">Total Customers</div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i> 5% from last month
+                <!-- Changed from "Total Customers" to "Active Orders" -->
+                <div class="stat-card active-orders reveal reveal-delay-2">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-value"><?php echo $dashboard_stats['active_orders']; ?></div>
+                    <div class="stat-label">Active Orders</div>
+                    <div class="stat-change negative">
+                        <i class="fas fa-arrow-down"></i> 2 from yesterday
                     </div>
                 </div>
 
@@ -2166,6 +2279,8 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
         const notificationList = document.getElementById('notificationList');
         const markAllReadBtn = document.getElementById('markAllRead');
         const notificationBadge = document.querySelector('.notification-badge');
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userMenuDropdown = document.getElementById('userMenuDropdown');
 
         // Mobile sidebar toggler functionality
         mobileMenuToggle.addEventListener('click', function() {
@@ -2274,6 +2389,14 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             });
         }
 
+        // User Menu functionality
+        userMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userMenuDropdown.classList.toggle('active');
+            // Close notification dropdown if open
+            notificationDropdown.classList.remove('active');
+        });
+
         // Notification functionality
         function renderNotifications() {
             notificationList.innerHTML = '';
@@ -2334,12 +2457,20 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
         notificationIcon.addEventListener('click', function(e) {
             e.stopPropagation();
             notificationDropdown.classList.toggle('active');
+            // Close user menu dropdown if open
+            userMenuDropdown.classList.remove('active');
         });
 
-        // Close dropdown when clicking outside
+        // Close dropdowns when clicking outside
         document.addEventListener('click', function(e) {
+            // Close notification dropdown
             if (!notificationIcon.contains(e.target) && !notificationDropdown.contains(e.target)) {
                 notificationDropdown.classList.remove('active');
+            }
+            
+            // Close user menu dropdown
+            if (!userMenuBtn.contains(e.target) && !userMenuDropdown.contains(e.target)) {
+                userMenuDropdown.classList.remove('active');
             }
         });
 
