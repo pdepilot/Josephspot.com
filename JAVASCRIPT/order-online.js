@@ -583,7 +583,11 @@ document.addEventListener("DOMContentLoaded", function () {
     downloadReceiptBtn.addEventListener("click", downloadReceipt);
     shareWhatsAppBtn.addEventListener("click", shareViaWhatsApp);
     shareEmailBtn.addEventListener("click", shareViaEmail);
-    closeReceiptBtn.addEventListener("click", closeReceiptModal);
+    if (closeReceiptBtn) {
+      closeReceiptBtn.addEventListener("click", closeReceiptModal);
+    } else {
+      console.warn("closeReceipt button not found");
+    }
   }
 
   // Setup Admin Event Listeners
@@ -1011,8 +1015,51 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
+    // Prepare order data for database submission
+    const orderData = {
+      customerName: formData.fullName,
+      customerEmail: formData.email,
+      customerPhone: formData.phone,
+      customerState: formData.state || null,
+      customerAddress: formData.address,
+      deliveryNotes: formData.deliveryNotes || null,
+      items: [...cart],
+      subtotal: subtotal,
+      deliveryFee: 1500,
+      total: totalAmount,
+      paymentMethod: formData.paymentMethod,
+      proofOfPayment: proofOfPayment,
+      status: status
+    };
+
+    // Submit to database
+    let dbOrderId = null;
+    try {
+      const response = await fetch('submit-order.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        dbOrderId = result.order_id;
+        console.log('Order saved to database:', dbOrderId);
+      } else {
+        console.error('Database save failed:', result.message);
+        // Continue with localStorage save even if DB save fails
+      }
+    } catch (error) {
+      console.error('Error submitting order to database:', error);
+      // Continue with localStorage save even if DB save fails
+    }
+
+    // Create order object (use DB order_id if available, otherwise generate one)
     const order = {
-      id: "GD" + Math.floor(10000 + Math.random() * 90000),
+      id: dbOrderId || ("GD" + Math.floor(10000 + Math.random() * 90000)),
       customerName: formData.fullName,
       customerEmail: formData.email,
       customerPhone: formData.phone,
@@ -1034,6 +1081,7 @@ document.addEventListener("DOMContentLoaded", function () {
       status: status,
     };
 
+    // Also save to localStorage for backward compatibility
     const orders = JSON.parse(localStorage.getItem("orders")) || [];
     orders.push(order);
     localStorage.setItem("orders", JSON.stringify(orders));

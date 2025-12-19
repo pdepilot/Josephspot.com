@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,23 +67,23 @@
             width: 80px;
         }
 
-        .sidebar.collapsed .logo-area h1, 
-        .sidebar.collapsed .admin-details, 
+        .sidebar.collapsed .logo-area h1,
+        .sidebar.collapsed .admin-details,
         .sidebar.collapsed .menu-label,
         .sidebar.collapsed .menu-item span {
             display: none;
         }
-        
+
         .sidebar.collapsed .admin-info {
             justify-content: center;
             padding: 15px 10px;
         }
-        
+
         .sidebar.collapsed .menu-item a {
             justify-content: center;
             padding: 15px;
         }
-        
+
         .sidebar.collapsed .menu-item i {
             margin-right: 0;
         }
@@ -93,54 +94,54 @@
                 width: 80px;
                 transform: translateX(0);
             }
-            
-            .sidebar .logo-area h1, 
-            .sidebar .admin-details, 
+
+            .sidebar .logo-area h1,
+            .sidebar .admin-details,
             .sidebar .menu-label,
             .sidebar .menu-item span {
                 display: none;
             }
-            
+
             .sidebar .admin-info {
                 justify-content: center;
                 padding: 15px 10px;
             }
-            
+
             .sidebar .menu-item a {
                 justify-content: center;
                 padding: 15px;
             }
-            
+
             .sidebar .menu-item i {
                 margin-right: 0;
             }
-            
+
             .sidebar:hover {
                 width: 260px;
                 transform: translateX(0);
             }
-            
-            .sidebar:hover .logo-area h1, 
-            .sidebar:hover .admin-details, 
+
+            .sidebar:hover .logo-area h1,
+            .sidebar:hover .admin-details,
             .sidebar:hover .menu-label,
             .sidebar:hover .menu-item span {
                 display: block;
             }
-            
+
             .sidebar:hover .admin-info {
                 justify-content: flex-start;
                 padding: 15px 20px;
             }
-            
+
             .sidebar:hover .menu-item a {
                 justify-content: flex-start;
                 padding: 12px 15px;
             }
-            
+
             .sidebar:hover .menu-item i {
                 margin-right: 12px;
             }
-            
+
             .main-content {
                 margin-left: 80px;
             }
@@ -218,7 +219,8 @@
             transition: var(--transition);
         }
 
-        .menu-item a:hover, .menu-item a.active {
+        .menu-item a:hover,
+        .menu-item a.active {
             background: rgba(255, 255, 255, 0.15);
             transform: translateX(5px);
         }
@@ -299,18 +301,21 @@
             color: var(--text-light);
         }
 
-        .notification-icon, .user-menu {
+        .notification-icon,
+        .user-menu {
             position: relative;
             cursor: pointer;
         }
 
-        .notification-icon i, .user-menu i {
+        .notification-icon i,
+        .user-menu i {
             font-size: 1.3rem;
             color: var(--primary);
             transition: var(--transition);
         }
 
-        .notification-icon:hover i, .user-menu:hover i {
+        .notification-icon:hover i,
+        .user-menu:hover i {
             color: var(--secondary);
         }
 
@@ -480,6 +485,22 @@
         .orders-table td {
             padding: 15px;
             border-bottom: 1px solid var(--gray);
+            color: var(--text) !important;
+        }
+
+        .orders-table tr.reveal.active td {
+            color: var(--text) !important;
+            opacity: 1 !important;
+        }
+
+        .orders-table tr.reveal td {
+            color: var(--text) !important;
+        }
+
+        /* Force visibility for all table cells */
+        .orders-table td {
+            opacity: 1 !important;
+            visibility: visible !important;
         }
 
         .orders-table tr:last-child td {
@@ -758,11 +779,11 @@
             .stats-cards {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
+
             .search-box input {
                 width: 180px;
             }
-            
+
             .order-filters {
                 justify-content: center;
             }
@@ -772,26 +793,26 @@
             .stats-cards {
                 grid-template-columns: 1fr;
             }
-            
+
             .header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
             }
-            
+
             .header-actions {
                 width: 100%;
                 justify-content: space-between;
             }
-            
+
             .search-box input {
                 width: 100%;
             }
-            
+
             .order-filters {
                 flex-direction: column;
             }
-            
+
             .filter-btn {
                 width: 100%;
             }
@@ -826,6 +847,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -834,7 +856,7 @@
                 <img src="../images/logo3.png" alt="Joseph's Pot Logo">
                 <h1>Admin Panel</h1>
             </div>
-            
+
             <div class="admin-info">
                 <div class="admin-avatar">AJ</div>
                 <div class="admin-details">
@@ -842,7 +864,7 @@
                     <p>Super Admin</p>
                 </div>
             </div>
-            
+
             <ul class="menu-items">
                 <li class="menu-label">Main</li>
                 <li class="menu-item">
@@ -876,7 +898,7 @@
                         <span>Order-Online Menu</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-label">Content</li>
                 <!-- <li class="menu-item">
                     <a href="admin-customers.php">
@@ -902,7 +924,7 @@
                         <span>Blog</span>
                     </a>
                 </li> -->
-                
+
                 <li class="menu-label">Settings</li>
                 <li class="menu-item">
                     <a href="admin-settings.php">
@@ -918,12 +940,15 @@
                 </li>
             </ul>
         </div>
-        
+
         <!-- Main Content -->
         <div class="main-content" id="mainContent">
             <div class="header">
                 <h2>Orders Management</h2>
                 <div class="header-actions">
+                    <button class="btn btn-primary" id="refreshOrdersBtn" style="margin-right: 10px;">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
                     <div class="search-box">
                         <i class="fas fa-search"></i>
                         <input type="text" placeholder="Search orders...">
@@ -937,7 +962,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Stats Cards -->
             <div class="stats-cards">
                 <div class="stat-card orders reveal">
@@ -948,16 +973,16 @@
                         <i class="fas fa-arrow-up"></i> 12% from yesterday
                     </div>
                 </div>
-                
+
                 <div class="stat-card revenue reveal reveal-delay-1">
-                     <i class="fa-solid fa-naira-sign"></i>
+                    <i class="fa-solid fa-naira-sign"></i>
                     <div class="stat-value">₦324,580</div>
                     <div class="stat-label">Total Revenue</div>
                     <div class="stat-change positive">
                         <i class="fas fa-arrow-up"></i> 8% from last week
                     </div>
                 </div>
-                
+
                 <div class="stat-card customers reveal reveal-delay-2">
                     <i class="fas fa-users"></i>
                     <div class="stat-value">2,847</div>
@@ -966,7 +991,7 @@
                         <i class="fas fa-arrow-up"></i> 5% from last month
                     </div>
                 </div>
-                
+
                 <div class="stat-card pending reveal reveal-delay-3">
                     <i class="fas fa-clock"></i>
                     <div class="stat-value">38</div>
@@ -976,7 +1001,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Order Filters -->
             <div class="order-filters">
                 <button class="filter-btn active" data-filter="all">All Orders</button>
@@ -985,7 +1010,7 @@
                 <button class="filter-btn" data-filter="cancelled">Cancelled</button>
                 <button class="filter-btn" data-filter="payment-pending">Payment Pending</button>
             </div>
-            
+
             <!-- Orders Table -->
             <div class="orders-table-container reveal">
                 <table class="orders-table">
@@ -1005,7 +1030,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <div class="footer">
                 <p>&copy; 2025 Joseph's Pot Admin Dashboard. All rights reserved.</p>
             </div>
@@ -1028,14 +1053,14 @@
                             <p><strong>Phone:</strong> <span id="customerPhone"></span></p>
                             <p><strong>Email:</strong> <span id="customerEmail"></span></p>
                         </div>
-                        
+
                         <div class="order-detail-group">
                             <h4>Delivery Information</h4>
                             <p><strong>Address:</strong> <span id="deliveryAddress"></span></p>
                             <p><strong>Instructions:</strong> <span id="deliveryInstructions"></span></p>
                         </div>
                     </div>
-                    
+
                     <div>
                         <div class="order-detail-group">
                             <h4>Order Information</h4>
@@ -1043,7 +1068,7 @@
                             <p><strong>Payment Method:</strong> <span id="paymentMethod"></span></p>
                             <p><strong>Status:</strong> <span id="orderStatus"></span></p>
                         </div>
-                        
+
                         <div class="order-detail-group" id="paymentProofSection" style="display: none;">
                             <h4>Payment Proof</h4>
                             <div class="payment-proof">
@@ -1053,7 +1078,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="order-items">
                     <h4>Order Items</h4>
                     <div id="orderItemsList">
@@ -1064,7 +1089,7 @@
                         <span id="orderTotalAmount"></span>
                     </div>
                 </div>
-                
+
                 <div class="modal-actions">
                     <button class="btn btn-secondary" id="cancelOrderBtn">Cancel Order</button>
                     <button class="btn btn-success" id="completeOrderBtn">Mark as Completed</button>
@@ -1075,98 +1100,9 @@
     </div>
 
     <script>
-        // Sample orders data
-        const orders = [
-            {
-                id: 'JP-2847',
-                customer: 'John Smith',
-                phone: '+234 801 234 5678',
-                email: 'john.smith@example.com',
-                date: '2025-03-15 14:30',
-                amount: 12500,
-                paymentMethod: 'card',
-                status: 'completed',
-                address: '123 Victoria Island, Lagos',
-                instructions: 'Leave at security post',
-                items: [
-                    { name: 'Ofe Owerri Special', quantity: 1, price: 6500 },
-                    { name: 'Pounded Yam', quantity: 2, price: 3000 },
-                    { name: 'Palm Wine', quantity: 1, price: 3000 }
-                ],
-                paymentProof: ''
-            },
-            {
-                id: 'JP-2848',
-                customer: 'Sarah Johnson',
-                phone: '+234 802 345 6789',
-                email: 'sarah.j@example.com',
-                date: '2025-03-15 15:45',
-                amount: 8200,
-                paymentMethod: 'transfer',
-                status: 'pending',
-                address: '45 Ikeja GRA, Lagos',
-                instructions: 'Call upon arrival',
-                items: [
-                    { name: 'Nkwobi', quantity: 1, price: 4500 },
-                    { name: 'Jollof Rice', quantity: 1, price: 2500 },
-                    { name: 'Chapman Drink', quantity: 1, price: 1200 }
-                ],
-                paymentProof: 'https://via.placeholder.com/400x200/8b4513/FFFFFF?text=Bank+Transfer+Receipt'
-            },
-            {
-                id: 'JP-2849',
-                customer: 'Michael Brown',
-                phone: '+234 803 456 7890',
-                email: 'm.brown@example.com',
-                date: '2025-03-15 16:20',
-                amount: 15300,
-                paymentMethod: 'cash',
-                status: 'pending',
-                address: '78 Lekki Phase 1, Lagos',
-                instructions: 'No instructions',
-                items: [
-                    { name: 'Egusi Delight', quantity: 1, price: 5500 },
-                    { name: 'Eba', quantity: 3, price: 4500 },
-                    { name: 'Goat Meat', quantity: 1, price: 5300 }
-                ],
-                paymentProof: ''
-            },
-            {
-                id: 'JP-2850',
-                customer: 'Grace Williams',
-                phone: '+234 804 567 8901',
-                email: 'grace.w@example.com',
-                date: '2025-03-15 17:10',
-                amount: 9600,
-                paymentMethod: 'card',
-                status: 'completed',
-                address: '22 Surulere, Lagos',
-                instructions: 'Ring bell twice',
-                items: [
-                    { name: 'Ofada Rice', quantity: 2, price: 6000 },
-                    { name: 'Pepper Soup', quantity: 1, price: 3600 }
-                ],
-                paymentProof: ''
-            },
-            {
-                id: 'JP-2851',
-                customer: 'David Okonkwo',
-                phone: '+234 805 678 9012',
-                email: 'd.okonkwo@example.com',
-                date: '2025-03-15 18:30',
-                amount: 11200,
-                paymentMethod: 'transfer',
-                status: 'pending',
-                address: '14 Yaba, Lagos',
-                instructions: 'Leave with neighbor if not home',
-                items: [
-                    { name: 'Banga Soup', quantity: 1, price: 4800 },
-                    { name: 'Starch', quantity: 2, price: 4000 },
-                    { name: 'Plantain', quantity: 1, price: 2400 }
-                ],
-                paymentProof: 'https://via.placeholder.com/400x200/8b4513/FFFFFF?text=Bank+Transfer+Receipt'
-            }
-        ];
+        // Orders data from database
+        let orders = [];
+        let currentOrderId = null;
 
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
@@ -1176,6 +1112,17 @@
         const closeModal = document.getElementById('closeModal');
         const filterBtns = document.querySelectorAll('.filter-btn');
         const searchBox = document.querySelector('.search-box input');
+        const refreshOrdersBtn = document.getElementById('refreshOrdersBtn');
+
+        // Verify critical elements exist
+        console.log('DOM Elements check:');
+        console.log('ordersTableBody:', ordersTableBody);
+        console.log('orderDetailsModal:', orderDetailsModal);
+        console.log('closeModal:', closeModal);
+
+        if (!ordersTableBody) {
+            console.error('CRITICAL: ordersTableBody element not found!');
+        }
 
         // Modal elements
         const modalOrderId = document.getElementById('modalOrderId');
@@ -1195,42 +1142,138 @@
         const completeOrderBtn = document.getElementById('completeOrderBtn');
         const printOrderBtn = document.getElementById('printOrderBtn');
 
+        // Fetch orders from database
+        async function fetchOrders(filter = 'all') {
+            // Show loading state
+            ordersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> Loading orders...</td></tr>';
+
+            try {
+                const response = await fetch(`api/get-orders.php?filter=${filter}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('API Response:', result);
+
+                if (result.success && result.orders) {
+                    console.log('Raw API orders:', result.orders);
+
+                    // Transform database format to expected format
+                    orders = result.orders.map(order => {
+                        const transformed = {
+                            id: order.order_id || order.id,
+                            customer: order.customer_name || '',
+                            phone: order.customer_phone || '',
+                            email: order.customer_email || '',
+                            date: order.created_at || new Date().toISOString(),
+                            amount: parseFloat(order.total_amount || 0),
+                            paymentMethod: order.payment_method || 'cod',
+                            status: order.order_status || 'pending',
+                            address: order.delivery_address || '',
+                            instructions: order.delivery_instructions || '',
+                            items: order.items || [],
+                            paymentProof: order.payment_proof || '',
+                            paymentStatus: order.payment_status || 'pending'
+                        };
+                        console.log('Transformed order:', transformed);
+                        return transformed;
+                    });
+
+                    console.log('All transformed orders:', orders);
+                    console.log('Orders table body element:', ordersTableBody);
+
+                    if (ordersTableBody) {
+                        renderOrders(orders);
+                        updateStats();
+                    } else {
+                        console.error('ordersTableBody element not found!');
+                    }
+                } else {
+                    console.error('Failed to fetch orders:', result.message || 'Unknown error');
+                    orders = [];
+                    if (result.orders && result.orders.length === 0) {
+                        ordersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">No orders found</td></tr>';
+                    } else {
+                        ordersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: red;">Error: ' + (result.message || 'Failed to load orders') + '</td></tr>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                orders = [];
+                ordersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: red;">Error loading orders: ' + error.message + '</td></tr>';
+            }
+        }
+
         // Filter orders
         function filterOrders(filter) {
-            let filteredOrders = orders;
-            
-            if (filter !== 'all') {
-                filteredOrders = orders.filter(order => {
-                    if (filter === 'payment-pending') {
-                        return order.status === 'pending' && order.paymentMethod === 'transfer';
-                    }
-                    return order.status === filter;
-                });
-            }
-            
-            renderOrders(filteredOrders);
+            fetchOrders(filter);
         }
 
         // Render orders in table
         function renderOrders(ordersToRender) {
+            console.log('=== RENDER ORDERS CALLED ===');
+            console.log('Orders to render:', ordersToRender);
+            console.log('Table body element:', ordersTableBody);
+
+            if (!ordersTableBody) {
+                console.error('ERROR: ordersTableBody is null!');
+                return;
+            }
+
             ordersTableBody.innerHTML = '';
-            
-            ordersToRender.forEach(order => {
+
+            if (!ordersToRender || ordersToRender.length === 0) {
+                console.log('No orders to render');
+                ordersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">No orders found</td></tr>';
+                return;
+            }
+
+            console.log(`Rendering ${ordersToRender.length} orders`);
+            let renderedCount = 0;
+
+            ordersToRender.forEach((order, index) => {
+                console.log(`Processing order ${index + 1}:`, order);
+
+                if (!order || !order.id) {
+                    console.warn(`Skipping invalid order at index ${index}:`, order);
+                    return;
+                }
+
                 const row = document.createElement('tr');
-                row.className = 'reveal';
-                
-                // Format date
-                const orderDate = new Date(order.date);
-                const formattedDate = `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                
+                row.className = 'reveal active'; // Add 'active' immediately so rows are visible
+
+                // Format date - handle both string and Date object
+                let orderDateObj;
+                if (order.date instanceof Date) {
+                    orderDateObj = order.date;
+                } else if (typeof order.date === 'string') {
+                    orderDateObj = new Date(order.date);
+                } else {
+                    orderDateObj = new Date();
+                }
+
+                // Check if date is valid
+                if (isNaN(orderDateObj.getTime())) {
+                    console.warn('Invalid date for order:', order.id, order.date);
+                    orderDateObj = new Date();
+                }
+
+                const formattedDate = `${orderDateObj.toLocaleDateString()} ${orderDateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+
                 // Status badge
                 let statusClass = '';
                 let statusText = '';
-                
-                switch(order.status) {
+
+                switch (order.status) {
                     case 'pending':
                         statusClass = 'status-pending';
                         statusText = 'Pending';
+                        break;
+                    case 'processing':
+                        statusClass = 'status-pending';
+                        statusText = 'Processing';
                         break;
                     case 'completed':
                         statusClass = 'status-completed';
@@ -1241,43 +1284,72 @@
                         statusText = 'Cancelled';
                         break;
                 }
-                
+
                 // Payment method icon
                 let paymentIcon = '';
                 let paymentText = '';
                 let paymentClass = '';
-                
-                switch(order.paymentMethod) {
-                    case 'card':
+
+                switch (order.paymentMethod) {
+                    case 'paystack':
                         paymentIcon = '<i class="fas fa-credit-card"></i>';
-                        paymentText = 'Card';
+                        paymentText = 'Paystack';
                         paymentClass = 'payment-card';
                         break;
-                    case 'cash':
+                    case 'cod':
                         paymentIcon = '<i class="fas fa-money-bill-wave"></i>';
-                        paymentText = 'Cash';
+                        paymentText = 'Cash on Delivery';
                         paymentClass = 'payment-cash';
                         break;
-                    case 'transfer':
+                    case 'bank':
                         paymentIcon = '<i class="fas fa-university"></i>';
-                        paymentText = 'Transfer';
+                        paymentText = 'Bank Transfer';
                         paymentClass = 'payment-transfer';
                         break;
+                    case 'flutterwave':
+                        paymentIcon = '<i class="fas fa-credit-card"></i>';
+                        paymentText = 'Flutterwave';
+                        paymentClass = 'payment-card';
+                        break;
+                    default:
+                        paymentIcon = '<i class="fas fa-money-bill-wave"></i>';
+                        paymentText = order.paymentMethod || 'Unknown';
+                        paymentClass = 'payment-cash';
                 }
-                
-                row.innerHTML = `
-                    <td class="order-id">${order.id}</td>
-                    <td>${order.customer}</td>
-                    <td>${formattedDate}</td>
-                    <td>₦${order.amount.toLocaleString()}</td>
-                    <td>
+
+                try {
+                    // Create cells individually with explicit styling to ensure visibility
+                    const idCell = document.createElement('td');
+                    idCell.className = 'order-id';
+                    idCell.textContent = order.id || 'N/A';
+                    idCell.style.color = '#8b4513';
+                    idCell.style.fontWeight = '600';
+
+                    const customerCell = document.createElement('td');
+                    customerCell.textContent = order.customer || 'N/A';
+                    customerCell.style.color = '#333333';
+
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = formattedDate;
+                    dateCell.style.color = '#333333';
+
+                    const amountCell = document.createElement('td');
+                    amountCell.textContent = `₦${(order.amount || 0).toLocaleString()}`;
+                    amountCell.style.color = '#333333';
+
+                    const paymentCell = document.createElement('td');
+                    paymentCell.innerHTML = `
                         <div class="payment-method ${paymentClass}">
                             ${paymentIcon}
                             <span>${paymentText}</span>
                         </div>
-                    </td>
-                    <td><span class="order-status ${statusClass}">${statusText}</span></td>
-                    <td>
+                    `;
+
+                    const statusCell = document.createElement('td');
+                    statusCell.innerHTML = `<span class="order-status ${statusClass}">${statusText}</span>`;
+
+                    const actionsCell = document.createElement('td');
+                    actionsCell.innerHTML = `
                         <div class="action-buttons">
                             <button class="action-btn view" data-id="${order.id}" title="View Order">
                                 <i class="fas fa-eye"></i>
@@ -1289,14 +1361,57 @@
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
-                    </td>
-                `;
-                
-                ordersTableBody.appendChild(row);
+                    `;
+
+                    // Append cells to row
+                    row.appendChild(idCell);
+                    row.appendChild(customerCell);
+                    row.appendChild(dateCell);
+                    row.appendChild(amountCell);
+                    row.appendChild(paymentCell);
+                    row.appendChild(statusCell);
+                    row.appendChild(actionsCell);
+
+                    ordersTableBody.appendChild(row);
+
+                    // Force the row to be visible by adding active class and setting opacity
+                    row.classList.add('active');
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+
+                    renderedCount++;
+                    console.log(`✓ Successfully rendered order ${order.id} (${renderedCount}/${ordersToRender.length})`);
+                } catch (error) {
+                    console.error(`✗ Error rendering order ${order.id}:`, error);
+                    console.error('Error details:', error.stack);
+                }
             });
-            
+
+            console.log(`=== RENDERING COMPLETE: ${renderedCount} orders rendered ===`);
+
+            if (renderedCount === 0 && ordersToRender.length > 0) {
+                console.error('WARNING: No orders were rendered despite having orders!');
+                ordersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: red;">Error: Failed to render orders. Check console for details.</td></tr>';
+            }
+
             // Add event listeners to action buttons
             document.querySelectorAll('.action-btn.view').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-id');
+                    showOrderDetails(orderId);
+                });
+            });
+
+            document.querySelectorAll('.action-btn.delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-id');
+                    if (confirm('Are you sure you want to delete this order?')) {
+                        deleteOrder(orderId);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.action-btn.edit').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const orderId = this.getAttribute('data-id');
                     showOrderDetails(orderId);
@@ -1307,13 +1422,13 @@
         // Show order details in modal
         function showOrderDetails(orderId) {
             const order = orders.find(o => o.id === orderId);
-            
+
             if (!order) return;
-            
+
             // Format date
             const orderDateObj = new Date(order.date);
             const formattedDate = `${orderDateObj.toLocaleDateString()} ${orderDateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            
+
             // Update modal content
             modalOrderId.textContent = order.id;
             customerName.textContent = order.customer;
@@ -1322,27 +1437,35 @@
             deliveryAddress.textContent = order.address;
             deliveryInstructions.textContent = order.instructions || 'None';
             orderDate.textContent = formattedDate;
-            
+
             // Payment method
             let paymentText = '';
-            switch(order.paymentMethod) {
-                case 'card':
-                    paymentText = 'Credit/Debit Card';
+            switch (order.paymentMethod) {
+                case 'paystack':
+                    paymentText = 'Paystack';
                     break;
-                case 'cash':
+                case 'cod':
                     paymentText = 'Cash on Delivery';
                     break;
-                case 'transfer':
+                case 'bank':
                     paymentText = 'Bank Transfer';
                     break;
+                case 'flutterwave':
+                    paymentText = 'Flutterwave';
+                    break;
+                default:
+                    paymentText = order.paymentMethod || 'Unknown';
             }
             paymentMethod.textContent = paymentText;
-            
+
             // Status
             let statusText = '';
-            switch(order.status) {
+            switch (order.status) {
                 case 'pending':
                     statusText = 'Pending';
+                    break;
+                case 'processing':
+                    statusText = 'Processing';
                     break;
                 case 'completed':
                     statusText = 'Completed';
@@ -1352,35 +1475,141 @@
                     break;
             }
             orderStatus.textContent = statusText;
-            
+
             // Payment proof (only for bank transfers)
-            if (order.paymentMethod === 'transfer' && order.paymentProof) {
+            if (order.paymentMethod === 'bank' && order.paymentProof) {
                 paymentProofSection.style.display = 'block';
                 paymentProofImage.src = order.paymentProof;
             } else {
                 paymentProofSection.style.display = 'none';
             }
-            
+
             // Order items
             orderItemsList.innerHTML = '';
-            order.items.forEach(item => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'order-item';
-                itemElement.innerHTML = `
-                    <div>
-                        <span class="item-name">${item.name}</span>
-                        <div><small>Qty: ${item.quantity}</small></div>
-                    </div>
-                    <div class="item-price">₦${(item.price * item.quantity).toLocaleString()}</div>
-                `;
-                orderItemsList.appendChild(itemElement);
-            });
-            
+            if (order.items && order.items.length > 0) {
+                order.items.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'order-item';
+                    const itemName = item.item_name || item.name || 'Unknown Item';
+                    const itemPrice = parseFloat(item.item_price || item.price || 0);
+                    const quantity = parseInt(item.quantity || 1);
+                    itemElement.innerHTML = `
+                        <div>
+                            <span class="item-name">${itemName}</span>
+                            <div><small>Qty: ${quantity}</small></div>
+                        </div>
+                        <div class="item-price">₦${(itemPrice * quantity).toLocaleString()}</div>
+                    `;
+                    orderItemsList.appendChild(itemElement);
+                });
+            }
+
             // Total amount
             orderTotalAmount.textContent = `₦${order.amount.toLocaleString()}`;
-            
+
+            // Store current order ID for actions
+            currentOrderId = order.id;
+
             // Show modal
             orderDetailsModal.style.display = 'flex';
+        }
+
+        // Update order status
+        async function updateOrderStatus(orderId, status) {
+            try {
+                const response = await fetch('api/update-order.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        action: 'update_status',
+                        status: status
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Update response:', result);
+
+                if (result.success) {
+                    // Refresh orders
+                    const activeFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+                    await fetchOrders(activeFilter);
+                    orderDetailsModal.style.display = 'none';
+                    alert('Order status updated successfully!');
+                    return true;
+                } else {
+                    alert('Failed to update order: ' + (result.message || 'Unknown error'));
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error updating order:', error);
+                alert('Error updating order: ' + error.message);
+                return false;
+            }
+        }
+
+        // Delete order
+        async function deleteOrder(orderId) {
+            try {
+                const response = await fetch('api/update-order.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        action: 'delete'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Delete response:', result);
+
+                if (result.success) {
+                    // Refresh orders
+                    const activeFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+                    await fetchOrders(activeFilter);
+                    if (orderDetailsModal.style.display === 'flex') {
+                        orderDetailsModal.style.display = 'none';
+                    }
+                    alert('Order deleted successfully!');
+                    return true;
+                } else {
+                    alert('Failed to delete order: ' + (result.message || 'Unknown error'));
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error deleting order:', error);
+                alert('Error deleting order: ' + error.message);
+                return false;
+            }
+        }
+
+        // Update stats cards
+        function updateStats() {
+            const totalOrders = orders.length;
+            const pendingOrders = orders.filter(o => o.status === 'pending').length;
+            const completedOrders = orders.filter(o => o.status === 'completed');
+            const totalRevenue = completedOrders.reduce((sum, o) => sum + o.amount, 0);
+
+            // Update stat cards if they exist
+            const ordersStat = document.querySelector('.stat-card.orders .stat-value');
+            const pendingStat = document.querySelector('.stat-card.pending .stat-value');
+            const revenueStat = document.querySelector('.stat-card.revenue .stat-value');
+
+            if (ordersStat) ordersStat.textContent = totalOrders;
+            if (pendingStat) pendingStat.textContent = pendingOrders;
+            if (revenueStat) revenueStat.textContent = `₦${totalRevenue.toLocaleString()}`;
         }
 
         // Close modal
@@ -1395,38 +1624,59 @@
             }
         });
 
-        // Filter buttons event listeners
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                filterOrders(this.getAttribute('data-filter'));
+        // Refresh button
+        if (refreshOrdersBtn) {
+            refreshOrdersBtn.addEventListener('click', function() {
+                const activeFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+                fetchOrders(activeFilter);
             });
-        });
+        } else {
+            console.warn('Refresh button not found');
+        }
+
+        // Filter buttons event listeners
+        if (filterBtns && filterBtns.length > 0) {
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    filterOrders(this.getAttribute('data-filter'));
+                });
+            });
+        } else {
+            console.warn('Filter buttons not found');
+        }
 
         // Search functionality
-        searchBox.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const filteredOrders = orders.filter(order => 
-                order.id.toLowerCase().includes(searchTerm) ||
-                order.customer.toLowerCase().includes(searchTerm) ||
-                order.phone.includes(searchTerm)
-            );
-            renderOrders(filteredOrders);
-        });
+        if (searchBox) {
+            searchBox.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const filteredOrders = orders.filter(order =>
+                    order.id.toLowerCase().includes(searchTerm) ||
+                    order.customer.toLowerCase().includes(searchTerm) ||
+                    order.phone.includes(searchTerm) ||
+                    order.email.toLowerCase().includes(searchTerm)
+                );
+                renderOrders(filteredOrders);
+            });
+        }
 
         // Order action buttons
-        completeOrderBtn.addEventListener('click', function() {
-            alert('Order marked as completed!');
-            orderDetailsModal.style.display = 'none';
-        });
+        if (completeOrderBtn) {
+            completeOrderBtn.addEventListener('click', function() {
+                if (currentOrderId) {
+                    updateOrderStatus(currentOrderId, 'completed');
+                }
+            });
+        }
 
-        cancelOrderBtn.addEventListener('click', function() {
-            if (confirm('Are you sure you want to cancel this order?')) {
-                alert('Order cancelled!');
-                orderDetailsModal.style.display = 'none';
-            }
-        });
+        if (cancelOrderBtn) {
+            cancelOrderBtn.addEventListener('click', function() {
+                if (currentOrderId && confirm('Are you sure you want to cancel this order?')) {
+                    updateOrderStatus(currentOrderId, 'cancelled');
+                }
+            });
+        }
 
         printOrderBtn.addEventListener('click', function() {
             alert('Printing receipt...');
@@ -1435,12 +1685,12 @@
         // Scroll Reveal Functionality
         function revealOnScroll() {
             const reveals = document.querySelectorAll('.reveal');
-            
+
             for (let i = 0; i < reveals.length; i++) {
                 const windowHeight = window.innerHeight;
                 const elementTop = reveals[i].getBoundingClientRect().top;
                 const elementVisible = 150;
-                
+
                 if (elementTop < windowHeight - elementVisible) {
                     reveals[i].classList.add('active');
                 } else {
@@ -1449,16 +1699,44 @@
             }
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Render all orders initially
-            renderOrders(orders);
-            
+        // Initialize - wait for DOM
+        function initializePage() {
+            console.log('=== INITIALIZING ADMIN ORDERS PAGE ===');
+            console.log('ordersTableBody exists:', !!ordersTableBody);
+
+            if (!ordersTableBody) {
+                console.error('ordersTableBody not found, retrying in 100ms...');
+                setTimeout(initializePage, 100);
+                return;
+            }
+
+            // Fetch and render orders from database
+            console.log('Fetching orders...');
+            fetchOrders('all');
+
             // Initialize scroll reveal
             window.addEventListener('scroll', revealOnScroll);
             // Trigger once on load to check initial position
             revealOnScroll();
+        }
+
+        // Try multiple initialization methods
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+        } else {
+            // DOM already loaded
+            initializePage();
+        }
+
+        // Also try on window load as backup
+        window.addEventListener('load', function() {
+            console.log('Window loaded, checking orders...');
+            if (orders.length === 0 && ordersTableBody) {
+                console.log('No orders found, retrying fetch...');
+                fetchOrders('all');
+            }
         });
     </script>
 </body>
+
 </html>
