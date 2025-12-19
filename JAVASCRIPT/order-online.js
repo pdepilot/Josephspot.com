@@ -1,4 +1,3 @@
-// ==================== SECTION 1: NAVIGATION BEHAVIOR ====================
 // Scroll effect for navbar
 window.addEventListener("scroll", function () {
   const navbar = document.getElementById("navbar");
@@ -38,12 +37,54 @@ document.querySelectorAll(".nav-links a").forEach((link) => {
     }
   });
 });
-// ==================== END SECTION 1: NAVIGATION BEHAVIOR ====================
 
-// ==================== SECTION 2: MAIN APPLICATION LOGIC ====================
 document.addEventListener("DOMContentLoaded", function () {
-  // 1. Menu Data
-  const menuItems = [
+  // 1. Menu Data - Will be loaded from database
+  let menuItems = [];
+  
+  // Load menu items from database
+  async function loadMenuItems() {
+    try {
+      console.log('Loading menu items from API...');
+      const response = await fetch('api/get-menu-items.php');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('API Response:', data);
+      
+      if (data.success && data.items) {
+        console.log(`Loaded ${data.items.length} menu items from database`);
+        if (data.debug) {
+          console.log('Debug info:', data.debug);
+          if (data.debug.total_items_in_db > 0 && data.items.length === 0) {
+            console.warn('⚠️ Items exist in database but none are marked as "Available". Check admin panel and set items to "Available" status.');
+          }
+        }
+        menuItems = data.items;
+        // Render with current category filter
+        renderMenuItems(currentCategory);
+      } else {
+        console.error('Failed to load menu items:', data.message || 'Unknown error');
+        // Fallback to empty array - menu will be empty until items are added via admin panel
+        menuItems = [];
+        renderMenuItems(currentCategory);
+      }
+    } catch (error) {
+      console.error('Error loading menu items:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack
+      });
+      menuItems = [];
+      renderMenuItems(currentCategory);
+    }
+  }
+  
+  // Initialize with hardcoded items as fallback (will be replaced by database)
+  const fallbackMenuItems = [
     {
       id: 1,
       title: "Ofe Owerri",
@@ -323,12 +364,15 @@ document.addEventListener("DOMContentLoaded", function () {
       image: "./images/IM33.png",
     },
   ];
-
+  
   // 2. DOM Elements
   const menuItemsContainer = document.getElementById("menuItems");
   const cartIcon = document.getElementById("cartIcon");
   const cartCount = document.querySelector(".cart-count");
   const categoryButtons = document.querySelectorAll(".category-btn");
+  
+  // Track current filter category
+  let currentCategory = "all";
   const checkoutModal = document.getElementById("checkoutModal");
   const closeCheckout = document.querySelector(".close-checkout");
   const cartItemsContainer = document.getElementById("cartItems");
@@ -362,27 +406,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const shareWhatsAppBtn = document.getElementById("shareWhatsApp");
   const shareEmailBtn = document.getElementById("shareEmail");
   const closeReceiptBtn = document.getElementById("closeReceipt");
-  // Admin Elements
-  const adminLoginBtn = document.getElementById("adminLoginBtn");
-  const adminLoginModal = document.getElementById("adminLoginModal");
-  const closeAdminLogin = document.querySelector(".close-admin-login");
-  const adminLoginForm = document.getElementById("adminLoginForm");
-  const adminDashboard = document.getElementById("adminDashboard");
-  const closeAdminDashboard = document.querySelector(".close-admin-dashboard");
-  const totalOrdersCount = document.getElementById("totalOrdersCount");
-  const pendingOrdersCount = document.getElementById("pendingOrdersCount");
-  const totalRevenue = document.getElementById("totalRevenue");
-  const ordersTableBody = document.getElementById("ordersTableBody");
-  const adminLogoutBtn = document.getElementById("adminLogout");
-  const dashboardTabs = document.querySelectorAll(".dashboard-tab");
-  const ordersTableTitle = document.getElementById("ordersTableTitle");
-  // Password Modal Elements
-  const adminPasswordModal = document.getElementById("adminPasswordModal");
-  const closeAdminPassword = document.querySelector(".close-admin-password");
-  const adminActionPassword = document.getElementById("adminActionPassword");
-  const cancelPasswordBtn = document.getElementById("cancelPassword");
-  const submitPasswordBtn = document.getElementById("submitPassword");
-  const passwordPrompt = document.getElementById("passwordPrompt");
   // Toast and Empty Cart Elements
   const toastContainer = document.getElementById("toastContainer");
   const emptyCartPrompt = document.getElementById("emptyCartPrompt");
@@ -393,28 +416,23 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeProofView = document.querySelector(".close-proof-view");
   const proofImage = document.getElementById("proofImage");
 
-  // Admin Credentials
-  const ADMIN_CREDENTIALS = {
-    username: "admin",
-    password: "admin123",
-    actionPassword: "secure123",
-  };
-
   // 3. Cart State
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  let currentTab = "pending";
-  let currentAction = null;
-  let currentOrderId = null;
 
-  // ==================== SECTION 3: APP INITIALIZATION ====================
   // 4. Initialize App
-  function init() {
+  async function init() {
     console.log("Initializing app");
-    renderMenuItems();
-    updateCartCount();
+    
+    // Setup event listeners first
     setupEventListeners();
-    setupAdminEventListeners();
-    initializeSampleOrders();
+    
+    // Load menu items from database (this will call renderMenuItems when done)
+    await loadMenuItems();
+    
+    // Update cart count
+    updateCartCount();
+    
+    // Setup other event listeners
     closeEmptyCartBtn.addEventListener("click", closeEmptyCartPrompt);
     browseMenuBtn.addEventListener("click", function () {
       closeEmptyCartPrompt();
@@ -422,99 +440,28 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Initialize sample orders
-  function initializeSampleOrders() {
-    console.log("Checking for sample orders");
-    let orders = JSON.parse(localStorage.getItem("orders"));
-    if (!Array.isArray(orders) || orders.length === 0) {
-      console.log("No orders found, initializing sample orders");
-      const sampleOrders = [
-        {
-          id: "GD10001",
-          customerName: "Chinwe Okoro",
-          customerEmail: "chinwe.okoro@example.com",
-          customerPhone: "08031234567",
-          customerAddress: "12 Nnamdi Azikiwe Road, Enugu",
-          items: [
-            {
-              id: 1,
-              title: "Ofe Owerri",
-              price: 2500,
-              quantity: 2,
-              image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            },
-            {
-              id: 17,
-              title: "Malt",
-              price: 1800,
-              quantity: 1,
-              image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            },
-          ],
-          subtotal: 6800,
-          deliveryFee: 1500,
-          total: 8300,
-          paymentMethod: "cod",
-          date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          dateFormatted: new Date(Date.now() - 2 * 60 * 60 * 1000).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          status: "pending",
-        },
-        {
-          id: "GD10002",
-          customerName: "Emeka Nwankwo",
-          customerEmail: "emeka.nwankwo@example.com",
-          customerPhone: "08029876543",
-          customerAddress: "45 Okigwe Road, Owerri",
-          items: [
-            {
-              id: 5,
-              title: "Jollof Rice",
-              price: 3200,
-              quantity: 1,
-              image: "https://images.unsplash.com/photo-1593219531316-511804d4b5e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            },
-            {
-              id: 6,
-              title: "Fried Rice",
-              price: 3500,
-              quantity: 1,
-              image: "https://images.unsplash.com/photo-1630918037678-a8f7e0f9c9c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            },
-          ],
-          subtotal: 6700,
-          deliveryFee: 1500,
-          total: 8200,
-          paymentMethod: "bank",
-          proofOfPayment: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAB9SURBVFhH7ZLRDcAgCEO9/6Un8Gi0oBvoBrqBAaQ7KULM3b2V3F0hF0gBXACXgAswAFwAF8AFcAFcABfABXABXAAXwAVwAVwAF8AFcAFcABfABXABXAAXwAVwAVwAF8AFcAFcABfABXABXAAXwAVwAVwAF8AFcAFcABfABXABXAAXwAb8AB2vA0E8RAAAAAElFTkSuQmCC",
-          date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          dateFormatted: new Date(Date.now() - 24 * 60 * 60 * 1000).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          status: "completed",
-        },
-      ];
-      localStorage.setItem("orders", JSON.stringify(sampleOrders));
-      orders = sampleOrders;
-    }
-    console.log("Orders initialized:", orders);
-  }
-  // ==================== END SECTION 3: APP INITIALIZATION ====================
+  // Removed - orders are now saved to database via submit-order.php
+  // Sample orders initialization code has been removed
 
-  // ==================== SECTION 4: MENU RENDERING ====================
   // 5. Render Menu Items
   function renderMenuItems(category = "all") {
+    // Update current category
+    currentCategory = category;
+    
     menuItemsContainer.innerHTML = "";
-    const filteredItems = category === "all" ? menuItems : menuItems.filter((item) => item.category === category);
+    
+    // Filter items by category (case-insensitive comparison)
+    const filteredItems = category === "all" 
+      ? menuItems 
+      : menuItems.filter((item) => {
+          // Normalize category for comparison (trim and lowercase)
+          const itemCategory = (item.category || '').toLowerCase().trim();
+          const filterCategory = category.toLowerCase().trim();
+          return itemCategory === filterCategory;
+        });
+
+    console.log(`Rendering ${filteredItems.length} items for category: ${category}`);
+    console.log('Available categories in data:', [...new Set(menuItems.map(item => item.category))]);
 
     if (filteredItems.length === 0) {
       menuItemsContainer.innerHTML = '<p class="no-items">No items in this category</p>';
@@ -525,12 +472,12 @@ document.addEventListener("DOMContentLoaded", function () {
       const menuItemElement = document.createElement("div");
       menuItemElement.className = "menu-item";
       menuItemElement.innerHTML = `
-        <img src="${item.image}" alt="${item.title}" class="menu-item-img">
+        <img src="${item.image || './images/default-food.jpg'}" alt="${item.title}" class="menu-item-img" onerror="this.src='./images/default-food.jpg'">
         <div class="menu-item-content">
-          <h3 class="menu-item-title">${item.title}</h3>
-          <p class="menu-item-desc">${item.description}</p>
+          <h3 class="menu-item-title">${item.title || 'Untitled Item'}</h3>
+          <p class="menu-item-desc">${item.description || ''}</p>
           <div class="menu-item-footer">
-            <span class="menu-item-price">₦${item.price.toLocaleString()}</span>
+            <span class="menu-item-price">₦${(item.price || 0).toLocaleString()}</span>
             <button class="add-to-cart" data-id="${item.id}">Add to Cart</button>
           </div>
         </div>
@@ -538,16 +485,16 @@ document.addEventListener("DOMContentLoaded", function () {
       menuItemsContainer.appendChild(menuItemElement);
     });
   }
-  // ==================== END SECTION 4: MENU RENDERING ====================
 
-  // ==================== SECTION 5: EVENT LISTENERS SETUP ====================
   // 6. Setup Event Listeners
   function setupEventListeners() {
     categoryButtons.forEach((button) => {
       button.addEventListener("click", function () {
         categoryButtons.forEach((btn) => btn.classList.remove("active"));
         this.classList.add("active");
-        renderMenuItems(this.dataset.category);
+        const selectedCategory = this.dataset.category || "all";
+        console.log('Category button clicked:', selectedCategory);
+        renderMenuItems(selectedCategory);
       });
     });
 
@@ -586,73 +533,6 @@ document.addEventListener("DOMContentLoaded", function () {
     closeReceiptBtn.addEventListener("click", closeReceiptModal);
   }
 
-  // Setup Admin Event Listeners
-  function setupAdminEventListeners() {
-    console.log("Setting up admin event listeners");
-    adminLoginBtn.addEventListener("click", openAdminLogin);
-    closeAdminLogin.addEventListener("click", closeAdminLoginModal);
-    adminLoginForm.addEventListener("submit", handleAdminLogin);
-    closeAdminDashboard.addEventListener("click", closeAdminDashboardModal);
-    adminLogoutBtn.addEventListener("click", handleAdminLogout);
-
-    dashboardTabs.forEach((tab) => {
-      tab.addEventListener("click", function () {
-        console.log("Tab clicked:", this.dataset.tab);
-        dashboardTabs.forEach((t) => t.classList.remove("active"));
-        this.classList.add("active");
-        currentTab = this.dataset.tab;
-        updateOrdersTableTitle();
-        loadAdminData();
-      });
-    });
-
-    closeAdminPassword.addEventListener("click", closeAdminPasswordModal);
-    cancelPasswordBtn.addEventListener("click", closeAdminPasswordModal);
-    submitPasswordBtn.addEventListener("click", handlePasswordSubmit);
-
-    if (closeProofView) {
-      closeProofView.addEventListener("click", closeProofViewModal);
-    } else {
-      console.error("closeProofView element not found");
-    }
-
-    if (ordersTableBody) {
-      ordersTableBody.addEventListener("click", function (e) {
-        if (e.target.classList.contains("proof-thumbnail")) {
-          console.log("Thumbnail clicked, order ID:", e.target.dataset.id);
-          const orderId = e.target.dataset.id;
-          const orders = JSON.parse(localStorage.getItem("orders")) || [];
-          const order = orders.find((o) => o.id === orderId);
-          if (order && order.proofOfPayment) {
-            console.log("Opening modal with image:", order.proofOfPayment);
-            openProofViewModal(order.proofOfPayment);
-          } else {
-            console.warn("No proof of payment found for order:", orderId);
-            showToast("No proof of payment available for this order.", true);
-          }
-        }
-      });
-    } else {
-      console.error("ordersTableBody not found");
-    }
-  }
-  // ==================== END SECTION 5: EVENT LISTENERS SETUP ====================
-
-  // ==================== SECTION 6: ADMIN UTILITY FUNCTIONS ====================
-  function updateOrdersTableTitle() {
-    console.log("Updating table title for tab:", currentTab);
-    switch (currentTab) {
-      case "pending":
-        ordersTableTitle.textContent = "Pending Orders";
-        break;
-      case "completed":
-        ordersTableTitle.textContent = "Completed Orders";
-        break;
-      case "all":
-        ordersTableTitle.textContent = "All Orders";
-        break;
-    }
-  }
 
   function formatPaymentMethod(method) {
     switch (method) {
@@ -668,9 +548,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return '<span class="payment-badge">' + method + "</span>";
     }
   }
-  // ==================== END SECTION 6: ADMIN UTILITY FUNCTIONS ====================
 
-  // ==================== SECTION 7: CART MANAGEMENT FUNCTIONS ====================
   // 7. Cart Functions
   function addToCart(itemId) {
     const existingItem = cart.find((item) => item.id === itemId);
@@ -781,9 +659,7 @@ document.addEventListener("DOMContentLoaded", function () {
     subtotalElement.textContent = `₦${subtotal.toLocaleString()}`;
     totalAmountElement.textContent = `₦${total.toLocaleString()}`;
   }
-  // ==================== END SECTION 7: CART MANAGEMENT FUNCTIONS ====================
 
-  // ==================== SECTION 8: MODAL CONTROL FUNCTIONS ====================
   // 8. Modal Functions
   function openCheckoutModal() {
     checkoutModal.style.display = "flex";
@@ -818,52 +694,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.style.overflow = "auto";
   }
 
-  function openAdminLogin() {
-    adminLoginModal.style.display = "flex";
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeAdminLoginModal() {
-    adminLoginModal.style.display = "none";
-    document.body.style.overflow = "auto";
-  }
-
-  function openAdminDashboard() {
-    adminLoginModal.style.display = "none";
-    adminDashboard.style.display = "flex";
-    document.body.style.overflow = "hidden";
-    loadAdminData();
-  }
-
-  function closeAdminDashboardModal() {
-    adminDashboard.style.display = "none";
-    document.body.style.overflow = "auto";
-  }
-
-  function openAdminPasswordModal(action, orderId) {
-    console.log(`Opening password modal for action: ${action}, order: ${orderId}`);
-    currentAction = action;
-    currentOrderId = orderId;
-
-    if (action === "delete") {
-      passwordPrompt.textContent = "Please enter your admin password to delete this order";
-    }
-
-    adminPasswordModal.style.display = "flex";
-    document.body.style.overflow = "hidden";
-
-    setTimeout(() => {
-      adminActionPassword.focus();
-    }, 100);
-  }
-
-  function closeAdminPasswordModal() {
-    adminPasswordModal.style.display = "none";
-    document.body.style.overflow = "auto";
-    adminActionPassword.value = "";
-    currentAction = null;
-    currentOrderId = null;
-  }
 
   function openProofViewModal(imageSrc) {
     if (proofViewModal && proofImage) {
@@ -887,12 +717,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function handleAdminLogout() {
-    closeAdminDashboardModal();
-  }
-  // ==================== END SECTION 8: MODAL CONTROL FUNCTIONS ====================
 
-  // ==================== SECTION 9: PAYMENT HANDLING FUNCTIONS ====================
   // 9. Payment Handling
   function handlePaymentMethodChange(e) {
     bankDetailsSection.style.display = e.target.value === "bank" ? "block" : "none";
@@ -912,9 +737,7 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => (copyAccountNumberBtn.textContent = originalText), 2000);
     });
   }
-  // ==================== END SECTION 9: PAYMENT HANDLING FUNCTIONS ====================
 
-  // ==================== SECTION 10: FORM HANDLING FUNCTIONS ====================
   // 10. Form Handling
   async function handleFormSubmission(e) {
     e.preventDefault();
@@ -965,7 +788,7 @@ document.addEventListener("DOMContentLoaded", function () {
         cart = [];
         updateCart();
         openReceiptModal();
-        generateReceipt(formData, order.items, subtotal, totalAmount);
+        generateReceipt(formData, order.items, subtotal, totalAmount, order.id);
       }
     } catch (error) {
       console.error('Payment processing error:', error);
@@ -1011,34 +834,72 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    const order = {
-      id: "GD" + Math.floor(10000 + Math.random() * 90000),
+    // Prepare order data for API
+    const orderData = {
       customerName: formData.fullName,
       customerEmail: formData.email,
       customerPhone: formData.phone,
-      customerAddress: formData.address,
-      items: [...cart],
+      customerState: formData.state,
+      deliveryAddress: formData.address,
+      deliveryInstructions: formData.deliveryNotes || null,
+      items: cart.map(item => ({
+        name: item.title,
+        price: item.price,
+        quantity: item.quantity
+      })),
       subtotal: subtotal,
       deliveryFee: 1500,
-      total: totalAmount,
+      totalAmount: totalAmount,
       paymentMethod: formData.paymentMethod,
-      proofOfPayment: proofOfPayment,
-      date: now.toISOString(),
-      dateFormatted: now.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      status: status,
+      paymentProof: proofOfPayment,
+      paymentStatus: status === "pending" ? "pending" : "completed"
     };
 
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    orders.push(order);
-    localStorage.setItem("orders", JSON.stringify(orders));
+    try {
+      // Send order to server
+      const response = await fetch('submit-order.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData)
+      });
 
-    return order;
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to save order');
+      }
+
+      // Return order object with server-generated ID
+      return {
+        id: result.order_id,
+        order_id: result.order_id,
+        customerName: result.order.customerName,
+        customerEmail: result.order.customerEmail,
+        customerPhone: result.order.customerPhone,
+        customerAddress: formData.address,
+        items: [...cart],
+        subtotal: subtotal,
+        deliveryFee: 1500,
+        total: totalAmount,
+        paymentMethod: formData.paymentMethod,
+        proofOfPayment: proofOfPayment,
+        date: now.toISOString(),
+        dateFormatted: now.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        status: result.order.status,
+      };
+    } catch (error) {
+      console.error('Error saving order:', error);
+      showToast(error.message || 'Failed to save order. Please try again.', true);
+      return null;
+    }
   }
 
   function handleAdminLogin(e) {
@@ -1128,9 +989,7 @@ document.addEventListener("DOMContentLoaded", function () {
       alert(orderDetails);
     }
   }
-  // ==================== END SECTION 10: FORM HANDLING FUNCTIONS ====================
 
-  // ==================== SECTION 11: ADMIN DATA MANAGEMENT ====================
   function loadAdminData() {
     console.log("Loading admin data for tab:", currentTab);
     let orders = JSON.parse(localStorage.getItem("orders"));
@@ -1246,11 +1105,12 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   }
-  // ==================== END SECTION 11: ADMIN DATA MANAGEMENT ====================
 
-  // ==================== SECTION 12: RECEIPT GENERATION & SHARING ====================
-  function generateReceipt(formData = {}, items = [], subtotal = 0, totalAmount = 0) {
-    const orderId = "GD" + Math.floor(10000 + Math.random() * 90000);
+  function generateReceipt(formData = {}, items = [], subtotal = 0, totalAmount = 0, orderId = null) {
+    // Use provided orderId or generate a temporary one for display
+    if (!orderId) {
+      orderId = "GD" + Math.floor(10000 + Math.random() * 90000);
+    }
     const now = new Date();
 
     const dateOptions = {
@@ -1426,9 +1286,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "_blank"
     );
   }
-  // ==================== END SECTION 12: RECEIPT GENERATION & SHARING ====================
 
-  // ==================== SECTION 13: PAYMENT GATEWAY INTEGRATION ====================
   function processPaystackPayment(formData, subtotal, amount) {
     showProcessingState(true);
 
@@ -1539,9 +1397,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   }
-  // ==================== END SECTION 13: PAYMENT GATEWAY INTEGRATION ====================
 
-  // ==================== SECTION 14: UI UTILITY FUNCTIONS ====================
   function animateCartIcon() {
     cartIcon.style.transform = "scale(1.2)";
     setTimeout(() => {
@@ -1571,15 +1427,11 @@ document.addEventListener("DOMContentLoaded", function () {
     emptyCartPrompt.style.display = "none";
     document.body.style.overflow = "auto";
   }
-  // ==================== END SECTION 14: UI UTILITY FUNCTIONS ====================
 
-  // ==================== SECTION 15: APP FINAL INITIALIZATION ====================
   // 15. Initialize the App
   init();
 });
-// ==================== END SECTION 15: APP FINAL INITIALIZATION ====================
 
-// ==================== SECTION 16: GLOBAL UI CONTROLS ====================
 // Scroll To Top Button
 const scrollBtn = document.getElementById("scrollTopBtn");
 window.onscroll = function () {
@@ -1596,4 +1448,3 @@ scrollBtn.onclick = function () {
 // WhatsApp link
 const whatsappNumber = "2349064296917";
 const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hello, I would like to place an order")}`;
-// ==================== END SECTION 16: GLOBAL UI CONTROLS ====================

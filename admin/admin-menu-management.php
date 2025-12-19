@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -206,6 +205,43 @@
             width: 100%;
         }
 
+        /* Real-time Clock Styles */
+        .real-time-clock {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 4px solid var(--primary);
+            flex-wrap: wrap;
+        }
+
+        .clock-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .clock-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .time-display {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .date-display {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -258,6 +294,271 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-light);
+        }
+
+        /* FIXED NOTIFICATION AND USER MENU STYLES */
+        .notification-user-container {
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Reduced gap */
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .notification-icon:hover {
+            background: var(--gray);
+        }
+
+        .notification-icon i {
+            font-size: 1.3rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .notification-icon:hover i {
+            color: var(--secondary);
+        }
+
+        .user-menu {
+            position: relative;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .user-menu:hover {
+            background: var(--gray);
+        }
+
+        .user-menu i {
+            font-size: 1.3rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .user-menu:hover i {
+            color: var(--secondary);
+        }
+
+        /* User Menu Dropdown Styles */
+        .user-menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: none;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .user-menu-dropdown.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .user-menu-header {
+            padding: 15px;
+            background: var(--gray);
+            border-bottom: 1px solid var(--gray-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-menu-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .user-menu-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .user-menu-info p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .user-menu-items {
+            list-style: none;
+        }
+
+        .user-menu-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-menu-item:hover {
+            background: var(--gray);
+        }
+
+        .user-menu-item i {
+            font-size: 1rem;
+            color: var(--text-light);
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-menu-item span {
+            font-size: 0.9rem;
+        }
+
+        /* Notification Dropdown */
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .notification-dropdown.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .notification-dropdown-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-dropdown-header h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .notification-dropdown-header .mark-all-read {
+            background: none;
+            border: none;
+            color: var(--info);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .notification-dropdown-header .mark-all-read:hover {
+            color: var(--primary);
+        }
+
+        .notification-list {
+            list-style: none;
+        }
+
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .notification-item:hover {
+            background: var(--gray);
+        }
+
+        .notification-item.unread {
+            background: #f9f9f9;
+        }
+
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+            color: var(--text);
+        }
+
+        .notification-message {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .notification-empty {
+            padding: 30px 20px;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            pointer-events: none;
         }
 
         /* Loading Overlay */
@@ -811,6 +1112,28 @@
             margin-bottom: 10px;
         }
 
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--gray-dark);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             .menu-items-grid {
@@ -848,6 +1171,23 @@
             .menu-header h3 {
                 font-size: 1.2rem;
             }
+            
+            .notification-dropdown {
+                position: fixed;
+                top: 70px;
+                right: 15px;
+                left: 15px;
+                width: auto;
+                max-height: 60vh;
+            }
+            
+            .user-menu-dropdown {
+                position: fixed;
+                top: 70px;
+                right: 15px;
+                left: 15px;
+                width: auto;
+            }
         }
 
         @media (max-width: 768px) {
@@ -877,7 +1217,7 @@
                 grid-template-columns: 1fr;
             }
             
-            .modal-actions {
+            .form-actions {
                 flex-direction: column;
             }
             
@@ -941,6 +1281,18 @@
             
             .image-upload-box i {
                 font-size: 2rem;
+            }
+            
+            .notification-dropdown {
+                width: calc(100% - 30px);
+                left: 15px;
+                right: 15px;
+            }
+            
+            .user-menu-dropdown {
+                width: calc(100% - 30px);
+                left: 15px;
+                right: 15px;
             }
         }
 
@@ -1009,9 +1361,9 @@
             </div>
             
             <div class="admin-info">
-                <div class="admin-avatar"><?php echo $user_initials; ?></div>
+                <div class="admin-avatar">AJ</div>
                 <div class="admin-details">
-                    <h3><?php echo htmlspecialchars($username); ?></h3>
+                    <h3>Admin Joseph</h3>
                     <p>Super Admin</p>
                 </div>
             </div>
@@ -1090,7 +1442,7 @@
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="admin-logout.php" onclick="return confirmLogout()">
+                    <a href="admin-logout.php">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a>
@@ -1100,12 +1452,68 @@
         
         <!-- Main Content -->
         <div class="main-content">
+            <!-- Real-time Clock -->
+            <div class="real-time-clock reveal">
+                <div class="clock-container">
+                    <i class="fas fa-clock clock-icon"></i>
+                    <div>
+                        <div class="time-display" id="currentTime">Loading...</div>
+                        <div class="date-display" id="currentDate">Loading...</div>
+                    </div>
+                </div>
+                <div class="location-info">
+                    <i class="fas fa-map-marker-alt"></i> Owerri, Nigeria
+                </div>
+            </div>
+
             <div class="header">
                 <h2>Menu Management</h2>
                 <div class="header-actions">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
                         <input type="text" id="searchInput" placeholder="Search menu items...">
+                    </div>
+                    <div class="notification-user-container">
+                        <div class="notification-icon" id="notificationIcon">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge">3</span>
+                            <div class="notification-dropdown" id="notificationDropdown">
+                                <div class="notification-dropdown-header">
+                                    <h4>Notifications</h4>
+                                    <button class="mark-all-read" id="markAllRead">Mark all as read</button>
+                                </div>
+                                <ul class="notification-list" id="notificationList">
+                                    <!-- Notifications will be loaded here -->
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="user-menu" id="userMenuBtn">
+                            <i class="fas fa-user-circle"></i>
+                            <!-- User Menu Dropdown -->
+                            <div class="user-menu-dropdown" id="userMenuDropdown">
+                                <div class="user-menu-header">
+                                    <div class="user-menu-avatar">AJ</div>
+                                    <div class="user-menu-info">
+                                        <h4>Admin Joseph</h4>
+                                        <p>Super Admin</p>
+                                    </div>
+                                </div>
+                                <ul class="user-menu-items">
+                                    <li class="user-menu-item" onclick="window.location.href='admin-settings.php'">
+                                        <i class="fas fa-user-cog"></i>
+                                        <span>Profile Settings</span>
+                                    </li>
+                                    <li class="user-menu-item" onclick="window.location.href='admin-settings.php'">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Account Settings</span>
+                                    </li>
+                                    <li class="user-menu-item" onclick="window.location.href='admin-logout.php'">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1193,6 +1601,10 @@
                         <!-- Drink items will be dynamically added here -->
                     </div>
                 </div>
+            </div>
+
+            <div class="footer">
+                <p>&copy; 2025 Joseph's Pot Admin Dashboard. All rights reserved | Developed by ERIBS Tech</p>
             </div>
         </div>
     </div>
@@ -1302,6 +1714,81 @@
         function confirmLogout() {
             return confirm('Are you sure you want to logout?');
         }
+
+        // Real-time Clock Functionality
+        function updateClock() {
+            const now = new Date();
+
+            // Format time
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            // Convert to 12-hour format
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+
+            // Add leading zeros
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            // Format date
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            const dateString = now.toLocaleDateString('en-US', options);
+
+            // Update the DOM
+            document.getElementById('currentTime').textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+            document.getElementById('currentDate').textContent = dateString;
+        }
+
+        // Update the clock immediately and then every second
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Sample notification data
+        const notifications = [
+            {
+                id: 1,
+                title: 'New Menu Item Added',
+                message: 'Customer added "Egusi Delight" to favorites',
+                time: '10 minutes ago',
+                unread: true
+            },
+            {
+                id: 2,
+                title: 'Item Unavailable',
+                message: 'Palm Wine is running low in stock',
+                time: '1 hour ago',
+                unread: true
+            },
+            {
+                id: 3,
+                title: 'Menu Update',
+                message: 'Breakfast menu items have been updated',
+                time: '2 hours ago',
+                unread: false
+            },
+            {
+                id: 4,
+                title: 'New Special Item',
+                message: 'Added "Joe\'s Secret" as special item',
+                time: '1 day ago',
+                unread: false
+            },
+            {
+                id: 5,
+                title: 'Price Update',
+                message: 'Updated prices for bulk order items',
+                time: '2 days ago',
+                unread: false
+            }
+        ];
 
         // Sample menu data with availability status
         const menuData = {
@@ -1571,6 +2058,15 @@
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebar = document.getElementById('sidebar');
+        
+        // Notification and User Menu elements
+        const notificationIcon = document.getElementById('notificationIcon');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const notificationList = document.getElementById('notificationList');
+        const markAllReadBtn = document.getElementById('markAllRead');
+        const notificationBadge = document.querySelector('.notification-badge');
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userMenuDropdown = document.getElementById('userMenuDropdown');
 
         // Current filter state
         let currentFilter = 'all';
@@ -1607,6 +2103,99 @@
                 sidebarOverlay.classList.remove('active');
             }
         });
+
+        // User Menu functionality
+        userMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userMenuDropdown.classList.toggle('active');
+            // Close notification dropdown if open
+            notificationDropdown.classList.remove('active');
+        });
+
+        // Notification functionality
+        function renderNotifications() {
+            notificationList.innerHTML = '';
+            
+            if (notifications.length === 0) {
+                notificationList.innerHTML = '<div class="notification-empty">No notifications</div>';
+                return;
+            }
+            
+            notifications.forEach(notification => {
+                const notificationItem = document.createElement('li');
+                notificationItem.className = `notification-item ${notification.unread ? 'unread' : ''}`;
+                notificationItem.dataset.id = notification.id;
+                notificationItem.innerHTML = `
+                    <div class="notification-dot" style="${notification.unread ? 'background: var(--primary)' : 'background: transparent'}"></div>
+                    <div class="notification-content">
+                        <div class="notification-title">${notification.title}</div>
+                        <div class="notification-message">${notification.message}</div>
+                        <div class="notification-time">${notification.time}</div>
+                    </div>
+                `;
+                
+                notificationItem.addEventListener('click', function() {
+                    markAsRead(notification.id);
+                });
+                
+                notificationList.appendChild(notificationItem);
+            });
+            
+            // Update badge count
+            updateNotificationBadge();
+        }
+
+        function updateNotificationBadge() {
+            const unreadCount = notifications.filter(n => n.unread).length;
+            if (notificationBadge) {
+                notificationBadge.textContent = unreadCount;
+                notificationBadge.style.display = unreadCount > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function markAsRead(notificationId) {
+            const notification = notifications.find(n => n.id === notificationId);
+            if (notification && notification.unread) {
+                notification.unread = false;
+                renderNotifications();
+            }
+        }
+
+        function markAllAsRead() {
+            notifications.forEach(notification => {
+                notification.unread = false;
+            });
+            renderNotifications();
+        }
+
+        // Toggle notification dropdown
+        notificationIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            notificationDropdown.classList.toggle('active');
+            // Close user menu dropdown if open
+            userMenuDropdown.classList.remove('active');
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            // Close notification dropdown
+            if (!notificationIcon.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                notificationDropdown.classList.remove('active');
+            }
+            
+            // Close user menu dropdown
+            if (!userMenuBtn.contains(e.target) && !userMenuDropdown.contains(e.target)) {
+                userMenuDropdown.classList.remove('active');
+            }
+        });
+
+        // Mark all as read button
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                markAllAsRead();
+            });
+        }
 
         // Tab switching functionality
         menuTabs.forEach(tab => {
@@ -2284,6 +2873,9 @@
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize notifications
+            renderNotifications();
+            
             // Initial render
             renderMenuItems();
         });

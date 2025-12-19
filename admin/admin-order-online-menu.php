@@ -1079,6 +1079,10 @@ $user_initials = 'AJ';
                         Add New Item
                     </button>
                 </div>
+                <div style="background: #e3f2fd; border-left: 4px solid #2196F3; padding: 12px 15px; margin-bottom: 20px; border-radius: 4px; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle" style="color: #2196F3; margin-right: 8px;"></i>
+                    <strong>Note:</strong> Items must be set to <strong>"Available"</strong> status to appear on the frontend order-online.php page. Items marked as "Out of Stock" will not be visible to customers.
+                </div>
                 
                 <div class="menu-filters">
                     <button class="filter-btn active" data-filter="all">All Items</button>
@@ -1125,10 +1129,10 @@ $user_initials = 'AJ';
                         <select id="itemCategory" required>
                             <option value="">Select Category</option>
                             <option value="soups">Soups</option>
-                            <option value="main">Main Dishes</option>
-                            <option value="sides">Side Dishes</option>
+                            <option value="starters">Starters</option>
+                            <option value="main courses">Main Courses</option>
+                            <option value="noodles">Noodles</option>
                             <option value="drinks">Drinks</option>
-                            <option value="desserts">Desserts</option>
                         </select>
                     </div>
                 </div>
@@ -1161,7 +1165,7 @@ $user_initials = 'AJ';
                 <div class="form-group">
                     <label for="itemAvailability">Availability</label>
                     <select id="itemAvailability" required>
-                        <option value="available">Available</option>
+                        <option value="available" selected>Available</option>
                         <option value="out-of-stock">Out of Stock</option>
                     </select>
                 </div>
@@ -1299,10 +1303,44 @@ $user_initials = 'AJ';
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebar = document.getElementById('sidebar');
 
-        // Use a different variable name for the menu items array
-        let menuData = [...sampleMenuData];
+        // Menu items array - will be loaded from database
+        let menuData = [];
         let currentFilter = 'all';
         let currentEditId = null;
+        
+        // Load menu items from database
+        async function loadMenuItems() {
+            try {
+                const response = await fetch('api/menu-items.php');
+                const data = await response.json();
+                
+                if (data.success && data.items) {
+                    menuData = data.items.map(item => ({
+                        id: item.id,
+                        name: item.name,
+                        price: parseFloat(item.price),
+                        category: item.category || 'main',
+                        description: item.description || '',
+                        ingredients: '', // Not in DB schema
+                        cookingTime: 0, // Not in DB schema
+                        image: item.image_url || '',
+                        available: item.is_available == 1
+                    }));
+                    renderMenuItems();
+                } else {
+                    console.error('Failed to load menu items:', data.message);
+                    menuData = [];
+                    renderMenuItems();
+                }
+            } catch (error) {
+                console.error('Error loading menu items:', error);
+                menuData = [];
+                renderMenuItems();
+            }
+        }
+        
+        // Load menu items on page load
+        loadMenuItems();
 
         // Mobile sidebar toggler functionality
         mobileMenuToggle.addEventListener('click', function() {
@@ -1340,6 +1378,8 @@ $user_initials = 'AJ';
             modalTitle.textContent = 'Add New Menu Item';
             submitBtn.textContent = 'Add Item';
             itemForm.reset();
+            // Set default availability to "available"
+            document.getElementById('itemAvailability').value = 'available';
             imagePreview.style.display = 'none';
             itemModal.style.display = 'flex';
         });
@@ -1404,60 +1444,69 @@ $user_initials = 'AJ';
         });
 
         // Handle form submission
-        itemForm.addEventListener('submit', function(e) {
+        itemForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const name = document.getElementById('itemName').value;
             const price = parseFloat(document.getElementById('itemPrice').value);
             const category = document.getElementById('itemCategory').value;
             const description = document.getElementById('itemDescription').value;
-            const ingredients = document.getElementById('itemIngredients').value;
-            const cookingTime = parseInt(document.getElementById('itemCookingTime').value);
             const available = document.getElementById('itemAvailability').value === 'available';
+            const imageUrl = imagePreview.src || '';
             
-            if (currentEditId) {
-                // Edit existing item
-                const index = menuData.findIndex(item => item.id === currentEditId);
-                if (index !== -1) {
-                    menuData[index] = {
-                        ...menuData[index],
-                        name,
-                        price,
-                        category,
-                        description,
-                        ingredients,
-                        cookingTime,
-                        available,
-                        image: imagePreview.src || menuData[index].image
-                    };
+            const itemData = {
+                name: name,
+                price: price,
+                category: category,
+                description: description,
+                image_url: imageUrl,
+                is_available: available ? 1 : 0
+            };
+            
+            try {
+                let response;
+                if (currentEditId) {
+                    // Update existing item
+                    itemData.id = currentEditId;
+                    response = await fetch('api/menu-items.php', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(itemData)
+                    });
+                } else {
+                    // Create new item
+                    response = await fetch('api/menu-items.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(itemData)
+                    });
                 }
-            } else {
-                // Add new item
-                const newItem = {
-                    id: menuData.length > 0 ? Math.max(...menuData.map(item => item.id)) + 1 : 1,
-                    name,
-                    price,
-                    category,
-                    description,
-                    ingredients,
-                    cookingTime,
-                    image: imagePreview.src || "",
-                    available
-                };
                 
-                menuData.push(newItem);
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Reload menu items from database
+                    await loadMenuItems();
+                    
+                    // Close modal and reset form
+                    itemModal.style.display = 'none';
+                    itemForm.reset();
+                    imagePreview.style.display = 'none';
+                    currentEditId = null;
+                    
+                    // Show success message
+                    alert(`Menu item ${currentEditId ? 'updated' : 'added'} successfully!`);
+                } else {
+                    alert(`Error: ${result.message}`);
+                }
+            } catch (error) {
+                console.error('Error saving menu item:', error);
+                alert('Error saving menu item. Please try again.');
             }
-            
-            // Update UI
-            renderMenuItems();
-            
-            // Close modal and reset form
-            itemModal.style.display = 'none';
-            itemForm.reset();
-            imagePreview.style.display = 'none';
-            
-            // Show success message
-            alert(`Menu item ${currentEditId ? 'updated' : 'added'} successfully!`);
         });
 
         // Render menu items in the grid
@@ -1566,7 +1615,10 @@ $user_initials = 'AJ';
         function getCategoryName(category) {
             const categories = {
                 'soups': 'Soups',
-                'main': 'Main Dishes',
+                'starters': 'Starters',
+                'main': 'Main Courses',
+                'main courses': 'Main Courses',
+                'noodles': 'Noodles',
                 'sides': 'Side Dishes',
                 'drinks': 'Drinks',
                 'desserts': 'Desserts'
@@ -1602,32 +1654,69 @@ $user_initials = 'AJ';
         }
 
         // Toggle stock status
-        function toggleStock(id) {
+        async function toggleStock(id) {
             const item = menuData.find(item => item.id === id);
             if (!item) return;
             
-            item.available = !item.available;
-            renderMenuItems();
+            const newAvailability = !item.available;
             
-            // Show confirmation message
-            alert(`"${item.name}" is now ${item.available ? 'available' : 'out of stock'} on the online menu.`);
+            try {
+                const response = await fetch('api/menu-items.php', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        name: item.name,
+                        price: item.price,
+                        category: item.category,
+                        description: item.description,
+                        image_url: item.image || '',
+                        is_available: newAvailability ? 1 : 0
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    await loadMenuItems();
+                    alert(`"${item.name}" is now ${newAvailability ? 'available' : 'out of stock'} on the online menu.`);
+                } else {
+                    alert(`Error: ${result.message}`);
+                }
+            } catch (error) {
+                console.error('Error toggling stock:', error);
+                alert('Error updating item availability. Please try again.');
+            }
         }
 
         // Delete menu item
-        function deleteMenuItem(id) {
-            if (!confirm('Are you sure you want to delete this menu item? This action cannot be undone.')) {
+        async function deleteMenuItem(id) {
+            const item = menuData.find(item => item.id === id);
+            if (!item) return;
+            
+            if (!confirm(`Are you sure you want to delete "${item.name}"? This action cannot be undone.`)) {
                 return;
             }
             
-            const itemIndex = menuData.findIndex(item => item.id === id);
-            if (itemIndex === -1) return;
-            
-            const itemName = menuData[itemIndex].name;
-            menuData.splice(itemIndex, 1);
-            renderMenuItems();
-            
-            // Show confirmation message
-            alert(`"${itemName}" has been removed from the online menu.`);
+            try {
+                const response = await fetch(`api/menu-items.php?id=${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    await loadMenuItems();
+                    alert(`"${item.name}" has been removed from the online menu.`);
+                } else {
+                    alert(`Error: ${result.message}`);
+                }
+            } catch (error) {
+                console.error('Error deleting menu item:', error);
+                alert('Error deleting menu item. Please try again.');
+            }
         }
 
         // Initialize the page

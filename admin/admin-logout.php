@@ -42,10 +42,17 @@ function getAdminData($admin_id) {
     return null;
 }
 
+// Check if column exists in table
+function columnExists($table, $column) {
+    $conn = getDBConnection();
+    $result = $conn->query("SHOW COLUMNS FROM $table LIKE '$column'");
+    return $result->num_rows > 0;
+}
+
 // Handle logout
 function handleLogout() {
-    // Clear remember token from database
-    if (isset($_SESSION['admin_id'])) {
+    // Clear remember token from database if column exists
+    if (isset($_SESSION['admin_id']) && columnExists('admins', 'remember_token')) {
         $conn = getDBConnection();
         $stmt = $conn->prepare("UPDATE admins SET remember_token = NULL WHERE id = ?");
         if ($stmt) {
@@ -69,8 +76,10 @@ function handleLogout() {
     // Destroy the session
     session_destroy();
     
-    // Clear remember me cookie
-    setcookie("remember_admin", "", time() - 3600, "/");
+    // Clear remember me cookie if it exists
+    if (isset($_COOKIE['remember_admin'])) {
+        setcookie("remember_admin", "", time() - 3600, "/");
+    }
     
     return true;
 }
@@ -144,6 +153,7 @@ if (isset($_GET['timeout'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../images/logo3.png">
     <title>Logout - Joseph's Pot Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">

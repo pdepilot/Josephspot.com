@@ -8,7 +8,7 @@
       rel="stylesheet"
       href="./fontawesome-free-6.7.2-web/fontawesome-free-6.7.2-web/css/all.min.css"
     />
-    <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
+    <!-- <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin> -->
      <link rel="icon" href="./images/logo3.png">
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
@@ -33,7 +33,7 @@
           <a href="gallery.php">Gallery</a>
           <a href="index.php#eventContainer">Events</a>
           <a href="contact.php">Contact</a>
-          <a href="order-online.php" class="active">Order Online</a>
+          <a href="order online.php" class="active">Order Online</a>
         </nav>
 
         <div class="cart-icon-container">
@@ -52,6 +52,7 @@
             ><i class="fab fa-instagram"></i
           ></a>
         </div>
+
 
         <span class="menu-toggle" onclick="toggleMenu()"
           ><i class="fa-solid fa-utensils"></i
@@ -406,66 +407,6 @@
       </div>
     </div>
 
-
-    <!-- Admin Dashboard Modal -->
-    <div class="admin-dashboard-modal" id="adminDashboard">
-      <div class="admin-dashboard-container">
-        <div class="admin-dashboard-header">
-          <h2>Admin Dashboard</h2>
-          <button class="close-admin-dashboard">&times;</button>
-        </div>
-        <div class="admin-dashboard-body">
-          <div class="dashboard-stats">
-            <div class="stat-card">
-              <h3>Total Orders</h3>
-              <p id="totalOrdersCount">0</p>
-            </div>
-            <div class="stat-card">
-              <h3>Pending Orders</h3>
-              <p id="pendingOrdersCount">0</p>
-            </div>
-            <div class="stat-card">
-              <h3>Revenue</h3>
-              <p id="totalRevenue">₦0.00</p>
-            </div>
-          </div>
-
-          <div class="dashboard-tabs">
-            <button class="dashboard-tab active" data-tab="pending">
-              Pending Orders
-            </button>
-            <button class="dashboard-tab" data-tab="completed">
-              Completed Orders
-            </button>
-            <button class="dashboard-tab" data-tab="all">All Orders</button>
-          </div>
-
-          <div class="recent-orders">
-            <h3 id="ordersTableTitle">Pending Orders</h3>
-            <div class="orders-table-container">
-              <table class="orders-table" id="ordersTable">
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Phone</th>
-                    <th>Amount</th>
-                    <th>Payment Method</th>
-                    <th>Date & Time</th>
-                    <th>Status</th>
-                    <th>Proof</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="ordersTableBody">
-                  <!-- Orders will be populated here -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Footer Section -->
     <footer class="footer">
