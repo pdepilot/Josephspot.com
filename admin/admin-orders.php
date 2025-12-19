@@ -754,6 +754,28 @@ require_once 'db_config.php';
             border-color: var(--primary);
         }
 
+        /* Proof of Payment Button */
+        .proof-btn {
+            margin-left: 8px;
+            padding: 4px 8px;
+            background: var(--info);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .proof-btn:hover {
+            background: #1976d2;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
         /* Orders Table */
         .orders-section {
             background: var(--white);
@@ -1709,6 +1731,21 @@ require_once 'db_config.php';
         </div>
     </div>
 
+    <!-- Proof of Payment Modal -->
+    <div class="modal-overlay" id="proofModal" style="display: none;">
+        <div class="modal-content" style="max-width: 90%; max-height: 90vh; overflow: auto;">
+            <div class="modal-header">
+                <h2 id="proofModalTitle"><i class="fas fa-image"></i> Proof of Payment</h2>
+                <button class="close-modal" onclick="closeProofModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 20px;">
+                <div id="proofImageContainer" style="display: flex; justify-content: center; align-items: center; min-height: 400px;">
+                    <img id="proofImage" src="" alt="Proof of Payment" style="max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Real-time Clock Functionality
         function updateClock() {
@@ -1945,6 +1982,7 @@ require_once 'db_config.php';
         // Chart instances
         let ordersChart = null;
         let revenueChart = null;
+        let currentPeriod = 'week'; // Track current period for orders chart
 
         // Helper function to escape HTML (must be defined early)
         function escapeHtml(text) {
@@ -1969,22 +2007,43 @@ require_once 'db_config.php';
             setInterval(() => {
                 loadOrders(); // Reload orders to get latest data
                 updateStats(); // Update statistics
+                loadChartData(currentPeriod); // Update charts with latest data
             }, 30000); // Update every 30 seconds
         }
 
-        // Initialize charts
-        function initCharts() {
-            const ordersCtx = document.getElementById('ordersChart').getContext('2d');
-            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        // Load chart data from API
+        async function loadChartData(period = 'week') {
+            try {
+                const response = await fetch(`api/get-chart-data.php?period=${period}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateOrdersChart(data.orders_overview);
+                    updateRevenueChart(data.revenue_distribution);
+                } else {
+                    console.error('Failed to load chart data:', data.message);
+                }
+            } catch (error) {
+                console.error('Error loading chart data:', error);
+            }
+        }
+        
+        // Update Orders Chart
+        function updateOrdersChart(ordersData) {
+            const ordersCtx = document.getElementById('ordersChart');
             
-            // Orders Chart
+            // Destroy existing chart if it exists
+            if (ordersChart) {
+                ordersChart.destroy();
+            }
+            
             ordersChart = new Chart(ordersCtx, {
                 type: 'line',
                 data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    labels: ordersData.labels,
                     datasets: [{
                         label: 'Orders',
-                        data: [12, 19, 15, 25, 22, 30, 28],
+                        data: ordersData.data,
                         borderColor: 'rgba(139, 69, 19, 1)',
                         backgroundColor: 'rgba(139, 69, 19, 0.1)',
                         borderWidth: 3,
@@ -1993,7 +2052,8 @@ require_once 'db_config.php';
                         pointBackgroundColor: 'rgba(139, 69, 19, 1)',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
-                        pointRadius: 5
+                        pointRadius: 5,
+                        pointHoverRadius: 7
                     }]
                 },
                 options: {
@@ -2007,7 +2067,12 @@ require_once 'db_config.php';
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
                             titleFont: { size: 14 },
                             bodyFont: { size: 13 },
-                            padding: 12
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Orders: ${context.parsed.y}`;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -2019,7 +2084,8 @@ require_once 'db_config.php';
                             ticks: {
                                 font: {
                                     size: 12
-                                }
+                                },
+                                stepSize: 1
                             }
                         },
                         x: {
@@ -2035,14 +2101,33 @@ require_once 'db_config.php';
                     }
                 }
             });
+        }
+        
+        // Update Revenue Chart
+        function updateRevenueChart(revenueData) {
+            const revenueCtx = document.getElementById('revenueChart');
             
-            // Revenue Chart
+            // Destroy existing chart if it exists
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+            
+            // Calculate total for percentage display
+            const total = revenueData.data.reduce((sum, val) => sum + val, 0);
+            
+            // Store counts for tooltip access
+            const orderCounts = revenueData.counts || [];
+            
             revenueChart = new Chart(revenueCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['COD', 'Bank Transfer', 'Paystack', 'Flutterwave'],
+                    labels: revenueData.labels.map((label, index) => {
+                        const value = revenueData.data[index];
+                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                        return `${label} (${percentage}%)`;
+                    }),
                     datasets: [{
-                        data: [40, 25, 20, 15],
+                        data: revenueData.data,
                         backgroundColor: [
                             'rgba(139, 69, 19, 0.8)',
                             'rgba(210, 105, 30, 0.8)',
@@ -2064,17 +2149,36 @@ require_once 'db_config.php';
                                 font: {
                                     size: 12
                                 },
-                                padding: 20
+                                padding: 20,
+                                usePointStyle: true
                             }
                         },
                         tooltip: {
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
                             bodyFont: { size: 13 },
-                            padding: 10
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label.split(' (')[0];
+                                    const value = context.parsed;
+                                    const count = orderCounts[context.dataIndex] || 0;
+                                    return [
+                                        label,
+                                        `Revenue: ₦${value.toLocaleString()}`,
+                                        `Orders: ${count}`
+                                    ];
+                                }
+                            }
                         }
                     }
                 }
             });
+        }
+        
+        // Initialize charts
+        function initCharts() {
+            // Load initial chart data
+            loadChartData(currentPeriod);
         }
 
         // Load orders from API
@@ -2124,6 +2228,7 @@ require_once 'db_config.php';
                             deliveryFee: parseFloat(order.delivery_fee),
                             total: parseFloat(order.total_amount),
                             paymentMethod: order.payment_method,
+                            paymentProof: order.payment_proof || null,
                             status: order.order_status,
                             date: order.created_at,
                             updatedAt: order.updated_at
@@ -2232,6 +2337,10 @@ require_once 'db_config.php';
                         break;
                 }
                 
+                // Check if proof of payment exists for bank transfers
+                const hasProof = order.paymentMethod === 'bank' && order.paymentProof && order.paymentProof.trim() !== '';
+                const proofImageData = hasProof ? order.paymentProof : null;
+                
                 const escapedOrderId = escapeHtml(order.id);
                 const escapedCustomerName = escapeHtml(order.customerName);
                 const escapedCustomerPhone = escapeHtml(order.customerPhone);
@@ -2245,7 +2354,14 @@ require_once 'db_config.php';
                         </td>
                         <td>${itemsText}</td>
                         <td><strong>₦${(order.total || 0).toLocaleString()}</strong></td>
-                        <td><span class="payment-badge">${paymentText}</span></td>
+                        <td>
+                            <span class="payment-badge">${paymentText}</span>
+                            ${hasProof ? `
+                                <button class="proof-btn" onclick="viewProofOfPayment('${escapedOrderId}', ${JSON.stringify(proofImageData).replace(/"/g, '&quot;')})" title="View Proof of Payment" style="margin-left: 8px; padding: 4px 8px; background: var(--info); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">
+                                    <i class="fas fa-image"></i> Proof
+                                </button>
+                            ` : ''}
+                        </td>
                         <td>
                             <div>${formattedDate}</div>
                             <div style="font-size: 0.85rem; color: #666;">${formattedTime}</div>
@@ -2437,6 +2553,16 @@ require_once 'db_config.php';
                                         <span class="detail-label">Payment Status</span>
                                         <span class="detail-value">${escapeHtml(order.payment_status)}</span>
                                     </div>
+                                    ${hasProof ? `
+                                    <div class="detail-item">
+                                        <span class="detail-label">Proof of Payment</span>
+                                        <span class="detail-value">
+                                            <button class="proof-btn" onclick="viewProofOfPayment('${escapeHtml(order.order_id)}', ${JSON.stringify(proofImageData).replace(/"/g, '&quot;')})" style="padding: 8px 15px; background: var(--info); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                                                <i class="fas fa-image"></i> View Proof
+                                            </button>
+                                        </span>
+                                    </div>
+                                    ` : ''}
                                 </div>
                                 
                                 <div class="detail-card">
@@ -2603,6 +2729,62 @@ require_once 'db_config.php';
             printOrderDetails();
         });
 
+        // View proof of payment
+        window.viewProofOfPayment = function(orderId, imageData) {
+            if (!imageData || imageData.trim() === '') {
+                showToast('No proof of payment available for this order', 'error');
+                return;
+            }
+            
+            const proofModal = document.getElementById('proofModal');
+            const proofModalTitle = document.getElementById('proofModalTitle');
+            const proofImageContainer = document.getElementById('proofImageContainer');
+            
+            // Reset container
+            proofImageContainer.innerHTML = '<img id="proofImage" src="" alt="Proof of Payment" style="max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">';
+            const img = document.getElementById('proofImage');
+            
+            // Set the image source - handle both base64 data URLs and regular URLs
+            if (imageData.startsWith('data:') || imageData.startsWith('http://') || imageData.startsWith('https://')) {
+                img.src = imageData;
+            } else {
+                // If it's a base64 string without the data: prefix, add it
+                img.src = imageData.startsWith('/9j/') || imageData.startsWith('iVBORw0KG') 
+                    ? `data:image/jpeg;base64,${imageData}` 
+                    : `data:image/png;base64,${imageData}`;
+            }
+            
+            proofModalTitle.innerHTML = `<i class="fas fa-image"></i> Proof of Payment - ${escapeHtml(orderId)}`;
+            proofModal.style.display = 'flex';
+            
+            // Handle image load error
+            img.onerror = function() {
+                proofImageContainer.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #f44336; margin-bottom: 15px;"></i>
+                        <p style="color: #666; font-size: 1.1rem;">Failed to load proof of payment image</p>
+                        <p style="color: #999; font-size: 0.9rem; margin-top: 10px;">The image data may be corrupted or in an unsupported format.</p>
+                    </div>
+                `;
+            };
+        };
+        
+        // Close proof modal
+        function closeProofModal() {
+            document.getElementById('proofModal').style.display = 'none';
+            const proofImage = document.getElementById('proofImage');
+            if (proofImage) {
+                proofImage.src = '';
+            }
+        }
+        
+        // Close proof modal when clicking outside
+        document.getElementById('proofModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProofModal();
+            }
+        });
+        
         // Update order status
         window.updateOrderStatus = function(orderId, newStatus) {
             const statusLabels = {
@@ -2639,6 +2821,7 @@ require_once 'db_config.php';
                         if (data.success) {
                             showToast(`Order ${orderId} status updated to ${statusLabels[newStatus] || newStatus}!`, 'success');
                             loadOrders(); // Reload orders to reflect changes
+                            loadChartData(currentPeriod); // Update charts with latest data
                             updateStats(); // Update statistics
                         } else {
                             showToast(data.message || 'Failed to update order status', 'error');
@@ -2693,8 +2876,9 @@ require_once 'db_config.php';
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.chart-action-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                // In a real app, you would update the chart data based on the period
-                showToast(`Showing data for ${this.textContent.toLowerCase()}`, 'info');
+                const period = this.getAttribute('data-period');
+                currentPeriod = period;
+                loadChartData(period);
             });
         });
 
