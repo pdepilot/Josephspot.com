@@ -1259,6 +1259,12 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                     </a>
                 </li>
                 <li class="menu-item">
+                    <a href="admin-contact-messages.php">
+                        <i class="fas fa-envelope"></i>
+                        <span>Contact Messages</span>
+                    </a>
+                </li>
+                <li class="menu-item">
                     <a href="admin-menu-management.php">
                         <i class="fas fa-utensils"></i>
                         <span>Menu Management</span>

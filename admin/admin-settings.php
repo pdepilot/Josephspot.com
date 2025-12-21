@@ -8,6 +8,15 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'joseph_pot_admin');
 
+// PDO Database Connection
+try {
+    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+} catch(PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
+}
+
 // Check if user is logged in
 function isLoggedIn()
 {
@@ -15,23 +24,100 @@ function isLoggedIn()
 }
 
 // Get admin user data
-function getAdminData($admin_id)
+function getAdminData($pdo, $admin_id)
 {
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    if ($conn->connect_error) {
+    try {
+        $stmt = $pdo->prepare("SELECT id, username, email, role, created_at FROM admins WHERE id = ?");
+        $stmt->execute([$admin_id]);
+        return $stmt->fetch();
+    } catch(PDOException $e) {
         return null;
     }
-    
-    $stmt = $conn->prepare("SELECT id, username, email, created_at FROM admins WHERE id = ?");
-    if ($stmt) {
-        $stmt->bind_param("i", $admin_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows === 1) {
-            return $result->fetch_assoc();
-        }
+}
+
+// CSRF Token Generation
+function generateCSRFToken() {
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
-    return null;
+    return $_SESSION['csrf_token'];
+}
+
+// CSRF Token Validation
+function validateCSRFToken($token) {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+// Get setting helper function
+function get_setting($pdo, $section, $key, $default = '') {
+    try {
+        $table = $section . '_settings';
+        $stmt = $pdo->prepare("SELECT setting_value FROM `{$table}` WHERE setting_key = ? LIMIT 1");
+        $stmt->execute([$key]);
+        $result = $stmt->fetch();
+        return $result ? $result['setting_value'] : $default;
+    } catch(PDOException $e) {
+        return $default;
+    }
+}
+
+// Set setting helper function
+function set_setting($pdo, $section, $key, $value) {
+    try {
+        $table = $section . '_settings';
+        $sql = "INSERT INTO `{$table}` (setting_key, setting_value) VALUES (?, ?) 
+                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = CURRENT_TIMESTAMP";
+        $stmt = $pdo->prepare($sql);
+        return $stmt->execute([$key, $value]);
+    } catch(PDOException $e) {
+        return false;
+    }
+}
+
+// Get notification setting (can be per admin)
+function get_notification_setting($pdo, $key, $admin_id = null, $default = '0') {
+    try {
+        if ($admin_id) {
+            $stmt = $pdo->prepare("SELECT setting_value FROM notification_settings WHERE setting_key = ? AND admin_id = ? LIMIT 1");
+            $stmt->execute([$key, $admin_id]);
+        } else {
+            $stmt = $pdo->prepare("SELECT setting_value FROM notification_settings WHERE setting_key = ? AND admin_id IS NULL LIMIT 1");
+            $stmt->execute([$key]);
+        }
+        $result = $stmt->fetch();
+        return $result ? $result['setting_value'] : $default;
+    } catch(PDOException $e) {
+        return $default;
+    }
+}
+
+// Set notification setting
+function set_notification_setting($pdo, $key, $value, $admin_id = null) {
+    try {
+        if ($admin_id) {
+            $sql = "INSERT INTO notification_settings (setting_key, setting_value, admin_id) VALUES (?, ?, ?) 
+                    ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = CURRENT_TIMESTAMP";
+            $stmt = $pdo->prepare($sql);
+            return $stmt->execute([$key, $value, $admin_id]);
+        } else {
+            $sql = "INSERT INTO notification_settings (setting_key, setting_value, admin_id) VALUES (?, ?, NULL) 
+                    ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = CURRENT_TIMESTAMP";
+            $stmt = $pdo->prepare($sql);
+            return $stmt->execute([$key, $value]);
+        }
+    } catch(PDOException $e) {
+        return false;
+    }
+}
+
+// Get all admins
+function get_all_admins($pdo) {
+    try {
+        $stmt = $pdo->query("SELECT id, username, email, role, created_at FROM admins ORDER BY created_at DESC");
+        return $stmt->fetchAll();
+    } catch(PDOException $e) {
+        return [];
+    }
 }
 
 // Redirect to login if not logged in
@@ -41,14 +127,68 @@ if (!isLoggedIn()) {
 }
 
 // Get admin data for display
-$admin_data = getAdminData($_SESSION['admin_id']);
+$admin_data = getAdminData($pdo, $_SESSION['admin_id']);
 $username = 'Admin';
 $user_initials = 'AJ';
+$is_super_admin = false;
 
 if ($admin_data) {
     $username = $admin_data['username'];
     $user_initials = strtoupper(substr($admin_data['username'], 0, 2));
+    $is_super_admin = ($admin_data['role'] === 'super_admin');
 }
+
+// Generate CSRF token
+$csrf_token = generateCSRFToken();
+
+// Load all settings
+$settings = [
+    'general' => [
+        'site_name' => get_setting($pdo, 'general', 'site_name', "Joseph's Pot"),
+        'site_description' => get_setting($pdo, 'general', 'site_description', 'Authentic Nigerian cuisine restaurant offering traditional dishes in a warm and welcoming atmosphere.'),
+        'currency' => get_setting($pdo, 'general', 'currency', 'NGN'),
+        'timezone' => get_setting($pdo, 'general', 'timezone', 'Africa/Lagos'),
+        'date_format' => get_setting($pdo, 'general', 'date_format', 'DD/MM/YYYY'),
+        'maintenance_mode' => get_setting($pdo, 'general', 'maintenance_mode', '0')
+    ],
+    'restaurant' => [
+        'restaurant_name' => get_setting($pdo, 'restaurant', 'restaurant_name', "Joseph's Pot"),
+        'restaurant_tagline' => get_setting($pdo, 'restaurant', 'restaurant_tagline', 'Authentic Nigerian Cuisine'),
+        'restaurant_address' => get_setting($pdo, 'restaurant', 'restaurant_address', '123 Food Street, Victoria Island, Lagos, Nigeria'),
+        'restaurant_phone' => get_setting($pdo, 'restaurant', 'restaurant_phone', '+234 801 234 5678'),
+        'restaurant_email' => get_setting($pdo, 'restaurant', 'restaurant_email', 'info@josephspot.com'),
+        'opening_hours' => get_setting($pdo, 'restaurant', 'opening_hours', "Monday - Friday: 8:00 AM - 10:00 PM\nSaturday - Sunday: 9:00 AM - 11:00 PM")
+    ],
+    'notifications' => [
+        'email_orders' => get_notification_setting($pdo, 'email_orders', $_SESSION['admin_id'], '1'),
+        'email_reservations' => get_notification_setting($pdo, 'email_reservations', $_SESSION['admin_id'], '1'),
+        'email_reviews' => get_notification_setting($pdo, 'email_reviews', $_SESSION['admin_id'], '0'),
+        'email_promotions' => get_notification_setting($pdo, 'email_promotions', $_SESSION['admin_id'], '1'),
+        'push_orders' => get_notification_setting($pdo, 'push_orders', $_SESSION['admin_id'], '1'),
+        'push_reservations' => get_notification_setting($pdo, 'push_reservations', $_SESSION['admin_id'], '0'),
+        'push_low_stock' => get_notification_setting($pdo, 'push_low_stock', $_SESSION['admin_id'], '1'),
+        'notification_sound' => get_notification_setting($pdo, 'notification_sound', $_SESSION['admin_id'], 'default')
+    ],
+    'security' => [
+        'password_min_length' => get_setting($pdo, 'security', 'password_min_length', '8'),
+        'password_require_uppercase' => get_setting($pdo, 'security', 'password_require_uppercase', '1'),
+        'password_require_lowercase' => get_setting($pdo, 'security', 'password_require_lowercase', '1'),
+        'password_require_numbers' => get_setting($pdo, 'security', 'password_require_numbers', '1'),
+        'password_require_special' => get_setting($pdo, 'security', 'password_require_special', '0'),
+        'session_timeout' => get_setting($pdo, 'security', 'session_timeout', '30'),
+        'login_attempts' => get_setting($pdo, 'security', 'login_attempts', '5'),
+        'two_factor_auth' => get_setting($pdo, 'security', 'two_factor_auth', '0')
+    ],
+    'appearance' => [
+        'theme' => get_setting($pdo, 'appearance', 'theme', 'warm_brown'),
+        'primary_color' => get_setting($pdo, 'appearance', 'primary_color', '#8b4513'),
+        'logo_path' => get_setting($pdo, 'appearance', 'logo_path', ''),
+        'favicon_path' => get_setting($pdo, 'appearance', 'favicon_path', '')
+    ]
+];
+
+// Get all admins for user management
+$all_admins = get_all_admins($pdo);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -1299,31 +1439,31 @@ if ($admin_data) {
 
                         <div class="form-group">
                             <label for="siteName">Site Name</label>
-                            <input type="text" id="siteName" value="Joseph's Pot">
+                            <input type="text" id="siteName" value="<?php echo htmlspecialchars($settings['general']['site_name']); ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="siteDescription">Site Description</label>
-                            <textarea id="siteDescription">Authentic Nigerian cuisine restaurant offering traditional dishes in a warm and welcoming atmosphere.</textarea>
+                            <textarea id="siteDescription"><?php echo htmlspecialchars($settings['general']['site_description']); ?></textarea>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="currency">Currency</label>
                                 <select id="currency">
-                                    <option value="NGN" selected>Nigerian Naira (₦)</option>
-                                    <option value="USD">US Dollar ($)</option>
-                                    <option value="EUR">Euro (€)</option>
-                                    <option value="GBP">British Pound (£)</option>
+                                    <option value="NGN" <?php echo $settings['general']['currency'] === 'NGN' ? 'selected' : ''; ?>>Nigerian Naira (₦)</option>
+                                    <option value="USD" <?php echo $settings['general']['currency'] === 'USD' ? 'selected' : ''; ?>>US Dollar ($)</option>
+                                    <option value="EUR" <?php echo $settings['general']['currency'] === 'EUR' ? 'selected' : ''; ?>>Euro (€)</option>
+                                    <option value="GBP" <?php echo $settings['general']['currency'] === 'GBP' ? 'selected' : ''; ?>>British Pound (£)</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="timezone">Timezone</label>
                                 <select id="timezone">
-                                    <option value="Africa/Lagos" selected>West Africa Time (WAT)</option>
-                                    <option value="UTC">UTC</option>
-                                    <option value="America/New_York">Eastern Time (ET)</option>
-                                    <option value="Europe/London">Greenwich Mean Time (GMT)</option>
+                                    <option value="Africa/Lagos" <?php echo $settings['general']['timezone'] === 'Africa/Lagos' ? 'selected' : ''; ?>>West Africa Time (WAT)</option>
+                                    <option value="UTC" <?php echo $settings['general']['timezone'] === 'UTC' ? 'selected' : ''; ?>>UTC</option>
+                                    <option value="America/New_York" <?php echo $settings['general']['timezone'] === 'America/New_York' ? 'selected' : ''; ?>>Eastern Time (ET)</option>
+                                    <option value="Europe/London" <?php echo $settings['general']['timezone'] === 'Europe/London' ? 'selected' : ''; ?>>Greenwich Mean Time (GMT)</option>
                                 </select>
                             </div>
                         </div>
@@ -1331,15 +1471,15 @@ if ($admin_data) {
                         <div class="form-group">
                             <label for="dateFormat">Date Format</label>
                             <select id="dateFormat">
-                                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                                <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
-                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                <option value="MM/DD/YYYY" <?php echo $settings['general']['date_format'] === 'MM/DD/YYYY' ? 'selected' : ''; ?>>MM/DD/YYYY</option>
+                                <option value="DD/MM/YYYY" <?php echo $settings['general']['date_format'] === 'DD/MM/YYYY' ? 'selected' : ''; ?>>DD/MM/YYYY</option>
+                                <option value="YYYY-MM-DD" <?php echo $settings['general']['date_format'] === 'YYYY-MM-DD' ? 'selected' : ''; ?>>YYYY-MM-DD</option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label class="checkbox-group">
-                                <input type="checkbox" id="maintenanceMode">
+                                <input type="checkbox" id="maintenanceMode" <?php echo $settings['general']['maintenance_mode'] === '1' ? 'checked' : ''; ?>>
                                 <span>Enable Maintenance Mode</span>
                             </label>
                             <small style="display: block; margin-top: 5px; color: var(--text-light);">When enabled,
@@ -1362,34 +1502,33 @@ if ($admin_data) {
 
                         <div class="form-group">
                             <label for="restaurantName">Restaurant Name</label>
-                            <input type="text" id="restaurantName" value="Joseph's Pot">
+                            <input type="text" id="restaurantName" value="<?php echo htmlspecialchars($settings['restaurant']['restaurant_name']); ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="restaurantTagline">Tagline</label>
-                            <input type="text" id="restaurantTagline" value="Authentic Nigerian Cuisine">
+                            <input type="text" id="restaurantTagline" value="<?php echo htmlspecialchars($settings['restaurant']['restaurant_tagline']); ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="restaurantAddress">Address</label>
-                            <textarea id="restaurantAddress">123 Food Street, Victoria Island, Lagos, Nigeria</textarea>
+                            <textarea id="restaurantAddress"><?php echo htmlspecialchars($settings['restaurant']['restaurant_address']); ?></textarea>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="restaurantPhone">Phone Number</label>
-                                <input type="text" id="restaurantPhone" value="+234 801 234 5678">
+                                <input type="text" id="restaurantPhone" value="<?php echo htmlspecialchars($settings['restaurant']['restaurant_phone']); ?>">
                             </div>
                             <div class="form-group">
                                 <label for="restaurantEmail">Email Address</label>
-                                <input type="email" id="restaurantEmail" value="info@josephspot.com">
+                                <input type="email" id="restaurantEmail" value="<?php echo htmlspecialchars($settings['restaurant']['restaurant_email']); ?>">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="openingHours">Opening Hours</label>
-                            <textarea id="openingHours">Monday - Friday: 8:00 AM - 10:00 PM
-Saturday - Sunday: 9:00 AM - 11:00 PM</textarea>
+                            <textarea id="openingHours"><?php echo htmlspecialchars($settings['restaurant']['opening_hours']); ?></textarea>
                         </div>
 
                         <div class="settings-actions">
@@ -1409,19 +1548,19 @@ Saturday - Sunday: 9:00 AM - 11:00 PM</textarea>
                         <div class="form-group">
                             <label>Email Notifications</label>
                             <div class="checkbox-group">
-                                <input type="checkbox" id="emailOrders" checked>
+                                <input type="checkbox" id="emailOrders" <?php echo $settings['notifications']['email_orders'] === '1' ? 'checked' : ''; ?>>
                                 <span>New orders</span>
                             </div>
                             <div class="checkbox-group">
-                                <input type="checkbox" id="emailReservations" checked>
+                                <input type="checkbox" id="emailReservations" <?php echo $settings['notifications']['email_reservations'] === '1' ? 'checked' : ''; ?>>
                                 <span>New reservations</span>
                             </div>
                             <div class="checkbox-group">
-                                <input type="checkbox" id="emailReviews">
+                                <input type="checkbox" id="emailReviews" <?php echo $settings['notifications']['email_reviews'] === '1' ? 'checked' : ''; ?>>
                                 <span>New reviews</span>
                             </div>
                             <div class="checkbox-group">
-                                <input type="checkbox" id="emailPromotions" checked>
+                                <input type="checkbox" id="emailPromotions" <?php echo $settings['notifications']['email_promotions'] === '1' ? 'checked' : ''; ?>>
                                 <span>Promotions & updates</span>
                             </div>
                         </div>
@@ -1429,15 +1568,15 @@ Saturday - Sunday: 9:00 AM - 11:00 PM</textarea>
                         <div class="form-group">
                             <label>Push Notifications</label>
                             <div class="checkbox-group">
-                                <input type="checkbox" id="pushOrders" checked>
+                                <input type="checkbox" id="pushOrders" <?php echo $settings['notifications']['push_orders'] === '1' ? 'checked' : ''; ?>>
                                 <span>New orders</span>
                             </div>
                             <div class="checkbox-group">
-                                <input type="checkbox" id="pushReservations">
+                                <input type="checkbox" id="pushReservations" <?php echo $settings['notifications']['push_reservations'] === '1' ? 'checked' : ''; ?>>
                                 <span>New reservations</span>
                             </div>
                             <div class="checkbox-group">
-                                <input type="checkbox" id="pushLowStock" checked>
+                                <input type="checkbox" id="pushLowStock" <?php echo $settings['notifications']['push_low_stock'] === '1' ? 'checked' : ''; ?>>
                                 <span>Low stock alerts</span>
                             </div>
                         </div>
@@ -1445,11 +1584,11 @@ Saturday - Sunday: 9:00 AM - 11:00 PM</textarea>
                         <div class="form-group">
                             <label for="notificationSound">Notification Sound</label>
                             <select id="notificationSound">
-                                <option value="default" selected>Default</option>
-                                <option value="chime">Chime</option>
-                                <option value="bell">Bell</option>
-                                <option value="ding">Ding</option>
-                                <option value="none">None</option>
+                                <option value="default" <?php echo $settings['notifications']['notification_sound'] === 'default' ? 'selected' : ''; ?>>Default</option>
+                                <option value="chime" <?php echo $settings['notifications']['notification_sound'] === 'chime' ? 'selected' : ''; ?>>Chime</option>
+                                <option value="bell" <?php echo $settings['notifications']['notification_sound'] === 'bell' ? 'selected' : ''; ?>>Bell</option>
+                                <option value="ding" <?php echo $settings['notifications']['notification_sound'] === 'ding' ? 'selected' : ''; ?>>Ding</option>
+                                <option value="none" <?php echo $settings['notifications']['notification_sound'] === 'none' ? 'selected' : ''; ?>>None</option>
                             </select>
                         </div>
 
@@ -1478,37 +1617,34 @@ Saturday - Sunday: 9:00 AM - 11:00 PM</textarea>
                             </div>
 
                             <ul class="admin-list">
-                                <li class="admin-item">
-                                    <div class="admin-avatar-sm">AJ</div>
-                                    <div class="admin-details-sm">
-                                        <h4>Admin Joseph</h4>
-                                        <p>joseph@josephspot.com</p>
-                                    </div>
-                                    <div class="admin-role">Super Admin</div>
-                                </li>
-                                <li class="admin-item">
-                                    <div class="admin-avatar-sm">MD</div>
-                                    <div class="admin-details-sm">
-                                        <h4>Manager David</h4>
-                                        <p>david@josephspot.com</p>
-                                    </div>
-                                    <div class="admin-role">Manager</div>
-                                </li>
-                                <li class="admin-item">
-                                    <div class="admin-avatar-sm">CS</div>
-                                    <div class="admin-details-sm">
-                                        <h4>Content Sarah</h4>
-                                        <p>sarah@josephspot.com</p>
-                                    </div>
-                                    <div class="admin-role">Content Manager</div>
-                                </li>
+                                <?php if (empty($all_admins)): ?>
+                                    <li class="admin-item">
+                                        <div class="admin-details-sm">
+                                            <p>No administrators found.</p>
+                                        </div>
+                                    </li>
+                                <?php else: ?>
+                                    <?php foreach ($all_admins as $admin): 
+                                        $admin_initials = strtoupper(substr($admin['username'], 0, 2));
+                                        $admin_role = ucfirst(str_replace('_', ' ', $admin['role'] ?? 'manager'));
+                                    ?>
+                                    <li class="admin-item">
+                                        <div class="admin-avatar-sm"><?php echo htmlspecialchars($admin_initials); ?></div>
+                                        <div class="admin-details-sm">
+                                            <h4><?php echo htmlspecialchars($admin['username']); ?></h4>
+                                            <p><?php echo htmlspecialchars($admin['email']); ?></p>
+                                        </div>
+                                        <div class="admin-role"><?php echo htmlspecialchars($admin_role); ?></div>
+                                    </li>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </ul>
                         </div>
 
                         <div class="form-group">
                             <label for="userRegistration">User Registration</label>
                             <div class="toggle-switch">
-                                <input type="checkbox" id="userRegistration" checked>
+                                <input type="checkbox" id="userRegistration" <?php echo get_setting($pdo, 'general', 'user_registration', '1') === '1' ? 'checked' : ''; ?>>
                                 <span class="toggle-slider"></span>
                             </div>
                             <small style="display: block; margin-top: 5px; color: var(--text-light);">Allow new users
@@ -1518,8 +1654,8 @@ Saturday - Sunday: 9:00 AM - 11:00 PM</textarea>
                         <div class="form-group">
                             <label for="defaultUserRole">Default User Role</label>
                             <select id="defaultUserRole">
-                                <option value="customer" selected>Customer</option>
-                                <option value="subscriber">Subscriber</option>
+                                <option value="customer" <?php echo get_setting($pdo, 'general', 'default_user_role', 'customer') === 'customer' ? 'selected' : ''; ?>>Customer</option>
+                                <option value="subscriber" <?php echo get_setting($pdo, 'general', 'default_user_role', 'customer') === 'subscriber' ? 'selected' : ''; ?>>Subscriber</option>
                             </select>
                         </div>
 
@@ -1539,32 +1675,33 @@ Saturday - Sunday: 9:00 AM - 11:00 PM</textarea>
 
                         <div class="form-group">
                             <label>Theme</label>
-                            <div class="theme-option active">
+                            <div class="theme-option <?php echo $settings['appearance']['theme'] === 'warm_brown' ? 'active' : ''; ?>" data-theme="warm_brown">
                                 <div class="color-preview" style="background: #8b4513;"></div>
                                 <div class="theme-info">
                                     <div class="theme-name">Warm Brown</div>
                                     <div class="theme-desc">Default theme with warm brown tones</div>
                                 </div>
                             </div>
-                            <div class="theme-option">
+                            <div class="theme-option <?php echo $settings['appearance']['theme'] === 'forest_green' ? 'active' : ''; ?>" data-theme="forest_green">
                                 <div class="color-preview" style="background: #2c5530;"></div>
                                 <div class="theme-info">
                                     <div class="theme-name">Forest Green</div>
                                     <div class="theme-desc">Nature-inspired green theme</div>
                                 </div>
                             </div>
-                            <div class="theme-option">
+                            <div class="theme-option <?php echo $settings['appearance']['theme'] === 'ocean_blue' ? 'active' : ''; ?>" data-theme="ocean_blue">
                                 <div class="color-preview" style="background: #1e3a5f;"></div>
                                 <div class="theme-info">
                                     <div class="theme-name">Ocean Blue</div>
                                     <div class="theme-desc">Cool blue color scheme</div>
                                 </div>
                             </div>
+                            <input type="hidden" id="selectedTheme" value="<?php echo htmlspecialchars($settings['appearance']['theme']); ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="primaryColor">Primary Color</label>
-                            <input type="color" id="primaryColor" value="#8b4513">
+                            <input type="color" id="primaryColor" value="<?php echo htmlspecialchars($settings['appearance']['primary_color']); ?>">
                         </div>
 
                         <div class="form-group">
@@ -1597,42 +1734,42 @@ Saturday - Sunday: 9:00 AM - 11:00 PM</textarea>
 
                         <div class="form-group">
                             <label for="passwordMinLength">Minimum Password Length</label>
-                            <input type="number" id="passwordMinLength" value="8" min="6" max="20">
+                            <input type="number" id="passwordMinLength" value="<?php echo htmlspecialchars($settings['security']['password_min_length']); ?>" min="6" max="20">
                         </div>
 
                         <div class="form-group">
                             <label for="passwordRequireSpecial">Password Requirements</label>
                             <div class="checkbox-group">
-                                <input type="checkbox" id="passwordRequireUppercase" checked>
+                                <input type="checkbox" id="passwordRequireUppercase" <?php echo $settings['security']['password_require_uppercase'] === '1' ? 'checked' : ''; ?>>
                                 <span>Require uppercase letters</span>
                             </div>
                             <div class="checkbox-group">
-                                <input type="checkbox" id="passwordRequireLowercase" checked>
+                                <input type="checkbox" id="passwordRequireLowercase" <?php echo $settings['security']['password_require_lowercase'] === '1' ? 'checked' : ''; ?>>
                                 <span>Require lowercase letters</span>
                             </div>
                             <div class="checkbox-group">
-                                <input type="checkbox" id="passwordRequireNumbers" checked>
+                                <input type="checkbox" id="passwordRequireNumbers" <?php echo $settings['security']['password_require_numbers'] === '1' ? 'checked' : ''; ?>>
                                 <span>Require numbers</span>
                             </div>
                             <div class="checkbox-group">
-                                <input type="checkbox" id="passwordRequireSpecial">
+                                <input type="checkbox" id="passwordRequireSpecial" <?php echo $settings['security']['password_require_special'] === '1' ? 'checked' : ''; ?>>
                                 <span>Require special characters</span>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="sessionTimeout">Session Timeout (minutes)</label>
-                            <input type="number" id="sessionTimeout" value="30" min="5" max="240">
+                            <input type="number" id="sessionTimeout" value="<?php echo htmlspecialchars($settings['security']['session_timeout']); ?>" min="5" max="240">
                         </div>
 
                         <div class="form-group">
                             <label for="loginAttempts">Max Login Attempts</label>
-                            <input type="number" id="loginAttempts" value="5" min="3" max="10">
+                            <input type="number" id="loginAttempts" value="<?php echo htmlspecialchars($settings['security']['login_attempts']); ?>" min="3" max="10">
                         </div>
 
                         <div class="form-group">
                             <label class="checkbox-group">
-                                <input type="checkbox" id="twoFactorAuth">
+                                <input type="checkbox" id="twoFactorAuth" <?php echo $settings['security']['two_factor_auth'] === '1' ? 'checked' : ''; ?>>
                                 <span>Enable Two-Factor Authentication</span>
                             </label>
                         </div>
@@ -1661,42 +1798,50 @@ Saturday - Sunday: 9:00 AM - 11:00 PM</textarea>
                                 </div>
                             </div>
 
-                            <ul class="admin-list">
-                                <li class="admin-item">
-                                    <div class="admin-details-sm">
-                                        <h4>Full System Backup</h4>
-                                        <p>Created on October 15, 2025 at 2:30 PM</p>
-                                    </div>
-                                    <div class="card-actions">
-                                        <button class="card-action-btn">
-                                            <i class="fas fa-download"></i> Download
-                                        </button>
-                                        <button class="card-action-btn">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </div>
-                                </li>
-                                <li class="admin-item">
-                                    <div class="admin-details-sm">
-                                        <h4>Database Backup</h4>
-                                        <p>Created on October 10, 2025 at 10:15 AM</p>
-                                    </div>
-                                    <div class="card-actions">
-                                        <button class="card-action-btn">
-                                            <i class="fas fa-download"></i> Download
-                                        </button>
-                                        <button class="card-action-btn">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </div>
-                                </li>
+                            <ul class="admin-list" id="backupList">
+                                <?php
+                                // Load backups from database
+                                try {
+                                    $stmt = $pdo->query("SELECT meta_key, meta_value, created_at FROM admin_settings_meta WHERE meta_type = 'backup' ORDER BY created_at DESC LIMIT 10");
+                                    $backups = $stmt->fetchAll();
+                                    
+                                    if (empty($backups)) {
+                                        echo '<li class="admin-item"><div class="admin-details-sm"><p>No backups found. Create your first backup.</p></div></li>';
+                                    } else {
+                                        foreach ($backups as $backup) {
+                                            $meta = json_decode($backup['meta_value'], true);
+                                            $filename = $backup['meta_key'];
+                                            $created = new DateTime($backup['created_at']);
+                                            $formatted_date = $created->format('F j, Y \a\t g:i A');
+                                            $size = isset($meta['size']) ? number_format($meta['size'] / 1024, 2) . ' KB' : 'Unknown size';
+                                            
+                                            echo '<li class="admin-item" data-backup="' . htmlspecialchars($filename) . '">';
+                                            echo '<div class="admin-details-sm">';
+                                            echo '<h4>' . htmlspecialchars($filename) . '</h4>';
+                                            echo '<p>Created on ' . htmlspecialchars($formatted_date) . ' (' . $size . ')</p>';
+                                            echo '</div>';
+                                            echo '<div class="card-actions">';
+                                            echo '<button class="card-action-btn download-backup" data-file="' . htmlspecialchars($filename) . '">';
+                                            echo '<i class="fas fa-download"></i> Download';
+                                            echo '</button>';
+                                            echo '<button class="card-action-btn delete-backup" data-file="' . htmlspecialchars($filename) . '">';
+                                            echo '<i class="fas fa-trash"></i> Delete';
+                                            echo '</button>';
+                                            echo '</div>';
+                                            echo '</li>';
+                                        }
+                                    }
+                                } catch(PDOException $e) {
+                                    echo '<li class="admin-item"><div class="admin-details-sm"><p>Error loading backups.</p></div></li>';
+                                }
+                                ?>
                             </ul>
                         </div>
 
                         <div class="form-group">
                             <label for="autoBackup">Automatic Backups</label>
                             <div class="toggle-switch">
-                                <input type="checkbox" id="autoBackup" checked>
+                                <input type="checkbox" id="autoBackup" <?php echo get_setting($pdo, 'general', 'auto_backup', '1') === '1' ? 'checked' : ''; ?>>
                                 <span class="toggle-slider"></span>
                             </div>
                         </div>
@@ -1704,15 +1849,15 @@ Saturday - Sunday: 9:00 AM - 11:00 PM</textarea>
                         <div class="form-group">
                             <label for="backupFrequency">Backup Frequency</label>
                             <select id="backupFrequency">
-                                <option value="daily">Daily</option>
-                                <option value="weekly" selected>Weekly</option>
-                                <option value="monthly">Monthly</option>
+                                <option value="daily" <?php echo get_setting($pdo, 'general', 'backup_frequency', 'weekly') === 'daily' ? 'selected' : ''; ?>>Daily</option>
+                                <option value="weekly" <?php echo get_setting($pdo, 'general', 'backup_frequency', 'weekly') === 'weekly' ? 'selected' : ''; ?>>Weekly</option>
+                                <option value="monthly" <?php echo get_setting($pdo, 'general', 'backup_frequency', 'weekly') === 'monthly' ? 'selected' : ''; ?>>Monthly</option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label for="backupRetention">Backup Retention (days)</label>
-                            <input type="number" id="backupRetention" value="30" min="7" max="365">
+                            <input type="number" id="backupRetention" value="<?php echo htmlspecialchars(get_setting($pdo, 'general', 'backup_retention', '30')); ?>" min="7" max="365">
                         </div>
 
                         <div class="settings-actions">
@@ -1983,32 +2128,384 @@ Saturday - Sunday: 9:00 AM - 11:00 PM</textarea>
             option.addEventListener('click', function() {
                 themeOptions.forEach(opt => opt.classList.remove('active'));
                 this.classList.add('active');
+                // Update hidden input
+                const hiddenInput = document.getElementById('selectedTheme');
+                if (hiddenInput) {
+                    hiddenInput.value = this.dataset.theme;
+                }
             });
         });
 
+        // CSRF Token
+        const csrfToken = '<?php echo $csrf_token; ?>';
+        
         // Save Settings
         saveButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // In a real application, this would save the settings to a database
-                alert('Settings saved successfully!');
+            button.addEventListener('click', async function() {
+                const section = this.closest('.settings-section');
+                if (!section) return;
+                
+                // Determine which section
+                let sectionName = '';
+                let data = {};
+                
+                if (section.id === 'general-settings') {
+                    sectionName = 'general';
+                    data = {
+                        site_name: document.getElementById('siteName').value,
+                        site_description: document.getElementById('siteDescription').value,
+                        currency: document.getElementById('currency').value,
+                        timezone: document.getElementById('timezone').value,
+                        date_format: document.getElementById('dateFormat').value,
+                        maintenance_mode: document.getElementById('maintenanceMode').checked ? '1' : '0'
+                    };
+                } else if (section.id === 'restaurant-settings') {
+                    sectionName = 'restaurant';
+                    data = {
+                        restaurant_name: document.getElementById('restaurantName').value,
+                        restaurant_tagline: document.getElementById('restaurantTagline').value,
+                        restaurant_address: document.getElementById('restaurantAddress').value,
+                        restaurant_phone: document.getElementById('restaurantPhone').value,
+                        restaurant_email: document.getElementById('restaurantEmail').value,
+                        opening_hours: document.getElementById('openingHours').value
+                    };
+                } else if (section.id === 'notifications-settings') {
+                    sectionName = 'notifications';
+                    data = {
+                        email_orders: document.getElementById('emailOrders').checked ? '1' : '0',
+                        email_reservations: document.getElementById('emailReservations').checked ? '1' : '0',
+                        email_reviews: document.getElementById('emailReviews').checked ? '1' : '0',
+                        email_promotions: document.getElementById('emailPromotions').checked ? '1' : '0',
+                        push_orders: document.getElementById('pushOrders').checked ? '1' : '0',
+                        push_reservations: document.getElementById('pushReservations').checked ? '1' : '0',
+                        push_low_stock: document.getElementById('pushLowStock').checked ? '1' : '0',
+                        notification_sound: document.getElementById('notificationSound').value
+                    };
+                } else if (section.id === 'security-settings') {
+                    sectionName = 'security';
+                    data = {
+                        password_min_length: document.getElementById('passwordMinLength').value,
+                        password_require_uppercase: document.getElementById('passwordRequireUppercase').checked ? '1' : '0',
+                        password_require_lowercase: document.getElementById('passwordRequireLowercase').checked ? '1' : '0',
+                        password_require_numbers: document.getElementById('passwordRequireNumbers').checked ? '1' : '0',
+                        password_require_special: document.getElementById('passwordRequireSpecial').checked ? '1' : '0',
+                        session_timeout: document.getElementById('sessionTimeout').value,
+                        login_attempts: document.getElementById('loginAttempts').value,
+                        two_factor_auth: document.getElementById('twoFactorAuth').checked ? '1' : '0'
+                    };
+                } else if (section.id === 'appearance-settings') {
+                    sectionName = 'appearance';
+                    const selectedTheme = document.querySelector('.theme-option.active');
+                    data = {
+                        theme: selectedTheme ? selectedTheme.dataset.theme : 'warm_brown',
+                        primary_color: document.getElementById('primaryColor').value
+                    };
+                } else if (section.id === 'users-settings') {
+                    sectionName = 'general'; // User management settings go to general
+                    data = {
+                        user_registration: document.getElementById('userRegistration').checked ? '1' : '0',
+                        default_user_role: document.getElementById('defaultUserRole').value
+                    };
+                } else if (section.id === 'backup-settings') {
+                    sectionName = 'general'; // Backup settings go to general
+                    data = {
+                        auto_backup: document.getElementById('autoBackup').checked ? '1' : '0',
+                        backup_frequency: document.getElementById('backupFrequency').value,
+                        backup_retention: document.getElementById('backupRetention').value
+                    };
+                }
+                
+                if (!sectionName) return;
+                
+                // Show loading state
+                const originalText = this.innerHTML;
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('section', sectionName);
+                    formData.append('csrf_token', csrfToken);
+                    formData.append('data', JSON.stringify(data));
+                    
+                    const response = await fetch('api/save_settings.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Show success message
+                        showNotification('Settings saved successfully!', 'success');
+                        
+                        // If appearance settings, reload page after short delay to show changes
+                        if (sectionName === 'appearance') {
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        }
+                    } else {
+                        showNotification(result.message || 'Error saving settings', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Error saving settings. Please try again.', 'error');
+                } finally {
+                    this.disabled = false;
+                    this.innerHTML = originalText;
+                }
             });
         });
+        
+        // Notification function
+        function showNotification(message, type = 'success') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification-toast ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#4CAF50' : '#F44336'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Add CSS animations for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // File Upload Handlers
+        const logoUpload = document.getElementById('logoUpload');
+        const faviconUpload = document.getElementById('faviconUpload');
+        
+        if (logoUpload) {
+            logoUpload.addEventListener('change', async function() {
+                if (!this.files[0]) return;
+                
+                const formData = new FormData();
+                formData.append('file', this.files[0]);
+                formData.append('file_type', 'logo');
+                formData.append('csrf_token', csrfToken);
+                
+                try {
+                    const response = await fetch('api/upload_file.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification('Logo uploaded successfully!', 'success');
+                    } else {
+                        showNotification(result.message || 'Error uploading logo', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Error uploading logo. Please try again.', 'error');
+                }
+            });
+        }
+        
+        if (faviconUpload) {
+            faviconUpload.addEventListener('change', async function() {
+                if (!this.files[0]) return;
+                
+                const formData = new FormData();
+                formData.append('file', this.files[0]);
+                formData.append('file_type', 'favicon');
+                formData.append('csrf_token', csrfToken);
+                
+                try {
+                    const response = await fetch('api/upload_file.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification('Favicon uploaded successfully!', 'success');
+                    } else {
+                        showNotification(result.message || 'Error uploading favicon', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Error uploading favicon. Please try again.', 'error');
+                }
+            });
+        }
 
         // Create Backup
         if (createBackupBtn) {
-            createBackupBtn.addEventListener('click', function() {
-                // In a real application, this would trigger a backup process
-                alert('Backup creation started. You will be notified when it completes.');
+            createBackupBtn.addEventListener('click', async function() {
+                if (!confirm('Create a backup of all settings? This may take a few moments.')) {
+                    return;
+                }
+                
+                const originalText = this.innerHTML;
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Backup...';
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'create_backup');
+                    formData.append('csrf_token', csrfToken);
+                    
+                    const response = await fetch('api/backup_settings.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification('Backup created successfully!', 'success');
+                        // Reload page to show new backup
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showNotification(result.message || 'Error creating backup', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Error creating backup. Please try again.', 'error');
+                } finally {
+                    this.disabled = false;
+                    this.innerHTML = originalText;
+                }
             });
         }
 
-        // Add Admin
+        // Add Admin (only for super admin)
         if (addAdminBtn) {
+            <?php if ($is_super_admin): ?>
             addAdminBtn.addEventListener('click', function() {
-                // In a real application, this would open a modal to add a new admin
-                alert('This would open a form to add a new administrator.');
+                // This would open a modal to add a new admin
+                // For now, redirect to a separate admin creation page or show alert
+                if (confirm('This will open the admin creation form. Continue?')) {
+                    // You can implement a modal here or redirect
+                    alert('Admin creation form would open here. Implement as needed.');
+                }
+            });
+            <?php else: ?>
+            addAdminBtn.style.display = 'none';
+            <?php endif; ?>
+        }
+        
+        // Restore Defaults button
+        const restoreDefaultsBtn = document.querySelector('.btn-danger');
+        if (restoreDefaultsBtn && restoreDefaultsBtn.textContent.includes('Restore Defaults')) {
+            restoreDefaultsBtn.addEventListener('click', async function() {
+                if (!confirm('Are you sure you want to restore all settings to default values? This cannot be undone.')) {
+                    return;
+                }
+                
+                const originalText = this.innerHTML;
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Restoring...';
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'restore_defaults');
+                    formData.append('csrf_token', csrfToken);
+                    
+                    const response = await fetch('api/backup_settings.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification('Settings restored to defaults!', 'success');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showNotification(result.message || 'Error restoring defaults', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Error restoring defaults. Please try again.', 'error');
+                } finally {
+                    this.disabled = false;
+                    this.innerHTML = originalText;
+                }
             });
         }
+        
+        // Backup download and delete handlers
+        document.addEventListener('click', async function(e) {
+            if (e.target.closest('.download-backup')) {
+                const filename = e.target.closest('.download-backup').dataset.file;
+                window.location.href = 'api/download_backup.php?file=' + encodeURIComponent(filename) + '&csrf_token=' + csrfToken;
+            }
+            
+            if (e.target.closest('.delete-backup')) {
+                const filename = e.target.closest('.delete-backup').dataset.file;
+                if (!confirm('Are you sure you want to delete this backup?')) {
+                    return;
+                }
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'delete_backup');
+                    formData.append('filename', filename);
+                    formData.append('csrf_token', csrfToken);
+                    
+                    const response = await fetch('api/backup_settings.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification('Backup deleted successfully!', 'success');
+                        e.target.closest('.admin-item').remove();
+                    } else {
+                        showNotification(result.message || 'Error deleting backup', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Error deleting backup. Please try again.', 'error');
+                }
+            }
+        });
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {

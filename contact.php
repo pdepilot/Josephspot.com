@@ -1,3 +1,7 @@
+<?php
+// Load appearance settings from database
+require_once __DIR__ . '/includes/appearance_settings.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +9,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact Us | Joseph's Pot</title>
-  <link rel="icon" href="./images/logo3.png">
+  <link rel="icon" href="<?php echo $appearance['favicon_path']; ?>?v=<?php echo time(); ?>">
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -26,10 +30,11 @@
 
   <style>
     /* CSS Starts Here */
+    /* Override CSS variables - using :root */
     :root {
-      --brown: #8b4513;
-      --brown-light: #a0522d;
-      --brown-dark: #654321;
+      --brown: <?php echo $appearance['primary_color']; ?>;
+      --brown-light: <?php echo $appearance['primary_light']; ?>;
+      --brown-dark: <?php echo $appearance['primary_dark']; ?>;
       --white: #ffffff;
       --pale-orange: #ffe4b5;
       --pale-orange-light: #fff8dc;
@@ -812,7 +817,7 @@
   <header class="navbar" id="navbar">
     <div class="containerr">
       <div class="logo">
-        <a href="index.php"><img src="./images/logo3.png" alt="Joseph's Pot Logo"></a>
+        <a href="index.php"><img src="<?php echo $appearance['logo_path']; ?>?v=<?php echo time(); ?>" alt="Joseph's Pot Logo"></a>
       </div>
       <nav class="nav-links">
         <a href="index.php">Home</a>
@@ -982,7 +987,7 @@
       <div class="footer-glass-inner">
         <div class="footer-content">
           <div class="footer-column">
-            <img src="./images/logo.jpg" alt="Joseph's Pot Logo" width="80px" />
+            <img src="<?php echo $appearance['logo_path']; ?>?v=<?php echo time(); ?>" alt="Joseph's Pot Logo" width="80px" />
             <p>
               Authentic taste, unforgettable experience.<br>
               Serving happiness from Owerri, Nigeria.
@@ -1398,6 +1403,15 @@
   // ========== END GOOGLE MAPS ERROR HANDLER ==========
 </script>
 <!-- JavaScript Ends Here -->
+  <script>
+    // Force CSS variable update after page load (ensures override of static CSS)
+    (function() {
+        const root = document.documentElement;
+        root.style.setProperty('--brown', '<?php echo $appearance['primary_color']; ?>', 'important');
+        root.style.setProperty('--brown-light', '<?php echo $appearance['primary_light']; ?>', 'important');
+        root.style.setProperty('--brown-dark', '<?php echo $appearance['primary_dark']; ?>', 'important');
+    })();
+  </script>
 </body>
 
 </html>

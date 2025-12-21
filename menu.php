@@ -1,20 +1,80 @@
+<?php
+// menu.php - Add at the very top
+require_once 'db_connection.php';
+require_once __DIR__ . '/includes/appearance_settings.php';
+
+// Fetch menu items from database
+try {
+    $sql = "SELECT * FROM food_menu_manager WHERE is_available = 1 ORDER BY 
+            CASE category 
+                WHEN 'main-course' THEN 1
+                WHEN 'proteins' THEN 2
+                WHEN 'swallow' THEN 3
+                WHEN 'bulk-orders' THEN 4
+                WHEN 'breakfast' THEN 5
+                WHEN 'lunch' THEN 6
+                WHEN 'dinner' THEN 7
+                WHEN 'drinks' THEN 8
+                ELSE 9
+            END, 
+            CASE WHEN is_special = 1 THEN 0 ELSE 1 END,
+            name";
+    
+    $stmt = $pdo->query($sql);
+    $menu_items = $stmt->fetchAll();
+    
+    // Group items by category
+    $items_by_category = [];
+    foreach($menu_items as $item) {
+        $category = $item['category'];
+        if(!isset($items_by_category[$category])) {
+            $items_by_category[$category] = [];
+        }
+        $items_by_category[$category][] = $item;
+    }
+    
+} catch(PDOException $e) {
+    // If database fails, use empty array
+    $items_by_category = [];
+    error_log("Database error: " . $e->getMessage());
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Joseph's Pot - Authentic Igbo Cuisine</title>
-    <link rel="icon" href="./images/logo3.png">
+    <link rel="icon" href="<?php echo $appearance['favicon_path']; ?>?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="./fontawesome-free-6.7.2-web/css/all.min.css">
     <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="./CSS/menu.css">
+    <!-- Dynamic Theme Colors (must come after CSS to override) -->
+    <style id="dynamic-theme-colors">
+        /* Override CSS variables - using :root */
+        :root {
+            --brown: <?php echo $appearance['primary_color']; ?>;
+            --brown-light: <?php echo $appearance['primary_light']; ?>;
+            --brown-dark: <?php echo $appearance['primary_dark']; ?>;
+        }
+    </style>
+    <script>
+        // Force CSS variable update after page load (ensures override of static CSS)
+        (function() {
+            const root = document.documentElement;
+            root.style.setProperty('--brown', '<?php echo $appearance['primary_color']; ?>', 'important');
+            root.style.setProperty('--brown-light', '<?php echo $appearance['primary_light']; ?>', 'important');
+            root.style.setProperty('--brown-dark', '<?php echo $appearance['primary_dark']; ?>', 'important');
+        })();
+    </script>
 </head>
 <body>
     <!-- Navbar -->
     <header class="navbar" id="navbar">
         <div class="containerr">
             <div class="logo">
-                <a href="index.php"><img src="./images/logo3.png" alt="Joseph's Pot Logo"></a>
+                <a href="index.php"><img src="<?php echo $appearance['logo_path']; ?>?v=<?php echo time(); ?>" alt="Joseph's Pot Logo"></a>
             </div>
             <nav class="nav-links">
                 <a href="index.php">Home</a>
@@ -44,6 +104,9 @@
     <!-- Menu Filter -->
     <div class="menu-filter">
         <button class="filter-btn active" data-filter="all">All Items</button>
+        <button class="filter-btn" data-filter="breakfast">Breakfast</button>
+        <button class="filter-btn" data-filter="lunch">Lunch</button>
+        <button class="filter-btn" data-filter="dinner">Dinner</button>
         <button class="filter-btn" data-filter="main-course">Main Course</button>
         <button class="filter-btn" data-filter="proteins">Proteins</button>
         <button class="filter-btn" data-filter="swallow">Swallow</button>
@@ -54,932 +117,300 @@
     <!-- Menu Container -->
     <div class="menu-wrapper">
         <!-- Main Course -->
+        <?php if(isset($items_by_category['main-course'])): ?>
         <section class="menu-section fade-in" data-category="main-course">
             <div class="section-header">
                 <h2><i class="fas fa-utensils"></i> MAIN COURSE</h2>
                 <img src="./images/nsala.jpeg" alt="Main Course" class="section-image">
             </div>
             <div class="menu-items">
-                <div class="menu-item special-item">
+                <?php foreach($items_by_category['main-course'] as $item): 
+                    $is_special = $item['is_special'];
+                    $tags = !empty($item['tags']) ? explode(',', $item['tags']) : [];
+                    $display_price = $item['display_price'] ?: '₦' . number_format($item['price']);
+                ?>
+                <div class="menu-item <?php echo $is_special ? 'special-item' : ''; ?>">
                     <div class="item-info">
-                        <div class="item-name"><i class="fas fa-crown"></i> Joe's Secret</div>
-                        <p class="item-description">flavorful, bold full chicken red pepper base, seasoned with our signature blend of spices and served with salad and chips</p>
-                        <div class="item-tags">
-                            <span class="tag">Popular</span>
-                            <span class="tag">Chef's Special</span>
+                        <div class="item-name">
+                            <?php if($item['icon']): ?>
+                            <i class="<?php echo htmlspecialchars($item['icon']); ?>"></i>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($item['name']); ?>
                         </div>
-                    </div>
-                    <span class="item-price">₦25,000</span>
-                </div>
-
-
-                <div class="menu-item special-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-crown"></i> Jollof Rice</div>
-                        <p class="item-description">flavorful, bold tomato and red pepper base, seasoned with our signature blend of spices</p>
+                        <p class="item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                        <?php if(!empty($tags)): ?>
                         <div class="item-tags">
-                            <span class="tag">Popular</span>
-                            <span class="tag">Chef's Special</span>
+                            <?php foreach($tags as $tag): ?>
+                            <span class="tag"><?php echo htmlspecialchars(trim($tag)); ?></span>
+                            <?php endforeach; ?>
                         </div>
+                        <?php endif; ?>
                     </div>
-                    <span class="item-price">₦3,900</span>
+                    <span class="item-price"><?php echo htmlspecialchars($display_price); ?></span>
                 </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-utensil-spoon"></i> Noodles</div>
-                        <p class="item-description">Our signature instant noodles cooked to perfection in a spicy sauce of sautéed tomatoes, onions, and fresh peppers, accompanied by (Noodles wey dey boost belle)</p>
-                    </div>
-                    <span class="item-price">₦6,000</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-utensil-spoon"></i> Fried Rice</div>
-                        <p class="item-description">flavorful, curry-infused rice stir-fried to perfection with a colorful medley of fresh vegetables and succulent pieces of chicken or beef liver</p>
-                    </div>
-                    <span class="item-price">₦4,000</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-fish"></i> Native Rice</div>
-                        <p class="item-description">Traditional rice prepared with fresh fish and egg</p>
-                    </div>
-                    <span class="item-price">₦3,900</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-pot-food"></i> Porridge</div>
-                        <p class="item-description">Hearty and comforting traditional porridge</p>
-                    </div>
-                    <span class="item-price">₦4,000</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-egg"></i> Noodles & Turkey/Chicken</div>
-                        <p class="item-description">Flavorful noodles served with your choice of protein</p>
-                    </div>
-                    <span class="item-price">₦3,000</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-drumstick-bite"></i> Goat Meat Nkwobi</div>
-                        <p class="item-description">Spicy goat meat prepared in traditional Nkwobi style</p>
-                    </div>
-                    <span class="item-price">₦3,000</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bone"></i> Cowtail Nkwobi</div>
-                        <p class="item-description">Tender cowtail prepared in rich Nkwobi sauce</p>
-                    </div>
-                    <span class="item-price">₦5,000</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> Roasted Plantain/Ugba</div>
-                        <p class="item-description">Roasted plantain served with traditional Ugba</p>
-                    </div>
-                    <span class="item-price">₦4,500</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-fire"></i> Stir-fry Pasta</div>
-                        <p class="item-description">Pasta stir-fried with fresh vegetables and seasonings</p>
-                    </div>
-                    <span class="item-price">₦1,500</span>
-                </div>
-                
-                <div class="menu-item special-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-crown"></i> Goat Meat Jollof Rice</div>
-                        <p class="item-description">Premium jollof rice with tender goat meat</p>
-                        <div class="item-tags">
-                            <span class="tag">Premium</span>
-                            <span class="tag">Specialty</span>
-                        </div>
-                    </div>
-                    <span class="item-price">₦6,500</span>
-                </div>
+                <?php endforeach; ?>
             </div>
         </section>
+        <?php endif; ?>
 
         <!-- Proteins -->
+        <?php if(isset($items_by_category['proteins'])): ?>
         <section class="menu-section fade-in" data-category="proteins">
             <div class="section-header">
                 <h2><i class="fas fa-drumstick-bite"></i> PROTEINS</h2>
                 <img src="./images/nkwobi.jpeg" alt="Protein Dishes" class="section-image">
             </div>
             <div class="menu-items">
-                <div class="menu-item">
+                <?php foreach($items_by_category['proteins'] as $item): 
+                    $is_special = $item['is_special'];
+                    $tags = !empty($item['tags']) ? explode(',', $item['tags']) : [];
+                    $display_price = $item['display_price'] ?: '₦' . number_format($item['price']);
+                ?>
+                <div class="menu-item <?php echo $is_special ? 'special-item' : ''; ?>">
                     <div class="item-info">
-                        <div class="item-name"><i class="fas fa-drumstick-bite"></i> Chicken</div>
-                        <p class="item-description">Flame-grilled or fried chicken pieces coated in our signature, fiery red pepper sauce. A true party favorite!</p>
+                        <div class="item-name">
+                            <?php if($item['icon']): ?>
+                            <i class="<?php echo htmlspecialchars($item['icon']); ?>"></i>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($item['name']); ?>
+                        </div>
+                        <p class="item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                        <?php if(!empty($tags)): ?>
+                        <div class="item-tags">
+                            <?php foreach($tags as $tag): ?>
+                            <span class="tag"><?php echo htmlspecialchars(trim($tag)); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
-                    <span class="item-price">₦5,000</span>
+                    <span class="item-price"><?php echo htmlspecialchars($display_price); ?></span>
                 </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-turkey"></i> Cowtail</div>
-                        <p class="item-description"> its rich, deep beef flavor and succulent, gelatinous texture with Joseph's traditional spices</p>
-                    </div>
-                    <span class="item-price">₦7,000</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-cow"></i> Beef</div>
-                        <p class="item-description">Succulent pieces of beef, fried and then tossed in a fiery, flavorful sauce of blended peppers and onions.</p>
-                    </div>
-                    <span class="item-price">₦5,000</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-fish"></i> Dry Fish</div>
-                        <p class="item-description">Smoked and cured fish, rehydrated to tender perfection, offering a rich, savory, and smoky flavor burst.</p>
-                    </div>
-                    <span class="item-price">₦8,000</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-paw"></i> Assorted</div>
-                        <p class="item-description">Tender goat meat and viscera with traditional spices</p>
-                    </div>
-                    <span class="item-price">₦5,000</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-paw"></i> Snail</div>
-                        <p class="item-description">succulent African land snails sautéed in a fiery blend of scotch bonnet and bell peppers, onions, and signature spices for that perfect "crunch".</p>
-                    </div>
-                    <span class="item-price">₦8,000</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-paw"></i> Goat Meat</div>
-                        <p class="item-description">Succulent pieces of seasoned goat meat, fried or grilled to perfection, then coated in a rich, flavourful, and spicy sauce made from a blend of fresh peppers and onions.</p>
-                    </div>
-                    <span class="item-price">₦8,000</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-paw"></i> Fish Big-sized</div>
-                        <p class="item-description">Soft, white, and flaky Hake fish cooked in a vibrant and spicy pepper sauce. The fish absorbs the rich flavors of the sauce, offering a delightful texture</p>
-                    </div>
-                    <span class="item-price">₦5,000</span>
-                </div>
-
-                 <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-paw"></i> Fish Small-sized</div>
-                        <p class="item-description">Soft, white, and flaky Hake fish cooked in a vibrant and spicy pepper sauce. The fish absorbs the rich flavors of the sauce, offering a delightful texture</p>
-                    </div>
-                    <span class="item-price">₦3,000</span>
-                </div>
+                <?php endforeach; ?>
             </div>
         </section>
+        <?php endif; ?>
 
         <!-- Swallow -->
+        <?php if(isset($items_by_category['swallow'])): ?>
         <section class="menu-section fade-in" data-category="swallow">
             <div class="section-header">
                 <h2><i class="fas fa-bread-slice"></i> SWALLOW</h2>
                 <img src="./images/fufu.jpg" alt="Swallow Dishes" class="section-image">
             </div>
             <div class="menu-items">
-                <div class="menu-item">
+                <?php foreach($items_by_category['swallow'] as $item): 
+                    $is_special = $item['is_special'];
+                    $tags = !empty($item['tags']) ? explode(',', $item['tags']) : [];
+                    $display_price = $item['display_price'] ?: '₦' . number_format($item['price']);
+                ?>
+                <div class="menu-item <?php echo $is_special ? 'special-item' : ''; ?>">
                     <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> Semolina</div>
-                        <p class="item-description">(dough-like staple) made from coarsely ground durum wheat semolina. It has a smooth, moldable texture and a mild flavor</p>
+                        <div class="item-name">
+                            <?php if($item['icon']): ?>
+                            <i class="<?php echo htmlspecialchars($item['icon']); ?>"></i>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($item['name']); ?>
+                        </div>
+                        <p class="item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                        <?php if(!empty($tags)): ?>
+                        <div class="item-tags">
+                            <?php foreach($tags as $tag): ?>
+                            <span class="tag"><?php echo htmlspecialchars(trim($tag)); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
-                    <span class="item-price">₦1,500</span>
+                    <span class="item-price"><?php echo htmlspecialchars($display_price); ?></span>
                 </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> Garri</div>
-                        <p class="item-description">A traditional, smooth, and stretchy dough-like staple made from fermented cassava.</p>
-                    </div>
-                    <span class="item-price">₦1,500</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-mortar-pestle"></i> Fufu</div>
-                        <p class="item-description">A traditional, smooth, and stretchy dough-like staple made from fermented cassava.</p>
-                    </div>
-                    <span class="item-price">₦1,500</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> Poundo</div>
-                        <p class="item-description">A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.</p>
-                    </div>
-                    <span class="item-price">₦3,000</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> Oat-meal</div>
-                        <p class="item-description">prepared from finely blended whole-grain oats. </p>
-                    </div>
-                    <span class="item-price">₦3,000</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> Plantain Flour</div>
-                        <p class="item-description">a dense, smooth dough made from finely ground, unripe plantains</p>
-                    </div>
-                    <span class="item-price">₦3,000</span>
-                </div>
+                <?php endforeach; ?>
             </div>
         </section>
+        <?php endif; ?>
 
         <!-- Bulk Orders -->
+        <?php if(isset($items_by_category['bulk-orders'])): ?>
         <section class="menu-section fade-in" data-category="bulk-orders">
             <div class="section-header">
                 <h2><i class="fas fa-people-carry"></i> BULK ORDERS</h2>
                 <img src="./images/owerri.jpg.png" alt="Bulk Orders" class="section-image">
             </div>
             <div class="menu-items">
-                <div class="menu-item special-item">
+                <?php foreach($items_by_category['bulk-orders'] as $item): 
+                    $is_special = $item['is_special'];
+                    $tags = !empty($item['tags']) ? explode(',', $item['tags']) : [];
+                    $display_price = $item['display_price'] ?: '₦' . number_format($item['price']);
+                ?>
+                <div class="menu-item <?php echo $is_special ? 'special-item' : ''; ?>">
                     <div class="item-info">
-                        <div class="item-name"><i class="fas fa-soup"></i> 1.5 liter of Ofe-Owerri</div>
-                        <p class="item-description">Traditional Owerri soup with assorted meats</p>
-                    </div>
-                    <span class="item-price">₦27,000 <span class="price-note">Takeaway: ₦29,000</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-soup"></i> 1.5 liter of Ofe-Anara</div>
-                        <p class="item-description">Traditional Anara soup with assorted proteins</p>
-                    </div>
-                    <span class="item-price">₦20,000 <span class="price-note">Takeaway: ₦22,000</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-snail"></i> 1.5 liter of Snail-Soup</div>
-                        <p class="item-description">Rich soup with fresh snails and traditional spices</p>
-                    </div>
-                    <span class="item-price">₦25,000 <span class="price-note">Takeaway: ₦27,000</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bowl-food"></i> 1.5 liter of White-Soup</div>
-                        <p class="item-description">Traditional white soup with utazi leaves</p>
-                    </div>
-                    <span class="item-price">₦23,000 <span class="price-note">Takeaway: ₦25,000</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-mortar-pestle"></i> 1 liter of Banga-Stew</div>
-                        <p class="item-description">Palm fruit stew with traditional seasonings</p>
-                    </div>
-                    <span class="item-price">₦7,000</span>
-                </div>
-                
-                <!-- Oha Soup Variations -->
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Beef/Fish</div>
-                        <p class="item-description">Traditional Oha soup with beef or fish</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Goat</div>
-                        <p class="item-description">Traditional Oha soup with goat meat</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Snail</div>
-                        <p class="item-description">Traditional Oha soup with snails</p>
-                    </div>
-                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Cowtail</div>
-                        <p class="item-description">Traditional Oha soup with cowtail</p>
-                    </div>
-                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Assorted</div>
-                        <p class="item-description">Traditional Oha soup with assorted meats</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Chicken</div>
-                        <p class="item-description">Traditional Oha soup with chicken</p>
-                    </div>
-                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Oha-Soup with Dry Fish</div>
-                        <p class="item-description">Traditional Oha soup with dry fish</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1.5 liter of Oha-Soup</div>
-                        <p class="item-description">Traditional Oha soup in larger quantity</p>
-                    </div>
-                    <span class="item-price">₦27,000 <span class="price-note">Takeaway: ₦29,500</span></span>
-                </div>
-                
-                <!-- Vegetable Soup Variations -->
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Beef/Fish</div>
-                        <p class="item-description">Vegetable soup with beef or fish</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Goat</div>
-                        <p class="item-description">Vegetable soup with goat meat</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Snail</div>
-                        <p class="item-description">Vegetable soup with snails</p>
-                    </div>
-                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Cowtail</div>
-                        <p class="item-description">Vegetable soup with cowtail</p>
-                    </div>
-                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦12,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Assorted</div>
-                        <p class="item-description">Vegetable soup with assorted meats</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Chicken</div>
-                        <p class="item-description">Vegetable soup with chicken</p>
-                    </div>
-                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-carrot"></i> 1 liter of Veg-Soup with Dry Fish</div>
-                        <p class="item-description">Vegetable soup with dry fish</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦14,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-carrot"></i> 1.5 liters of Veg-Soup</div>
-                        <p class="item-description">Vegetable soup in larger quantity</p>
-                    </div>
-                    <span class="item-price">₦29,000 <span class="price-note">Takeaway: ₦31,500</span></span>
-                </div>
-                
-                <!-- Okra Soup Variations -->
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Beef/Fish</div>
-                        <p class="item-description">Okra soup with beef or fish</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Goat</div>
-                        <p class="item-description">Okra soup with goat meat</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Snail</div>
-                        <p class="item-description">Okra soup with snails</p>
-                    </div>
-                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Cowtail</div>
-                        <p class="item-description">Okra soup with cowtail</p>
-                    </div>
-                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦12,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Assorted</div>
-                        <p class="item-description">Okra soup with assorted meats</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Chicken</div>
-                        <p class="item-description">Okra soup with chicken</p>
-                    </div>
-                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Okra-Soup with Dry Fish</div>
-                        <p class="item-description">Okra soup with dry fish</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦14,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1.5 liters of Okra-Soup</div>
-                        <p class="item-description">Okra soup in larger quantity</p>
-                    </div>
-                    <span class="item-price">₦27,000 <span class="price-note">Takeaway: ₦29,000</span></span>
-                </div>
-                
-                <!-- Bitterleaf/Okazi Soup Variations -->
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Beef/Fish</div>
-                        <p class="item-description">Bitterleaf or Okazi soup with beef or fish</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Goat</div>
-                        <p class="item-description">Bitterleaf or Okazi soup with goat meat</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Snail</div>
-                        <p class="item-description">Bitterleaf or Okazi soup with snails</p>
-                    </div>
-                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Cowtail</div>
-                        <p class="item-description">Bitterleaf or Okazi soup with cowtail</p>
-                    </div>
-                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦12,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Assorted</div>
-                        <p class="item-description">Bitterleaf or Okazi soup with assorted meats</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Chicken</div>
-                        <p class="item-description">Bitterleaf or Okazi soup with chicken</p>
-                    </div>
-                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Bitterleaf/Okazi Soup with Dry Fish</div>
-                        <p class="item-description">Bitterleaf or Okazi soup with dry fish</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦14,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1.5 liters of Bitterleaf/Okazi Soup</div>
-                        <p class="item-description">Bitterleaf or Okazi soup in larger quantity</p>
-                    </div>
-                    <span class="item-price">₦27,000 <span class="price-note">Takeaway: ₦29,000</span></span>
-                </div>
-                
-                <!-- Afang Soup Variations -->
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Beef/Fish</div>
-                        <p class="item-description">Afang soup with beef or fish</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Goat</div>
-                        <p class="item-description">Afang soup with goat meat</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Snail</div>
-                        <p class="item-description">Afang soup with snails</p>
-                    </div>
-                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Cowtail</div>
-                        <p class="item-description">Afang soup with cowtail</p>
-                    </div>
-                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦12,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Assorted</div>
-                        <p class="item-description">Afang soup with assorted meats</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Chicken</div>
-                        <p class="item-description">Afang soup with chicken</p>
-                    </div>
-                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1 liter of Afang-Soup with Dry Fish</div>
-                        <p class="item-description">Afang soup with dry fish</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦14,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-leaf"></i> 1.5 liters of Afang-Soup</div>
-                        <p class="item-description">Afang soup in larger quantity</p>
-                    </div>
-                    <span class="item-price">₦29,000 <span class="price-note">Takeaway: ₦31,000</span></span>
-                </div>
-                
-                <!-- Egusi Soup Variations -->
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Beef/Fish</div>
-                        <p class="item-description">Egusi soup with beef or fish</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Goat</div>
-                        <p class="item-description">Egusi soup with goat meat</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Snail</div>
-                        <p class="item-description">Egusi soup with snails</p>
-                    </div>
-                    <span class="item-price">₦12,000 <span class="price-note">Takeaway: ₦13,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Cowtail</div>
-                        <p class="item-description">Egusi soup with cowtail</p>
-                    </div>
-                    <span class="item-price">₦10,000 <span class="price-note">Takeaway: ₦12,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Assorted</div>
-                        <p class="item-description">Egusi soup with assorted meats</p>
-                    </div>
-                    <span class="item-price">₦8,500 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Chicken</div>
-                        <p class="item-description">Egusi soup with chicken</p>
-                    </div>
-                    <span class="item-price">₦9,000 <span class="price-note">Takeaway: ₦11,000</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 liter of Egusi-Soup with Dry Fish</div>
-                        <p class="item-description">Egusi soup with dry fish</p>
-                    </div>
-                    <span class="item-price">₦11,000 <span class="price-note">Takeaway: ₦14,500</span></span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1.5 liters of Egusi-Soup</div>
-                        <p class="item-description">Egusi soup in larger quantity</p>
-                    </div>
-                    <span class="item-price">₦27,000 <span class="price-note">Takeaway: ₦31,000</span></span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> Coconut Rice</div>
-                        <p class="item-description">A rich and savory one-pot meal of rice cooked in fresh coconut milk and a flavorful broth, bursting with spices</p>
-                    </div>
-                    <span class="item-price">₦3,900 <span class="price-note">Takeaway: ₦5,900</span></span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> Jollof Rice</div>
-                        <p class="item-description"> flavorful, bold tomato and red pepper base, seasoned with our signature blend of spices</p>
-                    </div>
-                    <span class="item-price">₦3,900 <span class="price-note">Takeaway: ₦5,900</span></span>
-                </div>
-
-                 <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> Ofe Akwu</div>
-                        <p class="item-description"> A rich and aromatic Nigerian stew made from concentrated palm fruit extract, simmered with assorted meats, smoked fish, and traditional native Joesph's spices. </p>
-                    </div>
-                    <span class="item-price">₦3,900 <span class="price-note">Takeaway: ₦5,900</span></span>
-                </div>
-
-                 <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> Asun Rice</div>
-                        <p class="item-description"> A fiery combination of stir-fried rice and peppered, smoky grilled goat meat, delivering an irresistible burst of flavor.</p>
-                    </div>
-                    <span class="item-price">₦3,900 <span class="price-note">Takeaway: ₦5,900</span></span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> Curry Sauce Rice</div>
-                        <p class="item-description"> A comforting bowl of perfectly cooked rice paired with a savory, spiced curry sauce.</p>
-                    </div>
-                    <span class="item-price">₦3,900 <span class="price-note">Takeaway: ₦5,900</span></span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> Native Rice </div>
-                        <p class="item-description"> A true taste of tradition. Our Joseph's pot Native Rice combines local unpolished grains with the bold flavors of palm oil, assorted smoked fish, and indigenous Joseph's spices</p>
-                    </div>
-                    <span class="item-price">₦3,900 <span class="price-note">Takeaway: ₦5,900</span></span>
-                </div>
-
-                 <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 litre of Jitazzi </div>
-                        <p class="item-description"> A vibrant and savory Nigerian specialty featuring a delectable mix of tender, marinated chicken gizzards and sweet, perfectly fried plantains. Both are tossed in a rich, spicy sauce made with sautéed tomatoes, bell peppers, onions, garlic, and a hint of ginger. </p>
-                    </div>
-                    <span class="item-price">₦8,000 <span class="price-note">Takeaway: ₦10,500</span></span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-seedling"></i> 1 litre of plantaintazi </div>
-                        <p class="item-description"> Boiled and mashed green plantains, offering a hearty, earthy base for vibrant toppings. </p>
-                    </div>
-                    <span class="item-price">₦7,000 <span class="price-note">Takeaway: ₦9,000</span></span>
-                </div>
-                
-                
-                <!-- Catering -->
-                <div class="menu-item special-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-users"></i> 1000 Menus</div>
-                        <p class="item-description">Large catering orders for events and special occasions</p>
-                        <div class="item-tags">
-                            <span class="tag">Catering</span>
-                            <span class="tag">Events</span>
+                        <div class="item-name">
+                            <?php if($item['icon']): ?>
+                            <i class="<?php echo htmlspecialchars($item['icon']); ?>"></i>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($item['name']); ?>
                         </div>
+                        <p class="item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                        <?php if(!empty($tags)): ?>
+                        <div class="item-tags">
+                            <?php foreach($tags as $tag): ?>
+                            <span class="tag"><?php echo htmlspecialchars(trim($tag)); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
-                    <span class="item-price">Price on request</span>
+                    <span class="item-price"><?php echo htmlspecialchars($display_price); ?></span>
                 </div>
+                <?php endforeach; ?>
             </div>
         </section>
+        <?php endif; ?>
 
+        <!-- Breakfast Section -->
+        <?php if(isset($items_by_category['breakfast'])): ?>
+        <section class="menu-section fade-in" data-category="breakfast">
+            <div class="section-header">
+                <h2><i class="fas fa-sun"></i> BREAKFAST NRI-UTUTU</h2>
+                <img src="./images/brakefast1.jpg" alt="Breakfast" class="section-image">
+            </div>
+            <div class="menu-items">
+                <?php foreach($items_by_category['breakfast'] as $item): 
+                    $is_special = $item['is_special'];
+                    $tags = !empty($item['tags']) ? explode(',', $item['tags']) : [];
+                    $display_price = $item['display_price'] ?: '₦' . number_format($item['price']);
+                ?>
+                <div class="menu-item <?php echo $is_special ? 'special-item' : ''; ?>">
+                    <div class="item-info">
+                        <div class="item-name">
+                            <?php if($item['icon']): ?>
+                            <i class="<?php echo htmlspecialchars($item['icon']); ?>"></i>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($item['name']); ?>
+                        </div>
+                        <p class="item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                        <?php if(!empty($tags)): ?>
+                        <div class="item-tags">
+                            <?php foreach($tags as $tag): ?>
+                            <span class="tag"><?php echo htmlspecialchars(trim($tag)); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <span class="item-price"><?php echo htmlspecialchars($display_price); ?></span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <?php endif; ?>
+
+        <!-- Lunch Section -->
+        <?php if(isset($items_by_category['lunch'])): ?>
+        <section class="menu-section fade-in" data-category="lunch">
+            <div class="section-header">
+                <h2><i class="fas fa-utensils"></i> LUNCH</h2>
+                <img src="./images/nsala.jpeg" alt="Lunch" class="section-image">
+            </div>
+            <div class="menu-items">
+                <?php foreach($items_by_category['lunch'] as $item): 
+                    $is_special = $item['is_special'];
+                    $tags = !empty($item['tags']) ? explode(',', $item['tags']) : [];
+                    $display_price = $item['display_price'] ?: '₦' . number_format($item['price']);
+                ?>
+                <div class="menu-item <?php echo $is_special ? 'special-item' : ''; ?>">
+                    <div class="item-info">
+                        <div class="item-name">
+                            <?php if($item['icon']): ?>
+                            <i class="<?php echo htmlspecialchars($item['icon']); ?>"></i>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($item['name']); ?>
+                        </div>
+                        <p class="item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                        <?php if(!empty($tags)): ?>
+                        <div class="item-tags">
+                            <?php foreach($tags as $tag): ?>
+                            <span class="tag"><?php echo htmlspecialchars(trim($tag)); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <span class="item-price"><?php echo htmlspecialchars($display_price); ?></span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <?php endif; ?>
+
+        <!-- Dinner Section -->
+        <?php if(isset($items_by_category['dinner'])): ?>
+        <section class="menu-section fade-in" data-category="dinner">
+            <div class="section-header">
+                <h2><i class="fas fa-moon"></i> DINNER</h2>
+                <img src="./images/okra.jpeg" alt="Dinner" class="section-image">
+            </div>
+            <div class="menu-items">
+                <?php foreach($items_by_category['dinner'] as $item): 
+                    $is_special = $item['is_special'];
+                    $tags = !empty($item['tags']) ? explode(',', $item['tags']) : [];
+                    $display_price = $item['display_price'] ?: '₦' . number_format($item['price']);
+                ?>
+                <div class="menu-item <?php echo $is_special ? 'special-item' : ''; ?>">
+                    <div class="item-info">
+                        <div class="item-name">
+                            <?php if($item['icon']): ?>
+                            <i class="<?php echo htmlspecialchars($item['icon']); ?>"></i>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($item['name']); ?>
+                        </div>
+                        <p class="item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                        <?php if(!empty($tags)): ?>
+                        <div class="item-tags">
+                            <?php foreach($tags as $tag): ?>
+                            <span class="tag"><?php echo htmlspecialchars(trim($tag)); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <span class="item-price"><?php echo htmlspecialchars($display_price); ?></span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <?php endif; ?>
+
+        <!-- Drinks section -->
+        <?php if(isset($items_by_category['drinks'])): ?>
         <section class="menu-section fade-in" data-category="drinks">
             <div class="section-header">
                 <h2><i class="fas fa-trophy"></i> Drinks</h2>
-                <img src="./images/IM30.jpg" alt="Swallow Dishes" class="section-image">
+                <img src="./images/IM30.jpg" alt="Drinks" class="section-image">
             </div>
             <div class="menu-items">
-                <div class="menu-item">
+                <?php foreach($items_by_category['drinks'] as $item): 
+                    $is_special = $item['is_special'];
+                    $tags = !empty($item['tags']) ? explode(',', $item['tags']) : [];
+                    $display_price = $item['display_price'] ?: '₦' . number_format($item['price']);
+                ?>
+                <div class="menu-item <?php echo $is_special ? 'special-item' : ''; ?>">
                     <div class="item-info">
-                        <div class="item-name"><i class="fas fa-tree"></i> Palm-wine</div>
-                        <p class="item-description">A mildly alcoholic, naturally sparkling brew made from palm sap. It features a unique, delicate balance of sweetness, a hint of sourness, and a smooth, creamy undertone. </p>
+                        <div class="item-name">
+                            <?php if($item['icon']): ?>
+                            <i class="<?php echo htmlspecialchars($item['icon']); ?>"></i>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($item['name']); ?>
+                        </div>
+                        <p class="item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                        <?php if(!empty($tags)): ?>
+                        <div class="item-tags">
+                            <?php foreach($tags as $tag): ?>
+                            <span class="tag"><?php echo htmlspecialchars(trim($tag)); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
-                    <span class="item-price">₦10,000</span>
+                    <span class="item-price"><?php echo htmlspecialchars($display_price); ?></span>
                 </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Black Bullet</div>
-                        <p class="item-description">A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day. </p>
-                    </div>
-                    <span class="item-price">₦3,500</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Hollandia youghurt</div>
-                        <p class="item-description">Recharge with this wholesome and invigorating drinking yoghurt. Made from high-quality milk with a perfectly balanced sweet and tart flavour, it's fortified with vitamins, minerals, and live cultures to support your energy levels and digestive health.</p>
-                    </div>
-                    <span class="item-price">₦4,000</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Chi Exotic</div>
-                        <p class="item-description">Indulge in a rich, velvety blend of tropical fruits, offering a sweet and tangy taste that's both healthy and revitalizing. Choose from our popular flavors, including Pineapple & Coconut, Mango, or Multifruita (a mix of pineapple, orange, banana, and lemon).</p>
-                    </div>
-                    <span class="item-price">₦4,000</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-water"></i> Heineken</div>
-                        <p class="item-description">A globally recognized, crisp, and refreshing pale lager with a mild, balanced bitterness and clean finish. </p>
-                    </div>
-                    <span class="item-price">₦3,500</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> G.Stout</div>
-                        <p class="item-description">A bold, rich, and full-bodied Nigerian stout with a perfect bitter-sweet balance and notes of roasted coffee and chocolate</p>
-                    </div>
-                    <span class="item-price">₦3,500</span>
-                </div>
-            </div>
-
-            <div class="menu-items">
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Star Radler</div>
-                        <p class="item-description">A light and refreshing fusion of Nigeria's own Star Lager beer and natural fruit juices. With only 2% alcohol, it offers a crisp, thirst-quenching taste, perfect as a mealtime companion. (Available in Citrus or Red Fruits). </p>
-                    </div>
-                    <span class="item-price">₦2,200</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Desperado</div>
-                        <p class="item-description">This lager is blended with tequila essence, offering a balanced profile with spicy and citrusy notes.</p>
-                    </div>
-                    <span class="item-price">₦3,500</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Smirnoff Ice</div>
-                        <p class="item-description">A sparkling, citrus-flavored alcoholic drink.</p>
-                    </div>
-                    <span class="item-price">₦2,200</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Hero</div>
-                        <p class="item-description">A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.</p>
-                    </div>
-                    <span class="item-price">₦2,200</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Life</div>
-                        <p class="item-description">prepared from finely blended whole-grain oats. </p>
-                    </div>
-                    <span class="item-price">₦2,200</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Flying Fish</div>
-                        <p class="item-description">a dense, smooth dough made from finely ground, unripe plantains</p>
-                    </div>
-                    <span class="item-price">₦2,200</span>
-                </div>
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Fayrouz</div>
-                        <p class="item-description">A premium, sparkling non-alcoholic malt beverage that offers a sophisticated and refreshing alternative to regular soft drinks.</p>
-                    </div>
-                    <span class="item-price">₦1,500</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Malt</div>
-                        <p class="item-description">A classic non-alcoholic, nutrient-rich malt drink that is a popular accompaniment to meals. It has a smooth, creamy, and sweet taste, known for providing energy and a rich flavour loved by all ages.</p>
-                    </div>
-                    <span class="item-price">₦1,500</span>
-                </div>
-                
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-droplet"></i> Soft drinks</div>
-                        <p class="item-description">The universally loved, classic carbonated soft drink. A cold, fizzy cola with its distinct, sweet flavour is a perfect thirst quencher and a popular treat with various meals.</p>
-                    </div>
-                    <span class="item-price">₦1,300</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-spray-can"></i> Can exotic</div>
-                        <p class="item-description">a vibrant array of tropical and classic fruit flavours with this refreshing beverage. </p>
-                    </div>
-                    <span class="item-price">₦1,600</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-water"></i> Small water</div>
-                        <p class="item-description">Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.</p>
-                    </div>
-                    <span class="item-price">₦500</span>
-                </div>
-                <div class="menu-item">
-                    <div class="item-info">
-                        <div class="item-name"><i class="fas fa-bottle-water"></i> Big Eva water</div>
-                        <p class="item-description">A large bottle of clean, premium table water, ideal for sharing or ensuring ample hydration throughout your meal. This generous size of Eva water provides refreshing, clean hydration for a satisfying dining experience. </p>
-                    </div>
-                    <span class="item-price">₦2,000</span>
-                </div>
-            </div>
+                <?php endforeach; ?>
             </div>
         </section>
-
-    </div>
+        <?php endif; ?>
 
     <!-- Footer -->
     <footer class="menu-footer">

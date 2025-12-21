@@ -1,19 +1,47 @@
+<?php
+session_start();
+if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: admin_login.php');
+    exit;
+}
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin-menu-management</title>
     <link rel="icon" href="../images/logo3.png">
-    <title>Menu Management - Joseph's Pot</title>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* CSS VARIABLES */
         :root {
+            --brown: #8b4513;
+            --brown-light: #a0522d;
+            --brown-dark: #654321;
+            --white: #ffffff;
+            --pale-orange: #ffe4b5;
+            --pale-orange-light: #fff8dc;
+            --accent: #d2691e;
+            --text: #333333;
+            --text-light: #666666;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --radius: 8px;
+            
+            /* Additional colors from customers dashboard */
             --primary: #8b4513;
             --primary-light: #a0522d;
             --primary-dark: #654321;
             --secondary: #d2691e;
-            --accent: #ff7b54;
             --light: #fff8dc;
             --dark: #333333;
             --success: #4CAF50;
@@ -22,26 +50,24 @@
             --info: #2196F3;
             --gray: #f5f5f5;
             --gray-dark: #e0e0e0;
-            --text: #333333;
-            --text-light: #666666;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: "Poppins", sans-serif;
         }
 
         body {
+            font-family: "Poppins", sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: var(--text);
-            min-height: 100vh;
+            line-height: 1.6;
             overflow-x: hidden;
         }
 
+        /* SIDEBAR FROM CUSTOMERS MANAGEMENT DASHBOARD */
         .dashboard-container {
             display: flex;
             min-height: 100vh;
@@ -55,7 +81,7 @@
             top: 15px;
             left: 15px;
             z-index: 1001;
-            background: var(--primary);
+            background: var(--brown);
             color: white;
             border: none;
             border-radius: 5px;
@@ -80,10 +106,14 @@
             z-index: 998;
         }
 
-        /* Sidebar Styles */
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Sidebar Styles from customers management */
         .sidebar {
             width: 260px;
-            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(180deg, var(--brown) 0%, var(--brown-dark) 100%);
             color: white;
             padding: 20px 0;
             box-shadow: var(--shadow);
@@ -91,7 +121,7 @@
             transition: var(--transition);
             position: fixed;
             height: 100vh;
-            overflow-y: auto;
+            overflow-x: auto;
             transform: translateX(0);
         }
 
@@ -116,6 +146,7 @@
         .logo-area h1 {
             font-size: 1.5rem;
             font-weight: 600;
+            color: white;
             transition: var(--transition);
         }
 
@@ -133,23 +164,26 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: var(--secondary);
+            background: var(--accent);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 12px;
             font-size: 1.2rem;
             font-weight: bold;
+            color: white;
         }
 
         .admin-details h3 {
             font-size: 1rem;
             margin-bottom: 3px;
+            color: white;
         }
 
         .admin-details p {
             font-size: 0.8rem;
             opacity: 0.8;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .menu-items {
@@ -189,6 +223,7 @@
             letter-spacing: 1px;
             padding: 20px 15px 10px;
             opacity: 0.7;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         /* Main Content Styles */
@@ -205,1135 +240,783 @@
             width: 100%;
         }
 
-        /* Real-time Clock Styles */
-        .real-time-clock {
-            background: white;
-            border-radius: 10px;
-            padding: 12px 20px;
+        /* TOPBAR - MATCHING NAVBAR STYLES */
+        .topbar {
+            background: var(--pale-orange);
+            padding: 15px 25px;
+            border-radius: var(--radius);
+            border: 2px solid var(--brown);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-left: 4px solid var(--primary);
-            flex-wrap: wrap;
-        }
-
-        .clock-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .clock-icon {
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-
-        .time-display {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .date-display {
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .header h2 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 10px;
-            width: 100%;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            width: 100%;
-            justify-content: space-between;
         }
 
         .search-box {
-            position: relative;
-            flex: 1;
-            max-width: 400px;
-        }
-
-        .search-box input {
-            padding: 10px 15px 10px 40px;
-            border: none;
+            display: flex;
+            align-items: center;
+            background: var(--white);
+            border: 2px solid var(--brown);
             border-radius: 30px;
-            background: white;
-            box-shadow: var(--shadow);
-            width: 100%;
-            transition: var(--transition);
-        }
-
-        .search-box input:focus {
-            outline: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            padding: 10px 20px;
+            width: 300px;
         }
 
         .search-box i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
+            color: var(--brown);
+            margin-right: 10px;
         }
 
-        /* FIXED NOTIFICATION AND USER MENU STYLES */
-        .notification-user-container {
-            display: flex;
-            align-items: center;
-            gap: 8px; /* Reduced gap */
-        }
-
-        .notification-icon {
-            position: relative;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .notification-icon:hover {
-            background: var(--gray);
-        }
-
-        .notification-icon i {
-            font-size: 1.3rem;
-            color: var(--primary);
-            transition: var(--transition);
-        }
-
-        .notification-icon:hover i {
-            color: var(--secondary);
-        }
-
-        .user-menu {
-            position: relative;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .user-menu:hover {
-            background: var(--gray);
-        }
-
-        .user-menu i {
-            font-size: 1.3rem;
-            color: var(--primary);
-            transition: var(--transition);
-        }
-
-        .user-menu:hover i {
-            color: var(--secondary);
-        }
-
-        /* User Menu Dropdown Styles */
-        .user-menu-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            width: 200px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            display: none;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-
-        .user-menu-dropdown.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .user-menu-header {
-            padding: 15px;
-            background: var(--gray);
-            border-bottom: 1px solid var(--gray-dark);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-menu-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            font-size: 1rem;
-        }
-
-        .user-menu-info h4 {
-            font-size: 0.9rem;
-            margin-bottom: 2px;
-        }
-
-        .user-menu-info p {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-
-        .user-menu-items {
-            list-style: none;
-        }
-
-        .user-menu-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--gray);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-menu-item:hover {
-            background: var(--gray);
-        }
-
-        .user-menu-item i {
-            font-size: 1rem;
-            color: var(--text-light);
-            width: 20px;
-            text-align: center;
-        }
-
-        .user-menu-item span {
-            font-size: 0.9rem;
-        }
-
-        /* Notification Dropdown */
-        .notification-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            width: 320px;
-            max-height: 400px;
-            overflow-y: auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            display: none;
-            margin-top: 5px;
-        }
-
-        .notification-dropdown.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .notification-dropdown-header {
-            padding: 15px;
-            border-bottom: 1px solid var(--gray-dark);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .notification-dropdown-header h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .notification-dropdown-header .mark-all-read {
-            background: none;
+        .search-box input {
             border: none;
-            color: var(--info);
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: var(--transition);
-        }
-
-        .notification-dropdown-header .mark-all-read:hover {
-            color: var(--primary);
-        }
-
-        .notification-list {
-            list-style: none;
-        }
-
-        .notification-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--gray);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .notification-item:hover {
-            background: var(--gray);
-        }
-
-        .notification-item.unread {
-            background: #f9f9f9;
-        }
-
-        .notification-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
-            margin-top: 5px;
-            flex-shrink: 0;
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-weight: 500;
-            font-size: 0.9rem;
-            margin-bottom: 3px;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-family: "Poppins", sans-serif;
             color: var(--text);
         }
 
-        .notification-message {
-            font-size: 0.85rem;
-            color: var(--text-light);
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--brown);
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: var(--white);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* DASHBOARD STATS - IN MENU CARD STYLE */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+            border-left: 4px solid var(--brown);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-left-color: var(--accent);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: var(--pale-orange);
+            color: var(--brown);
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--brown);
             margin-bottom: 5px;
         }
 
-        .notification-time {
-            font-size: 0.75rem;
+        .stat-info p {
             color: var(--text-light);
+            font-size: 0.95rem;
         }
 
-        .notification-empty {
-            padding: 30px 20px;
-            text-align: center;
-            color: var(--text-light);
+        /* SECTION HEADER - EXACT MATCHING MENU SECTION STYLES */
+        .section-header {
+            background: var(--brown);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
         }
 
-        /* Notification Badge */
-        .notification-badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            background: var(--danger);
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.7rem;
+        .section-header h2 {
+            font-size: 1.8rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            z-index: 1;
-            pointer-events: none;
+            gap: 10px;
         }
 
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
+        .action-buttons {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            gap: 12px;
+        }
+
+        /* BUTTONS - EXACT MATCHING MENU STYLES */
+        .btn {
+            padding: 12px 25px;
+            border: 2px solid var(--brown);
+            border-radius: 30px;
+            font-family: "Poppins", sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
             align-items: center;
-            z-index: 2000;
-            transition: opacity 0.3s ease;
+            gap: 8px;
+            font-size: 0.95rem;
+            background: var(--white);
+            color: var(--brown);
         }
 
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid var(--gray);
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 15px;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .btn-primary {
+            background: var(--brown);
+            color: var(--white);
         }
 
-        /* Menu Management Styles */
-        .menu-management {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
+        .btn-primary:hover {
+            background: var(--brown-light);
+            border-color: var(--brown-light);
+        }
+
+        /* CATEGORY FILTER - EXACT MATCHING MENU FILTER STYLES */
+        .category-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--pale-orange-light);
+        }
+
+        .filter-btn {
+            background: var(--white);
+            border: 2px solid var(--brown);
+            color: var(--brown);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            font-family: "Poppins", sans-serif;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--brown);
+            color: var(--white);
+        }
+
+        /* MENU ITEMS CONTAINER - EXACT SAME AS menu.php */
+        .menu-wrapper {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 30px;
             box-shadow: var(--shadow);
             margin-bottom: 30px;
         }
 
-        .menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .menu-header h3 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .add-item-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* EXACT SAME MENU SECTION STYLES AS menu.php */
+        .menu-section {
+            margin-bottom: 50px;
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
             transition: var(--transition);
-            font-weight: 500;
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .add-item-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .menu-tabs {
-            display: flex;
-            border-bottom: 2px solid var(--gray);
-            margin-bottom: 25px;
-            overflow-x: auto;
-        }
-
-        .menu-tab {
-            padding: 12px 24px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            color: var(--text-light);
-            transition: var(--transition);
-            position: relative;
-            white-space: nowrap;
-        }
-
-        .menu-tab.active {
-            color: var(--primary);
-        }
-
-        .menu-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--primary);
-        }
-
-        .menu-tab:hover {
-            color: var(--primary);
-        }
-
-        .menu-content {
+        .menu-section.hidden {
             display: none;
-            min-height: 300px;
         }
 
-        .menu-content.active {
-            display: block;
+        /* EXACT SAME SECTION HEADER */
+        .section-header-admin {
+            background: var(--brown);
+            color: var(--white);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-radius: 15px;
         }
 
-        .menu-items-grid {
+        .section-header-admin h2 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* EXACT SAME MENU ITEMS GRID FROM menu.php */
+        .menu-items {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 20px;
         }
 
+        /* EXACT SAME MENU ITEM CARD STYLES FROM menu.php */
         .menu-item-card {
-            background: var(--gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px;
+            background: var(--pale-orange-light);
             border-radius: 10px;
-            overflow: hidden;
             transition: var(--transition);
-            box-shadow: var(--shadow);
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.5s ease forwards;
+            border-left: 4px solid transparent;
             position: relative;
+        }
+
+        .menu-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-left-color: var(--brown);
         }
 
         .menu-item-card.unavailable {
             opacity: 0.6;
-            position: relative;
+            background: rgba(220, 53, 69, 0.05);
         }
 
-        .menu-item-card.unavailable::before {
-            content: '';
+        .menu-item-card.unavailable .item-name {
+            text-decoration: line-through;
+            color: var(--text-light);
+        }
+
+        .menu-item-card.special-item {
+            background: linear-gradient(135deg, var(--brown), var(--brown-dark));
+            color: var(--white);
+        }
+
+        .menu-item-card.special-item .item-name {
+            color: var(--white);
+        }
+
+        .menu-item-card.special-item .item-description {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .menu-item-card.special-item .item-price {
+            color: var(--pale-orange);
+        }
+
+        .menu-item-card.special-item .tag {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+        }
+
+        /* EXACT SAME ITEM INFO FROM menu.php */
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--brown);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-name i {
+            color: var(--accent);
+        }
+
+        .item-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .item-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .tag {
+            background: var(--pale-orange);
+            color: var(--brown);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .item-price {
+            font-weight: 700;
+            color: var(--brown);
+            font-size: 1.3rem;
+            white-space: nowrap;
+            margin-left: 15px;
+        }
+
+        .price-note {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* ADMIN ACTION BUTTONS ON CARDS */
+        .admin-actions {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .menu-item-card:hover .admin-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            color: var(--white);
+            font-size: 0.9rem;
+        }
+
+        .edit-btn {
+            background: var(--brown);
+        }
+
+        .edit-btn:hover {
+            background: var(--brown-light);
+            transform: scale(1.1);
+        }
+
+        .delete-btn {
+            background: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+
+        .toggle-btn {
+            background: var(--accent);
+        }
+
+        .toggle-btn:hover {
+            background: var(--brown-light);
+            transform: scale(1.1);
+        }
+
+        /* AVAILABILITY BADGE */
+        .availability-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
             z-index: 1;
-            border-radius: 10px;
+        }
+
+        .available-badge {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
         }
 
         .unavailable-badge {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--danger);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        /* PAGINATION */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .pagination-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--brown);
+            background: var(--white);
+            color: var(--brown);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
             font-weight: 600;
-            font-size: 0.9rem;
-            z-index: 2;
-            pointer-events: none;
         }
 
-        .unavailable-badge i {
-            margin-right: 5px;
+        .pagination-btn:hover,
+        .pagination-btn.active {
+            background: var(--brown);
+            color: var(--white);
         }
 
-        @keyframes fadeInUp {
+        /* MODAL STYLES - MATCHING MENU THEME */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlideIn 0.3s ease;
+            border: 2px solid var(--brown);
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        .menu-item-image {
-            height: 180px;
-            background: var(--gray);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .menu-item-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-            background: linear-gradient(45deg, var(--gray), var(--gray-dark));
-        }
-
-        .menu-item-card:hover .menu-item-image img {
-            transform: scale(1.05);
-        }
-
-        .menu-item-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--accent);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            z-index: 2;
-        }
-
-        .menu-item-details {
-            padding: 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .menu-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-
-        .menu-item-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .menu-item-price {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.2rem;
-        }
-
-        .menu-item-description {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .menu-item-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: var(--text-light);
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .menu-item-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            min-width: 100px;
-        }
-
-        .edit-btn {
-            background: var(--info);
-            color: white;
-        }
-
-        .delete-btn {
-            background: var(--danger);
-            color: white;
-        }
-
-        .availability-btn {
-            background: var(--success);
-            color: white;
-        }
-
-        .availability-btn.unavailable {
-            background: var(--warning);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Special item styling */
-        .special-item-indicator {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: gold;
-            color: var(--dark);
-            padding: 3px 8px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            z-index: 2;
-        }
-
-        /* Filter buttons */
-        .filter-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 8px 16px;
-            background: var(--gray);
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: var(--transition);
-            color: var(--text);
-        }
-
-        .filter-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .filter-btn:hover {
-            background: var(--primary-light);
-            color: white;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
         .modal-header {
+            padding: 25px;
+            border-bottom: 2px solid var(--pale-orange);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 25px;
-            border-bottom: 1px solid var(--gray);
+            background: var(--brown);
+            color: var(--white);
         }
 
         .modal-header h3 {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: 600;
-            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .close-modal {
+        .modal-close {
             background: none;
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: var(--text-light);
+            color: var(--white);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--pale-orange);
+            transform: rotate(90deg);
         }
 
         .modal-body {
-            padding: 25px;
+            padding: 30px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text);
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--brown);
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--gray-dark);
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 15px;
+            border: 2px solid var(--pale-orange);
+            border-radius: 10px;
+            font-family: "Poppins", sans-serif;
             transition: var(--transition);
+            background: var(--pale-orange-light);
+            color: var(--text);
         }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: var(--brown);
             box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 25px;
         }
 
         .form-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid var(--gray);
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid var(--pale-orange);
         }
 
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: var(--transition);
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
         }
 
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-        }
-
-        .btn-secondary {
-            background: var(--gray);
-            color: var(--text);
-        }
-
-        .btn-secondary:hover {
-            background: var(--gray-dark);
-        }
-
-        /* Checkbox styles */
-        .checkbox-group {
+        .form-check {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-top: 10px;
         }
 
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+        .form-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--brown);
         }
 
-        /* Image Upload Styles */
-        .image-upload-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .image-upload-box {
-            border: 2px dashed var(--gray-dark);
-            border-radius: 8px;
-            padding: 25px;
-            text-align: center;
+        .form-check label {
+            margin-bottom: 0;
             cursor: pointer;
-            transition: var(--transition);
-            position: relative;
         }
 
-        .image-upload-box:hover {
-            border-color: var(--primary);
-            background-color: rgba(139, 69, 19, 0.05);
-        }
-
-        .image-upload-box i {
-            font-size: 2.5rem;
-            color: var(--text-light);
-            margin-bottom: 10px;
-        }
-
-        .image-upload-box p {
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-
-        .image-upload-box small {
-            color: var(--text-light);
-            font-size: 0.8rem;
-        }
-
-        .image-preview {
+        /* TOAST NOTIFICATION */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--brown);
+            color: var(--white);
+            padding: 20px 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
             display: none;
-            width: 100%;
-            max-height: 200px;
-            object-fit: contain;
-            border-radius: 8px;
-            margin-top: 15px;
+            align-items: center;
+            gap: 15px;
+            z-index: 3000;
+            animation: slideInRight 0.3s ease;
+            border-left: 4px solid var(--accent);
         }
 
-        .image-upload-input {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-light);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: var(--gray-dark);
-        }
-
-        .empty-state h4 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 20px;
-            margin-top: 30px;
-            color: var(--text-light);
-            font-size: 0.9rem;
-            border-top: 1px solid var(--gray-dark);
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
+        @keyframes slideInRight {
             from {
+                transform: translateX(100%);
                 opacity: 0;
-                transform: translateY(-10px);
             }
             to {
+                transform: translateX(0);
                 opacity: 1;
-                transform: translateY(0);
             }
         }
 
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .menu-items-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }
-        }
-
-        @media (max-width: 992px) {
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
             }
-            
+
             .sidebar.active {
                 transform: translateX(0);
             }
-            
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+            }
+
             .mobile-menu-toggle {
                 display: flex;
             }
-            
+
             .sidebar-overlay.active {
                 display: block;
             }
-            
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-                padding-top: 70px;
+
+            .search-box {
+                width: 250px;
             }
-            
-            .header h2 {
-                font-size: 1.5rem;
-            }
-            
-            .menu-header h3 {
-                font-size: 1.2rem;
-            }
-            
-            .notification-dropdown {
-                position: fixed;
-                top: 70px;
-                right: 15px;
-                left: 15px;
-                width: auto;
-                max-height: 60vh;
-            }
-            
-            .user-menu-dropdown {
-                position: fixed;
-                top: 70px;
-                right: 15px;
-                left: 15px;
-                width: auto;
+
+            .menu-items {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             }
         }
 
         @media (max-width: 768px) {
-            .menu-items-grid {
+            .menu-items {
                 grid-template-columns: 1fr;
             }
-            
-            .menu-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .add-item-btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .menu-item-actions {
-                flex-direction: column;
-            }
-            
-            .action-btn {
-                width: 100%;
-            }
-            
+
             .form-row {
                 grid-template-columns: 1fr;
             }
-            
-            .form-actions {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-            }
-        }
 
-        @media (max-width: 576px) {
-            .main-content {
-                padding: 15px;
+            .dashboard-stats {
+                grid-template-columns: 1fr;
             }
-            
-            .menu-management {
-                padding: 20px;
+
+            .search-box {
+                width: 200px;
             }
-            
-            .menu-tabs {
+
+            .topbar {
                 flex-wrap: wrap;
+                gap: 15px;
             }
-            
-            .menu-tab {
-                flex: 1;
-                min-width: 120px;
-                text-align: center;
-                padding: 10px 15px;
-                font-size: 0.9rem;
-            }
-            
-            .menu-item-header {
+
+            .section-header {
                 flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .menu-item-price {
-                margin-top: 5px;
-            }
-            
-            .menu-item-meta {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-            
-            .filter-buttons {
-                flex-direction: column;
-            }
-            
-            .filter-btn {
-                width: 100%;
+                gap: 15px;
                 text-align: center;
             }
-            
-            .modal-content {
-                padding: 20px 15px;
-            }
-            
-            .image-upload-box {
-                padding: 20px 15px;
-            }
-            
-            .image-upload-box i {
-                font-size: 2rem;
-            }
-            
-            .notification-dropdown {
-                width: calc(100% - 30px);
-                left: 15px;
-                right: 15px;
-            }
-            
-            .user-menu-dropdown {
-                width: calc(100% - 30px);
-                left: 15px;
-                right: 15px;
+
+            .action-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
 
         @media (max-width: 480px) {
-            .logo-area h1 {
-                font-size: 1.2rem;
+            .main-content {
+                padding: 15px;
             }
-            
-            .header h2 {
-                font-size: 1.3rem;
+
+            .category-filter {
+                justify-content: center;
             }
-            
-            .menu-header h3 {
-                font-size: 1.1rem;
-            }
-            
-            .menu-item-name {
-                font-size: 1rem;
-            }
-            
-            .menu-item-price {
-                font-size: 1.1rem;
-            }
-            
-            .menu-item-description {
-                font-size: 0.85rem;
-            }
-            
-            .modal-header h3 {
-                font-size: 1.1rem;
-            }
-            
-            .add-item-btn, .filter-btn {
-                padding: 10px 15px;
+
+            .filter-btn {
+                padding: 8px 15px;
                 font-size: 0.9rem;
             }
-            
-            .action-btn {
-                padding: 10px;
-                font-size: 0.9rem;
+
+            .modal {
+                width: 95%;
+                margin: 10px;
             }
+        }
+
+        /* Scroll Reveal Animation Styles */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .reveal-delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .reveal-delay-3 {
+            transition-delay: 0.3s;
+        }
+
+        .reveal-delay-4 {
+            transition-delay: 0.4s;
+        }
+
+        /* Animation */
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -1346,14 +1029,8 @@
     <!-- Overlay for mobile sidebar -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
-        <p>Loading menu data...</p>
-    </div>
-
     <div class="dashboard-container">
-        <!-- Sidebar -->
+        <!-- Sidebar from customers management -->
         <div class="sidebar" id="sidebar">
             <div class="logo-area">
                 <img src="../images/logo3.png" alt="Joseph's Pot Logo">
@@ -1361,9 +1038,9 @@
             </div>
             
             <div class="admin-info">
-                <div class="admin-avatar">AJ</div>
+                <div class="admin-avatar">JD</div>
                 <div class="admin-details">
-                    <h3>Admin Joseph</h3>
+                    <h3>Joseph De Chef</h3>
                     <p>Super Admin</p>
                 </div>
             </div>
@@ -1395,7 +1072,7 @@
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="admin-orders.php">
+                    <a href="admin-order-online.php">
                         <i class="fas fa-shopping-cart"></i>
                         <span>Orders</span>
                     </a>
@@ -1409,12 +1086,12 @@
                 </li>
                 
                 <li class="menu-label">Content</li>
-                <!-- <li class="menu-item">
+                <li class="menu-item">
                     <a href="admin-customers.php">
                         <i class="fas fa-users"></i>
                         <span>Customers</span>
                     </a>
-                </li> -->
+                </li>
                 <li class="menu-item">
                     <a href="admin-reviews.php">
                         <i class="fas fa-star"></i>
@@ -1442,7 +1119,7 @@
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="admin-logout.php">
+                    <a href="admin-logout.php" onclick="return confirmLogout()">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a>
@@ -1451,191 +1128,121 @@
         </div>
         
         <!-- Main Content -->
-        <div class="main-content">
-            <!-- Real-time Clock -->
-            <div class="real-time-clock reveal">
-                <div class="clock-container">
-                    <i class="fas fa-clock clock-icon"></i>
-                    <div>
-                        <div class="time-display" id="currentTime">Loading...</div>
-                        <div class="date-display" id="currentDate">Loading...</div>
-                    </div>
+        <div class="main-content" id="mainContent">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search menu items...">
                 </div>
-                <div class="location-info">
-                    <i class="fas fa-map-marker-alt"></i> Owerri, Nigeria
-                </div>
-            </div>
-
-            <div class="header">
-                <h2>Menu Management</h2>
-                <div class="header-actions">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search menu items...">
-                    </div>
-                    <div class="notification-user-container">
-                        <div class="notification-icon" id="notificationIcon">
-                            <i class="fas fa-bell"></i>
-                            <span class="notification-badge">3</span>
-                            <div class="notification-dropdown" id="notificationDropdown">
-                                <div class="notification-dropdown-header">
-                                    <h4>Notifications</h4>
-                                    <button class="mark-all-read" id="markAllRead">Mark all as read</button>
-                                </div>
-                                <ul class="notification-list" id="notificationList">
-                                    <!-- Notifications will be loaded here -->
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="user-menu" id="userMenuBtn">
-                            <i class="fas fa-user-circle"></i>
-                            <!-- User Menu Dropdown -->
-                            <div class="user-menu-dropdown" id="userMenuDropdown">
-                                <div class="user-menu-header">
-                                    <div class="user-menu-avatar">AJ</div>
-                                    <div class="user-menu-info">
-                                        <h4>Admin Joseph</h4>
-                                        <p>Super Admin</p>
-                                    </div>
-                                </div>
-                                <ul class="user-menu-items">
-                                    <li class="user-menu-item" onclick="window.location.href='admin-settings.php'">
-                                        <i class="fas fa-user-cog"></i>
-                                        <span>Profile Settings</span>
-                                    </li>
-                                    <li class="user-menu-item" onclick="window.location.href='admin-settings.php'">
-                                        <i class="fas fa-cog"></i>
-                                        <span>Account Settings</span>
-                                    </li>
-                                    <li class="user-menu-item" onclick="window.location.href='admin-logout.php'">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                        <span>Logout</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Menu Management Section -->
-            <div class="menu-management">
-                <div class="menu-header">
-                    <h3>Restaurant Menu</h3>
-                    <button class="add-item-btn" id="addItemBtn">
-                        <i class="fas fa-plus"></i>
-                        Add New Item
+                <div class="topbar-actions">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
                     </button>
-                </div>
-                
-                <!-- Availability Filter -->
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-filter="all">All Items</button>
-                    <button class="filter-btn" data-filter="available">Available</button>
-                    <button class="filter-btn" data-filter="unavailable">Unavailable</button>
-                </div>
-                
-                <div class="menu-tabs">
-                    <button class="menu-tab active" data-tab="main-course">Main Course</button>
-                    <button class="menu-tab" data-tab="proteins">Proteins</button>
-                    <button class="menu-tab" data-tab="swallow">Swallow</button>
-                    <button class="menu-tab" data-tab="bulk-orders">Bulk Orders</button>
-                    <button class="menu-tab" data-tab="breakfast">Breakfast</button>
-                    <button class="menu-tab" data-tab="lunch">Lunch</button>
-                    <button class="menu-tab" data-tab="dinner">Dinner</button>
-                    <button class="menu-tab" data-tab="drinks">Drinks</button>
-                </div>
-                
-                <!-- Main Course Menu -->
-                <div class="menu-content active" id="main-course">
-                    <div class="menu-items-grid" id="mainCourseItems">
-                        <!-- Main course items will be dynamically added here -->
+                    <div class="user-info">
+                        <div class="user-avatar">JD</div>
                     </div>
                 </div>
-                
-                <!-- Proteins Menu -->
-                <div class="menu-content" id="proteins">
-                    <div class="menu-items-grid" id="proteinsItems">
-                        <!-- Protein items will be dynamically added here -->
+            </header>
+
+            <!-- Dashboard Stats -->
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statsTotalItems">65</h3>
+                        <p>Total Menu Items</p>
                     </div>
                 </div>
-                
-                <!-- Swallow Menu -->
-                <div class="menu-content" id="swallow">
-                    <div class="menu-items-grid" id="swallowItems">
-                        <!-- Swallow items will be dynamically added here -->
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statsUnavailable">8</h3>
+                        <p>Unavailable Items</p>
                     </div>
                 </div>
-                
-                <!-- Bulk Orders Menu -->
-                <div class="menu-content" id="bulk-orders">
-                    <div class="menu-items-grid" id="bulkOrdersItems">
-                        <!-- Bulk order items will be dynamically added here -->
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statsCategories">9</h3>
+                        <p>Categories</p>
                     </div>
                 </div>
-                
-                <!-- Breakfast Menu -->
-                <div class="menu-content" id="breakfast">
-                    <div class="menu-items-grid" id="breakfastItems">
-                        <!-- Breakfast items will be dynamically added here -->
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
                     </div>
-                </div>
-                
-                <!-- Lunch Menu -->
-                <div class="menu-content" id="lunch">
-                    <div class="menu-items-grid" id="lunchItems">
-                        <!-- Lunch items will be dynamically added here -->
-                    </div>
-                </div>
-                
-                <!-- Dinner Menu -->
-                <div class="menu-content" id="dinner">
-                    <div class="menu-items-grid" id="dinnerItems">
-                        <!-- Dinner items will be dynamically added here -->
-                    </div>
-                </div>
-                
-                <!-- Drinks Menu -->
-                <div class="menu-content" id="drinks">
-                    <div class="menu-items-grid" id="drinksItems">
-                        <!-- Drink items will be dynamically added here -->
+                    <div class="stat-info">
+                        <h3 id="statsSpecial">15</h3>
+                        <p>Special Items</p>
                     </div>
                 </div>
             </div>
 
-            <div class="footer">
-                <p>&copy; 2025 Joseph's Pot Admin Dashboard. All rights reserved | Developed by ERIBS Tech</p>
-            </div>
+            <!-- Menu Management Section -->
+            <section class="menu-management">
+                <div class="section-header">
+                    <h2><i class="fas fa-utensils"></i> Menu Management</h2>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="openAddModal()">
+                            <i class="fas fa-plus"></i> Add New Item
+                        </button>
+                        <button class="btn" onclick="exportMenu()">
+                            <i class="fas fa-download"></i> Export Menu
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="category-filter" id="categoryFilter">
+                    <!-- Filter buttons will be generated dynamically -->
+                </div>
+
+                <!-- Menu Items Container -->
+                <div class="menu-wrapper">
+                    <div class="section-header-admin">
+                        <h2><i class="fas fa-utensils"></i> <span id="currentCategoryTitle">All Menu Items</span></h2>
+                        <span class="badge" id="categoryItemCount">65 items</span>
+                    </div>
+
+                    <div class="menu-items" id="menuItemsContainer">
+                        <!-- Menu items will be loaded here in card format -->
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="pagination-btn" onclick="changePage(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <span style="padding: 0 10px; color: var(--brown);">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
+                    <button class="pagination-btn" onclick="changePage(1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </section>
         </div>
     </div>
 
-    <!-- Add/Edit Item Modal -->
-    <div class="modal" id="itemModal">
-        <div class="modal-content">
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="itemModal">
+        <div class="modal">
             <div class="modal-header">
-                <h3 id="modalTitle">Add Menu Item</h3>
-                <button class="close-modal" id="closeModal">&times;</button>
+                <h3><i class="fas fa-utensils"></i> <span id="modalTitle">Add New Menu Item</span></h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="itemForm">
-                    <div class="form-group">
-                        <label for="itemName">Item Name</label>
-                        <input type="text" id="itemName" class="form-control" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="itemDescription">Description</label>
-                        <textarea id="itemDescription" class="form-control" rows="3" required></textarea>
-                    </div>
-                    
+                <form id="menuItemForm" onsubmit="saveMenuItem(event)">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="itemPrice">Price (₦)</label>
-                            <input type="number" id="itemPrice" class="form-control" min="0" step="0.01" required>
+                            <label for="itemName">Item Name *</label>
+                            <input type="text" id="itemName" class="form-control" required placeholder="e.g., Jollof Rice">
                         </div>
-                        
                         <div class="form-group">
-                            <label for="itemCategory">Category</label>
+                            <label for="itemCategory">Category *</label>
                             <select id="itemCategory" class="form-control" required>
                                 <option value="">Select Category</option>
                                 <option value="main-course">Main Course</option>
@@ -1649,432 +1256,161 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="itemPrepTime">Preparation Time (mins)</label>
-                            <input type="number" id="itemPrepTime" class="form-control" min="0">
+                            <label for="itemPrice">Price (₦) *</label>
+                            <input type="number" id="itemPrice" class="form-control" step="100" min="0" required placeholder="e.g., 3900">
                         </div>
-                        
                         <div class="form-group">
-                            <label for="itemCalories">Calories</label>
-                            <input type="number" id="itemCalories" class="form-control" min="0">
+                            <label for="itemDisplayPrice">Display Price</label>
+                            <input type="text" id="itemDisplayPrice" class="form-control" placeholder="e.g., ₦3,900">
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="itemImage">Image</label>
-                        <div class="image-upload-container">
-                            <div class="image-upload-box" id="imageUploadBox">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <p>Click to upload an image</p>
-                                <small>JPG, PNG, or GIF (Max: 5MB)</small>
-                                <input type="file" id="itemImage" class="image-upload-input" accept="image/*">
-                                <img id="imagePreview" class="image-preview" src="" alt="Image preview">
+                        <label for="itemDescription">Description *</label>
+                        <textarea id="itemDescription" class="form-control" rows="3" required placeholder="Describe the menu item..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="itemIcon">Icon Class (Font Awesome)</label>
+                            <input type="text" id="itemIcon" class="form-control" placeholder="fas fa-utensils">
+                            <small style="color: var(--text-light); font-size: 0.85rem;">e.g., fas fa-crown, fas fa-drumstick-bite</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemTags">Tags (comma separated)</label>
+                            <input type="text" id="itemTags" class="form-control" placeholder="Popular, Chef's Special, Premium">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" id="isSpecial">
+                                <label for="isSpecial">Mark as Special Item</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" id="isAvailable" checked>
+                                <label for="isAvailable">Item is Available</label>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="itemIngredients">Ingredients (comma separated)</label>
-                        <input type="text" id="itemIngredients" class="form-control" placeholder="Ingredient 1, Ingredient 2, ...">
-                    </div>
-                    
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="isSpecial" class="form-control">
-                        <label for="isSpecial">Mark as Special Item</label>
-                    </div>
-                    
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="isAvailable" class="form-control" checked>
-                        <label for="isAvailable">Item is Available</label>
-                    </div>
-                    
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="hasTakeawayPrice" class="form-control">
-                        <label for="hasTakeawayPrice">Has Takeaway Price</label>
-                    </div>
-                    
-                    <div class="form-group" id="takeawayPriceGroup" style="display: none;">
-                        <label for="takeawayPrice">Takeaway Price (₦)</label>
-                        <input type="number" id="takeawayPrice" class="form-control" min="0" step="0.01">
-                    </div>
-                    
+
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Item</button>
+                        <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="modalSubmitBtn">
+                            <i class="fas fa-save"></i> Add Item
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong>"<span id="deleteItemName"></span>"</strong>?</p>
+                <p style="color: #dc3545; font-weight: 600; margin-top: 15px;">
+                    <i class="fas fa-exclamation-circle"></i> This action cannot be undone.
+                </p>
+                <div class="form-actions">
+                    <button type="button" class="btn" onclick="closeDeleteModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmDelete()" style="background: #dc3545; border-color: #dc3545;">
+                        <i class="fas fa-trash"></i> Delete Item
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Operation completed successfully!</span>
+    </div>
+
     <script>
-        // Logout confirmation function
-        function confirmLogout() {
-            return confirm('Are you sure you want to logout?');
-        }
+    // Logout confirmation function
+    function confirmLogout() {
+        return confirm('Are you sure you want to logout?');
+    }
 
-        // Real-time Clock Functionality
-        function updateClock() {
-            const now = new Date();
+    // Menu items array - will be populated from database
+    let menuItems = [];
+    
+    // API base URL
+    const API_BASE = 'api/';
 
-            // Format time
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-            let seconds = now.getSeconds();
-            const ampm = hours >= 12 ? 'PM' : 'AM';
+    // Categories from your menu.php
+    const categories = [
+        { id: 'all', name: 'All Items', icon: 'fas fa-utensils' },
+        { id: 'main-course', name: 'Main Course', icon: 'fas fa-utensils' },
+        { id: 'proteins', name: 'Proteins', icon: 'fas fa-drumstick-bite' },
+        { id: 'swallow', name: 'Swallow', icon: 'fas fa-bread-slice' },
+        { id: 'bulk-orders', name: 'Bulk Orders', icon: 'fas fa-people-carry' },
+        { id: 'breakfast', name: 'Breakfast', icon: 'fas fa-sun' },
+        { id: 'lunch', name: 'Lunch', icon: 'fas fa-utensils' },
+        { id: 'dinner', name: 'Dinner', icon: 'fas fa-moon' },
+        { id: 'drinks', name: 'Drinks', icon: 'fas fa-trophy' }
+    ];
 
-            // Convert to 12-hour format
-            hours = hours % 12;
-            hours = hours ? hours : 12; // the hour '0' should be '12'
+    // App state
+    let currentFilter = 'all';
+    let currentPage = 1;
+    const itemsPerPage = 12;
+    let currentEditId = null;
+    let currentDeleteId = null;
 
-            // Add leading zeros
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            seconds = seconds < 10 ? '0' + seconds : seconds;
+    // DOM Elements for sidebar functionality
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-            // Format date
-            const options = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            };
-            const dateString = now.toLocaleDateString('en-US', options);
-
-            // Update the DOM
-            document.getElementById('currentTime').textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
-            document.getElementById('currentDate').textContent = dateString;
-        }
-
-        // Update the clock immediately and then every second
-        updateClock();
-        setInterval(updateClock, 1000);
-
-        // Sample notification data
-        const notifications = [
-            {
-                id: 1,
-                title: 'New Menu Item Added',
-                message: 'Customer added "Egusi Delight" to favorites',
-                time: '10 minutes ago',
-                unread: true
-            },
-            {
-                id: 2,
-                title: 'Item Unavailable',
-                message: 'Palm Wine is running low in stock',
-                time: '1 hour ago',
-                unread: true
-            },
-            {
-                id: 3,
-                title: 'Menu Update',
-                message: 'Breakfast menu items have been updated',
-                time: '2 hours ago',
-                unread: false
-            },
-            {
-                id: 4,
-                title: 'New Special Item',
-                message: 'Added "Joe\'s Secret" as special item',
-                time: '1 day ago',
-                unread: false
-            },
-            {
-                id: 5,
-                title: 'Price Update',
-                message: 'Updated prices for bulk order items',
-                time: '2 days ago',
-                unread: false
-            }
-        ];
-
-        // Sample menu data with availability status
-        const menuData = {
-            "main-course": [
-                {
-                    id: 1001,
-                    name: "Joe's Secret",
-                    description: "Flavorful, bold full chicken red pepper base, seasoned with our signature blend of spices and served with salad and chips",
-                    price: 25000,
-                    prepTime: 40,
-                    calories: 750,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Chicken, Red Peppers, Spices, Salad, Chips",
-                    isSpecial: true,
-                    tags: ["Popular", "Chef's Special"],
-                    hasTakeaway: false,
-                    isAvailable: true
-                },
-                {
-                    id: 1002,
-                    name: "Jollof Rice",
-                    description: "Flavorful, bold tomato and red pepper base, seasoned with our signature blend of spices",
-                    price: 3900,
-                    prepTime: 30,
-                    calories: 450,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Rice, Tomatoes, Red Peppers, Onions, Spices",
-                    isSpecial: true,
-                    tags: ["Popular", "Chef's Special"],
-                    hasTakeaway: false,
-                    isAvailable: true
-                }
-            ],
-            "proteins": [
-                {
-                    id: 2001,
-                    name: "Chicken",
-                    description: "Flame-grilled or fried chicken pieces coated in our signature, fiery red pepper sauce",
-                    price: 5000,
-                    prepTime: 25,
-                    calories: 420,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Chicken, Red Pepper Sauce, Spices",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: false  // Example: This item is currently unavailable
-                },
-                {
-                    id: 2002,
-                    name: "Cowtail",
-                    description: "Rich, deep beef flavor and succulent, gelatinous texture with Joseph's traditional spices",
-                    price: 7000,
-                    prepTime: 40,
-                    calories: 480,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Cowtail, Spices",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: true
-                }
-            ],
-            "swallow": [
-                {
-                    id: 3001,
-                    name: "Semolina",
-                    description: "Smooth, moldable dough-like staple made from coarsely ground durum wheat semolina",
-                    price: 1500,
-                    prepTime: 10,
-                    calories: 280,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Semolina, Water",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: true
-                },
-                {
-                    id: 3002,
-                    name: "Garri",
-                    description: "Traditional, smooth, and stretchy dough-like staple made from fermented cassava",
-                    price: 1500,
-                    prepTime: 5,
-                    calories: 320,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Garri, Water",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: true
-                }
-            ],
-            "bulk-orders": [
-                {
-                    id: 4001,
-                    name: "1.5 liter of Ofe-Owerri",
-                    description: "Traditional Owerri soup with assorted meats",
-                    price: 27000,
-                    prepTime: 60,
-                    calories: 650,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Assorted Meats, Vegetables, Spices",
-                    isSpecial: true,
-                    tags: ["Bulk Order"],
-                    hasTakeaway: true,
-                    takeawayPrice: 29000,
-                    isAvailable: false  // Example: This item is currently unavailable
-                },
-                {
-                    id: 4002,
-                    name: "1.5 liter of Ofe-Anara",
-                    description: "Traditional Anara soup with assorted proteins",
-                    price: 20000,
-                    prepTime: 55,
-                    calories: 600,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Proteins, Vegetables, Spices",
-                    isSpecial: false,
-                    tags: ["Bulk Order"],
-                    hasTakeaway: true,
-                    takeawayPrice: 22000,
-                    isAvailable: true
-                }
-            ],
-            "breakfast": [
-                {
-                    id: 5001,
-                    name: "Yam and Egg Sauce",
-                    description: "Freshly pounded yam served with specially prepared egg sauce with tomatoes and peppers.",
-                    price: 2500,
-                    prepTime: 20,
-                    calories: 420,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Yam, Eggs, Tomatoes, Onions, Pepper, Oil",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: true
-                },
-                {
-                    id: 5002,
-                    name: "Akara and Pap",
-                    description: "Freshly made bean cakes served with traditional corn pap.",
-                    price: 1500,
-                    prepTime: 15,
-                    calories: 320,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Beans, Pepper, Onions, Corn Pap, Milk",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: true
-                }
-            ],
-            "lunch": [
-                {
-                    id: 6001,
-                    name: "Ofe Owerri Special",
-                    description: "Traditional Igbo soup made with assorted meats, fish, and fresh vegetables.",
-                    price: 3200,
-                    prepTime: 35,
-                    calories: 380,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Assorted Meat, Stockfish, Ugwu, Bitterleaf, Palm Oil",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: false  // Example: This item is currently unavailable
-                },
-                {
-                    id: 6002,
-                    name: "Jollof Rice with Chicken",
-                    description: "Flavorful Nigerian jollof rice served with grilled chicken and plantains.",
-                    price: 2800,
-                    prepTime: 30,
-                    calories: 450,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Rice, Tomatoes, Chicken, Plantains, Spices",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: true
-                }
-            ],
-            "dinner": [
-                {
-                    id: 7001,
-                    name: "Nkwobi",
-                    description: "Spicy cow foot delicacy served with palm wine onions.",
-                    price: 3500,
-                    prepTime: 25,
-                    calories: 520,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Cow Foot, Utazi, Palm Oil, Spices, Onions",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: true
-                },
-                {
-                    id: 7002,
-                    name: "Grilled Fish with Vegetables",
-                    description: "Fresh fish grilled to perfection with assorted vegetables.",
-                    price: 4200,
-                    prepTime: 40,
-                    calories: 380,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Fresh Fish, Bell Peppers, Onions, Tomatoes, Spices",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: true
-                }
-            ],
-            "drinks": [
-                {
-                    id: 8001,
-                    name: "Palm Wine",
-                    description: "Fresh traditional palm wine served chilled in calabash.",
-                    price: 800,
-                    prepTime: 5,
-                    calories: 180,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Palm Wine",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: false  // Example: This item is currently unavailable
-                },
-                {
-                    id: 8002,
-                    name: "Zobo Drink",
-                    description: "Refreshing hibiscus drink with pineapple and ginger.",
-                    price: 500,
-                    prepTime: 10,
-                    calories: 120,
-                    image: "./images/default-food.jpg",
-                    ingredients: "Hibiscus, Pineapple, Ginger, Sugar",
-                    isSpecial: false,
-                    tags: [],
-                    hasTakeaway: false,
-                    isAvailable: true
-                }
-            ]
-        };
-
-        // DOM Elements
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const menuTabs = document.querySelectorAll('.menu-tab');
-        const menuContents = document.querySelectorAll('.menu-content');
-        const addItemBtn = document.getElementById('addItemBtn');
-        const itemModal = document.getElementById('itemModal');
-        const closeModal = document.getElementById('closeModal');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const itemForm = document.getElementById('itemForm');
-        const modalTitle = document.getElementById('modalTitle');
-        const imageUploadBox = document.getElementById('imageUploadBox');
-        const imageInput = document.getElementById('itemImage');
-        const imagePreview = document.getElementById('imagePreview');
-        const hasTakeawayCheckbox = document.getElementById('hasTakeawayPrice');
-        const takeawayPriceGroup = document.getElementById('takeawayPriceGroup');
-        const takeawayPriceInput = document.getElementById('takeawayPrice');
-        const searchInput = document.getElementById('searchInput');
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const isAvailableCheckbox = document.getElementById('isAvailable');
-        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const sidebar = document.getElementById('sidebar');
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', async function() {
+        initializeDashboard();
+        await fetchMenuItems();
+        loadCategoryFilter();
+        loadMenuItems();
+        updateStats();
         
-        // Notification and User Menu elements
-        const notificationIcon = document.getElementById('notificationIcon');
-        const notificationDropdown = document.getElementById('notificationDropdown');
-        const notificationList = document.getElementById('notificationList');
-        const markAllReadBtn = document.getElementById('markAllRead');
-        const notificationBadge = document.querySelector('.notification-badge');
-        const userMenuBtn = document.getElementById('userMenuBtn');
-        const userMenuDropdown = document.getElementById('userMenuDropdown');
+        // Initialize scroll reveal
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll();
+    });
+    
+    // Fetch menu items from database
+    async function fetchMenuItems() {
+        try {
+            const response = await fetch(API_BASE + 'get_menu_items_admin.php');
+            const result = await response.json();
+            
+            if(result.success) {
+                menuItems = result.data || [];
+            } else {
+                console.error('Error loading menu items:', result.message);
+                showToast('Error loading menu items: ' + result.message, 'error');
+                menuItems = [];
+            }
+        } catch(error) {
+            console.error('Error loading menu items:', error);
+            showToast('Error loading menu items. Please check your connection.', 'error');
+            menuItems = [];
+        }
+    }
 
-        // Current filter state
-        let currentFilter = 'all';
-
-        // Show loading initially
-        loadingOverlay.style.display = 'flex';
-
-        // Mobile sidebar toggler functionality
+    function initializeDashboard() {
+        // Mobile menu toggle
         mobileMenuToggle.addEventListener('click', function() {
             sidebar.classList.toggle('active');
             sidebarOverlay.classList.toggle('active');
@@ -2089,796 +1425,491 @@
         const menuItems = document.querySelectorAll('.menu-item a');
         menuItems.forEach(item => {
             item.addEventListener('click', function() {
-                if (window.innerWidth <= 992) {
+                if (window.innerWidth <= 1024) {
                     sidebar.classList.remove('active');
                     sidebarOverlay.classList.remove('active');
                 }
             });
         });
 
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            searchMenuItems(e.target.value);
+        });
+
         // Handle window resize
         window.addEventListener('resize', function() {
-            if (window.innerWidth > 992) {
+            if (window.innerWidth > 1024) {
                 sidebar.classList.remove('active');
                 sidebarOverlay.classList.remove('active');
             }
+            revealOnScroll();
         });
+    }
 
-        // User Menu functionality
-        userMenuBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            userMenuDropdown.classList.toggle('active');
-            // Close notification dropdown if open
-            notificationDropdown.classList.remove('active');
-        });
-
-        // Notification functionality
-        function renderNotifications() {
-            notificationList.innerHTML = '';
+    function loadCategoryFilter() {
+        const container = document.getElementById('categoryFilter');
+        container.innerHTML = '';
+        
+        categories.forEach(category => {
+            const count = category.id === 'all' 
+                ? menuItems.length 
+                : menuItems.filter(item => item.category === category.id).length;
             
-            if (notifications.length === 0) {
-                notificationList.innerHTML = '<div class="notification-empty">No notifications</div>';
-                return;
-            }
-            
-            notifications.forEach(notification => {
-                const notificationItem = document.createElement('li');
-                notificationItem.className = `notification-item ${notification.unread ? 'unread' : ''}`;
-                notificationItem.dataset.id = notification.id;
-                notificationItem.innerHTML = `
-                    <div class="notification-dot" style="${notification.unread ? 'background: var(--primary)' : 'background: transparent'}"></div>
-                    <div class="notification-content">
-                        <div class="notification-title">${notification.title}</div>
-                        <div class="notification-message">${notification.message}</div>
-                        <div class="notification-time">${notification.time}</div>
-                    </div>
-                `;
-                
-                notificationItem.addEventListener('click', function() {
-                    markAsRead(notification.id);
-                });
-                
-                notificationList.appendChild(notificationItem);
-            });
-            
-            // Update badge count
-            updateNotificationBadge();
-        }
-
-        function updateNotificationBadge() {
-            const unreadCount = notifications.filter(n => n.unread).length;
-            if (notificationBadge) {
-                notificationBadge.textContent = unreadCount;
-                notificationBadge.style.display = unreadCount > 0 ? 'flex' : 'none';
-            }
-        }
-
-        function markAsRead(notificationId) {
-            const notification = notifications.find(n => n.id === notificationId);
-            if (notification && notification.unread) {
-                notification.unread = false;
-                renderNotifications();
-            }
-        }
-
-        function markAllAsRead() {
-            notifications.forEach(notification => {
-                notification.unread = false;
-            });
-            renderNotifications();
-        }
-
-        // Toggle notification dropdown
-        notificationIcon.addEventListener('click', function(e) {
-            e.stopPropagation();
-            notificationDropdown.classList.toggle('active');
-            // Close user menu dropdown if open
-            userMenuDropdown.classList.remove('active');
-        });
-
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function(e) {
-            // Close notification dropdown
-            if (!notificationIcon.contains(e.target) && !notificationDropdown.contains(e.target)) {
-                notificationDropdown.classList.remove('active');
-            }
-            
-            // Close user menu dropdown
-            if (!userMenuBtn.contains(e.target) && !userMenuDropdown.contains(e.target)) {
-                userMenuDropdown.classList.remove('active');
-            }
-        });
-
-        // Mark all as read button
-        if (markAllReadBtn) {
-            markAllReadBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                markAllAsRead();
-            });
-        }
-
-        // Tab switching functionality
-        menuTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const targetTab = tab.getAttribute('data-tab');
-                
-                // Update active tab
-                menuTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                // Show corresponding content
-                menuContents.forEach(content => {
-                    content.classList.remove('active');
-                    if (content.id === targetTab) {
-                        content.classList.add('active');
-                    }
-                });
-            });
-        });
-
-        // Filter button functionality
-        filterButtons.forEach(button => {
+            const button = document.createElement('button');
+            button.className = `filter-btn ${category.id === currentFilter ? 'active' : ''}`;
+            button.dataset.filter = category.id;
+            button.innerHTML = `<i class="${category.icon}"></i> ${category.name} (${count})`;
             button.addEventListener('click', () => {
-                // Update active filter button
-                filterButtons.forEach(btn => btn.classList.remove('active'));
+                currentFilter = category.id;
+                currentPage = 1;
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
-                
-                // Get filter type
-                currentFilter = button.getAttribute('data-filter');
-                
-                // Re-render items with current filter
-                renderMenuItems();
+                updateCategoryTitle();
+                loadMenuItems();
             });
+            
+            container.appendChild(button);
         });
+    }
 
-        // Modal functionality
-        addItemBtn.addEventListener('click', () => {
-            modalTitle.textContent = 'Add Menu Item';
-            itemForm.reset();
-            resetImagePreview();
-            takeawayPriceGroup.style.display = 'none';
-            isAvailableCheckbox.checked = true; // Default to available
-            itemModal.style.display = 'flex';
-        });
+    function updateCategoryTitle() {
+        const category = categories.find(c => c.id === currentFilter);
+        const count = currentFilter === 'all' 
+            ? menuItems.length 
+            : menuItems.filter(item => item.category === currentFilter).length;
+        
+        document.getElementById('currentCategoryTitle').textContent = category.name;
+        document.getElementById('categoryItemCount').textContent = `${count} items`;
+    }
 
-        closeModal.addEventListener('click', () => {
-            itemModal.style.display = 'none';
-        });
+    function loadMenuItems() {
+        const container = document.getElementById('menuItemsContainer');
+        let filteredItems = menuItems;
 
-        cancelBtn.addEventListener('click', () => {
-            itemModal.style.display = 'none';
-        });
+        // Apply category filter
+        if (currentFilter !== 'all') {
+            filteredItems = menuItems.filter(item => item.category === currentFilter);
+        }
 
-        // Close modal when clicking outside
-        window.addEventListener('click', (event) => {
-            if (event.target === itemModal) {
-                itemModal.style.display = 'none';
+        // Calculate pagination
+        const totalItems = filteredItems.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const pageItems = filteredItems.slice(startIndex, endIndex);
+
+        // Clear container
+        container.innerHTML = '';
+
+        // Add items to container in card format
+        pageItems.forEach((item, index) => {
+            const card = document.createElement('div');
+            const delayClass = index < 4 ? `reveal-delay-${index + 1}` : '';
+            const unavailableClass = !item.isAvailable ? 'unavailable' : '';
+            const specialClass = item.isSpecial ? 'special-item' : '';
+            card.className = `menu-item-card reveal ${delayClass} ${unavailableClass} ${specialClass}`.trim();
+            
+            let displayPrice = item.displayPrice || `₦${item.price.toLocaleString()}`;
+            let priceNote = '';
+            
+            if (item.category === 'bulk-orders') {
+                const takeawayPrice = item.price + 2000;
+                priceNote = `<span class="price-note">Takeaway: ₦${takeawayPrice.toLocaleString()}</span>`;
             }
+            
+            card.innerHTML = `
+                <div class="availability-badge ${item.isAvailable ? 'available-badge' : 'unavailable-badge'}">
+                    <i class="fas fa-${item.isAvailable ? 'check' : 'times'}"></i>
+                    ${item.isAvailable ? 'Available' : 'Unavailable'}
+                </div>
+                
+                <div class="admin-actions">
+                    <button class="action-btn edit-btn" onclick="editMenuItem(${item.id})" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-btn" onclick="deleteMenuItem(${item.id})" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="action-btn toggle-btn" onclick="toggleAvailability(${item.id})" title="${item.isAvailable ? 'Mark Unavailable' : 'Mark Available'}">
+                        <i class="fas fa-${item.isAvailable ? 'toggle-on' : 'toggle-off'}"></i>
+                    </button>
+                </div>
+                
+                <div class="item-info">
+                    <div class="item-name">
+                        ${item.icon ? `<i class="${item.icon}"></i>` : ''}
+                        ${item.name}
+                    </div>
+                    <p class="item-description">${item.description}</p>
+                    ${item.tags && item.tags.length > 0 ? `
+                        <div class="item-tags">
+                            ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="item-price">
+                    ${displayPrice}
+                    ${priceNote}
+                </div>
+            `;
+            container.appendChild(card);
         });
 
-        // Toggle takeaway price field
-        hasTakeawayCheckbox.addEventListener('change', function() {
-            takeawayPriceGroup.style.display = this.checked ? 'block' : 'none';
+        // Update pagination
+        document.getElementById('currentPage').textContent = currentPage;
+        document.getElementById('totalPages').textContent = totalPages;
+        
+        // Update category title
+        updateCategoryTitle();
+        
+        // Trigger reveal animation
+        setTimeout(() => revealOnScroll(), 100);
+    }
+
+    function updateStats() {
+        const totalItems = menuItems.length;
+        const unavailableItems = menuItems.filter(item => !item.isAvailable).length;
+        const specialItems = menuItems.filter(item => item.isSpecial).length;
+        const uniqueCategories = [...new Set(menuItems.map(item => item.category))].length;
+
+        document.getElementById('statsTotalItems').textContent = totalItems;
+        document.getElementById('statsUnavailable').textContent = unavailableItems;
+        document.getElementById('statsSpecial').textContent = specialItems;
+        document.getElementById('statsCategories').textContent = uniqueCategories;
+    }
+
+    function searchMenuItems(searchTerm) {
+        const searchLower = searchTerm.toLowerCase().trim();
+        if (!searchLower) {
+            loadMenuItems();
+            return;
+        }
+
+        const filteredItems = menuItems.filter(item => 
+            item.name.toLowerCase().includes(searchLower) ||
+            item.description.toLowerCase().includes(searchLower) ||
+            (item.tags && item.tags.some(tag => tag.toLowerCase().includes(searchLower)))
+        );
+
+        const container = document.getElementById('menuItemsContainer');
+        
+        if (filteredItems.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-search fa-2x" style="color: var(--text-light);"></i><p style="margin-top: 15px; color: var(--text-light);">No menu items found matching your search</p></div>';
+            return;
+        }
+
+        // Display filtered items without pagination
+        container.innerHTML = '';
+        
+        filteredItems.forEach(item => {
+            const card = document.createElement('div');
+            const unavailableClass = !item.isAvailable ? 'unavailable' : '';
+            const specialClass = item.isSpecial ? 'special-item' : '';
+            card.className = `menu-item-card ${unavailableClass} ${specialClass}`.trim();
+            
+            let displayPrice = item.displayPrice || `₦${item.price.toLocaleString()}`;
+            let priceNote = '';
+            
+            if (item.category === 'bulk-orders') {
+                const takeawayPrice = item.price + 2000;
+                priceNote = `<span class="price-note">Takeaway: ₦${takeawayPrice.toLocaleString()}</span>`;
+            }
+            
+            card.innerHTML = `
+                <div class="availability-badge ${item.isAvailable ? 'available-badge' : 'unavailable-badge'}">
+                    <i class="fas fa-${item.isAvailable ? 'check' : 'times'}"></i>
+                    ${item.isAvailable ? 'Available' : 'Unavailable'}
+                </div>
+                
+                <div class="admin-actions">
+                    <button class="action-btn edit-btn" onclick="editMenuItem(${item.id})" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-btn" onclick="deleteMenuItem(${item.id})" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="action-btn toggle-btn" onclick="toggleAvailability(${item.id})" title="${item.isAvailable ? 'Mark Unavailable' : 'Mark Available'}">
+                        <i class="fas fa-${item.isAvailable ? 'toggle-on' : 'toggle-off'}"></i>
+                    </button>
+                </div>
+                
+                <div class="item-info">
+                    <div class="item-name">
+                        ${item.icon ? `<i class="${item.icon}"></i>` : ''}
+                        ${item.name}
+                    </div>
+                    <p class="item-description">${item.description}</p>
+                    ${item.tags && item.tags.length > 0 ? `
+                        <div class="item-tags">
+                            ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="item-price">
+                    ${displayPrice}
+                    ${priceNote}
+                </div>
+            `;
+            container.appendChild(card);
         });
+    }
 
-        // Image upload functionality
-        imageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Check file size (max 5MB)
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('File size exceeds 5MB limit. Please choose a smaller file.');
-                    resetImagePreview();
-                    return;
-                }
-                
-                // Check file type
-                if (!file.type.match('image.*')) {
-                    alert('Please select an image file (JPG, PNG, or GIF).');
-                    resetImagePreview();
-                    return;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    imagePreview.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+    function changePage(direction) {
+        const totalItems = currentFilter === 'all' 
+            ? menuItems.length 
+            : menuItems.filter(item => item.category === currentFilter).length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        
+        const newPage = currentPage + direction;
+        if (newPage >= 1 && newPage <= totalPages) {
+            currentPage = newPage;
+            loadMenuItems();
+        }
+    }
 
-        // Reset image preview
-        function resetImagePreview() {
-            imagePreview.src = '';
-            imagePreview.style.display = 'none';
-            imageInput.value = '';
+    // Modal Functions
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = 'Add New Menu Item';
+        document.getElementById('modalSubmitBtn').innerHTML = '<i class="fas fa-save"></i> Add Item';
+        document.getElementById('menuItemForm').reset();
+        currentEditId = null;
+        document.getElementById('itemModal').style.display = 'flex';
+    }
+
+    function editMenuItem(id) {
+        const item = menuItems.find(i => i.id === id);
+        if (!item) return;
+
+        document.getElementById('modalTitle').textContent = 'Edit Menu Item';
+        document.getElementById('modalSubmitBtn').innerHTML = '<i class="fas fa-save"></i> Update Item';
+        
+        // Fill form with item data
+        document.getElementById('itemName').value = item.name;
+        document.getElementById('itemCategory').value = item.category;
+        document.getElementById('itemPrice').value = item.price;
+        document.getElementById('itemDisplayPrice').value = item.displayPrice || '';
+        document.getElementById('itemDescription').value = item.description || '';
+        document.getElementById('itemIcon').value = item.icon || '';
+        document.getElementById('itemTags').value = item.tags ? item.tags.join(', ') : '';
+        document.getElementById('isSpecial').checked = item.isSpecial || false;
+        document.getElementById('isAvailable').checked = item.isAvailable;
+
+        currentEditId = id;
+        document.getElementById('itemModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('itemModal').style.display = 'none';
+    }
+
+    async function saveMenuItem(event) {
+        event.preventDefault();
+        
+        // Get form values
+        const formData = {
+            name: document.getElementById('itemName').value.trim(),
+            category: document.getElementById('itemCategory').value,
+            price: parseFloat(document.getElementById('itemPrice').value),
+            displayPrice: document.getElementById('itemDisplayPrice').value.trim(),
+            description: document.getElementById('itemDescription').value.trim(),
+            icon: document.getElementById('itemIcon').value.trim(),
+            tags: document.getElementById('itemTags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+            isSpecial: document.getElementById('isSpecial').checked,
+            isAvailable: document.getElementById('isAvailable').checked
+        };
+
+        // Validate
+        if (!formData.name || !formData.category || !formData.price || !formData.description) {
+            showToast('Please fill in all required fields', 'error');
+            return;
         }
 
-        // Format price with commas
-        function formatPrice(price) {
-            if (price === 0) return 'Price on request';
-            return `₦${price.toLocaleString()}`;
+        // Format display price if not provided
+        if (!formData.displayPrice) {
+            formData.displayPrice = `₦${formData.price.toLocaleString()}`;
         }
 
-        // Get availability status text
-        function getAvailabilityText(isAvailable) {
-            return isAvailable ? 'Available' : 'Unavailable';
+        // Add ID if editing
+        if (currentEditId) {
+            formData.id = currentEditId;
         }
 
-        // Get availability icon
-        function getAvailabilityIcon(isAvailable) {
-            return isAvailable ? 'fas fa-check-circle' : 'fas fa-times-circle';
-        }
-
-        // Toggle item availability
-        function toggleAvailability(itemId, category) {
-            const item = menuData[category].find(item => item.id === itemId);
-            if (item) {
-                item.isAvailable = !item.isAvailable;
-                renderMenuItems();
-                
-                const action = item.isAvailable ? 'available' : 'unavailable';
-                alert(`"${item.name}" is now marked as ${action}.`);
-            }
-        }
-
-        // Filter items based on current filter
-        function filterItemsByAvailability(items) {
-            if (currentFilter === 'all') {
-                return items;
-            } else if (currentFilter === 'available') {
-                return items.filter(item => item.isAvailable);
-            } else if (currentFilter === 'unavailable') {
-                return items.filter(item => !item.isAvailable);
-            }
-            return items;
-        }
-
-        // Render menu items with current filter
-        function renderMenuItems() {
-            // Show loading
-            loadingOverlay.style.display = 'flex';
-            loadingOverlay.style.opacity = '1';
-            
-            // Clear existing items
-            document.querySelectorAll('.menu-items-grid').forEach(grid => {
-                grid.innerHTML = '';
+        try {
+            const response = await fetch(API_BASE + 'save_menu_item.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
             });
-            
-            // Render items for each category
-            Object.keys(menuData).forEach(category => {
-                const container = document.getElementById(`${category}Items`);
-                if (!container) return; // Skip if container doesn't exist
-                
-                // Filter items
-                const filteredItems = filterItemsByAvailability(menuData[category]);
-                
-                if (!filteredItems || filteredItems.length === 0) {
-                    let message = '';
-                    if (currentFilter === 'available') {
-                        message = `No available ${category.replace('-', ' ')} items`;
-                    } else if (currentFilter === 'unavailable') {
-                        message = `No unavailable ${category.replace('-', ' ')} items`;
-                    } else {
-                        message = `No ${category.replace('-', ' ')} items yet`;
-                    }
-                    
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-utensils"></i>
-                            <h4>${message}</h4>
-                            <p>${currentFilter === 'all' ? 'Add your first item to get started' : 'All items are ' + (currentFilter === 'available' ? 'unavailable' : 'available')}</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // Create document fragment for better performance
-                const fragment = document.createDocumentFragment();
-                
-                filteredItems.forEach(item => {
-                    const itemCard = document.createElement('div');
-                    itemCard.className = `menu-item-card ${!item.isAvailable ? 'unavailable' : ''}`;
-                    
-                    // Generate unavailable badge if needed
-                    const unavailableBadge = !item.isAvailable ? `
-                        <div class="unavailable-badge">
-                            <i class="fas fa-ban"></i> Currently Unavailable
-                        </div>
-                    ` : '';
-                    
-                    // Generate tags HTML
-                    const tagsHTML = item.isSpecial ? `
-                        <div class="special-item-indicator">
-                            <i class="fas fa-crown"></i> Special
-                        </div>
-                    ` : '';
-                    
-                    // Generate price display
-                    let priceDisplay = formatPrice(item.price);
-                    if (item.hasTakeaway && item.takeawayPrice > 0) {
-                        priceDisplay = `${formatPrice(item.price)}<br><small style="color: var(--text-light); font-size: 0.9rem;">Takeaway: ${formatPrice(item.takeawayPrice)}</small>`;
-                    } else if (item.price === 0) {
-                        priceDisplay = '<span style="color: var(--text-light);">Price on request</span>';
-                    }
-                    
-                    // Generate availability button text and icon
-                    const availabilityText = item.isAvailable ? 'Mark as Unavailable' : 'Mark as Available';
-                    const availabilityIcon = item.isAvailable ? 'fas fa-ban' : 'fas fa-check';
-                    const availabilityBtnClass = item.isAvailable ? 'availability-btn' : 'availability-btn unavailable';
-                    
-                    itemCard.innerHTML = `
-                        <div class="menu-item-image">
-                            <img src="${item.image}" alt="${item.name}" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\"%3E%3Crect width=\"300\" height=\"200\" fill=\"%23f5f5f5\"/%3E%3Ctext x=\"50%25\" y=\"50%25\" font-family=\"Arial\" font-size=\"16\" fill=\"%23666\" text-anchor=\"middle\" dy=\".3em\"%3E${encodeURIComponent(item.name)}%3C/text%3E%3C/svg%3E'">
-                            ${tagsHTML}
-                            ${unavailableBadge}
-                            <div class="menu-item-badge">${category.replace('-', ' ').toUpperCase()}</div>
-                        </div>
-                        <div class="menu-item-details">
-                            <div class="menu-item-header">
-                                <div class="menu-item-name">${item.name}</div>
-                                <div class="menu-item-price">${priceDisplay}</div>
-                            </div>
-                            <div class="menu-item-description">${item.description}</div>
-                            <div class="menu-item-meta">
-                                ${item.prepTime > 0 ? `<span><i class="fas fa-clock"></i> ${item.prepTime} mins</span>` : ''}
-                                ${item.calories > 0 ? `<span><i class="fas fa-fire"></i> ${item.calories} kcal</span>` : ''}
-                                <span><i class="${getAvailabilityIcon(item.isAvailable)}" style="color: ${item.isAvailable ? 'var(--success)' : 'var(--danger)'};"></i> ${getAvailabilityText(item.isAvailable)}</span>
-                            </div>
-                            ${item.ingredients ? `<div style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 10px;"><strong>Ingredients:</strong> ${item.ingredients}</div>` : ''}
-                            <div class="menu-item-actions">
-                                <button class="action-btn edit-btn" data-id="${item.id}" data-category="${category}">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <button class="action-btn ${availabilityBtnClass}" data-id="${item.id}" data-category="${category}">
-                                    <i class="${availabilityIcon}"></i> ${availabilityText}
-                                </button>
-                                <button class="action-btn delete-btn" data-id="${item.id}" data-category="${category}">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    fragment.appendChild(itemCard);
-                });
-                
-                container.appendChild(fragment);
-            });
-            
-            // Add event listeners
-            setTimeout(() => {
-                addEventListeners();
-                
-                // Hide loading overlay after a short delay
-                setTimeout(() => {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
-                    }, 300);
-                }, 500);
-            }, 100);
-        }
 
-        // Add event listeners to action buttons
-        function addEventListeners() {
-            // Edit buttons
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(btn.getAttribute('data-id'));
-                    const category = btn.getAttribute('data-category');
-                    editMenuItem(id, category);
-                });
-            });
-            
-            // Delete buttons
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(btn.getAttribute('data-id'));
-                    const category = btn.getAttribute('data-category');
-                    deleteMenuItem(id, category);
-                });
-            });
-            
-            // Availability toggle buttons
-            document.querySelectorAll('.availability-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const id = parseInt(btn.getAttribute('data-id'));
-                    const category = btn.getAttribute('data-category');
-                    toggleAvailability(id, category);
-                });
-            });
-        }
+            const result = await response.json();
 
-        // Edit menu item
-        function editMenuItem(id, category) {
-            const item = menuData[category].find(item => item.id === id);
-            if (!item) return;
-            
-            // Fill form with item data
-            document.getElementById('itemName').value = item.name;
-            document.getElementById('itemDescription').value = item.description;
-            document.getElementById('itemPrice').value = item.price;
-            document.getElementById('itemCategory').value = category;
-            document.getElementById('itemPrepTime').value = item.prepTime;
-            document.getElementById('itemCalories').value = item.calories;
-            document.getElementById('itemIngredients').value = item.ingredients || '';
-            document.getElementById('isSpecial').checked = item.isSpecial || false;
-            document.getElementById('isAvailable').checked = item.isAvailable !== false; // Default to true if undefined
-            document.getElementById('hasTakeawayPrice').checked = item.hasTakeaway || false;
-            
-            if (item.hasTakeaway) {
-                takeawayPriceGroup.style.display = 'block';
-                document.getElementById('takeawayPrice').value = item.takeawayPrice || 0;
+            if (result.success) {
+                showToast(result.message || 'Menu item saved successfully!', 'success');
+                closeModal();
+                await fetchMenuItems();
+                loadMenuItems();
+                updateStats();
+                loadCategoryFilter();
             } else {
-                takeawayPriceGroup.style.display = 'none';
+                showToast(result.message || 'Error saving menu item', 'error');
             }
-            
-            // Set image preview if available
-            if (item.image && item.image.startsWith('data:')) {
-                imagePreview.src = item.image;
-                imagePreview.style.display = 'block';
-            } else if (item.image) {
-                // If it's a path to an image
-                imagePreview.src = item.image;
-                imagePreview.style.display = 'block';
+        } catch (error) {
+            console.error('Error saving menu item:', error);
+            showToast('Error saving menu item. Please try again.', 'error');
+        }
+    }
+
+    function deleteMenuItem(id) {
+        const item = menuItems.find(i => i.id === id);
+        if (!item) return;
+
+        document.getElementById('deleteItemName').textContent = item.name;
+        currentDeleteId = id;
+        document.getElementById('deleteModal').style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+        currentDeleteId = null;
+    }
+
+    async function confirmDelete() {
+        if (!currentDeleteId) return;
+
+        try {
+            const response = await fetch(API_BASE + 'delete_menu_item.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: currentDeleteId })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showToast(result.message || 'Menu item deleted successfully!', 'success');
+                closeDeleteModal();
+                await fetchMenuItems();
+                loadMenuItems();
+                updateStats();
+                loadCategoryFilter();
             } else {
-                resetImagePreview();
+                showToast(result.message || 'Error deleting menu item', 'error');
+                closeDeleteModal();
             }
-            
-            // Update modal title
-            modalTitle.textContent = 'Edit Menu Item';
-            
-            // Store the item being edited
-            itemForm.setAttribute('data-editing-id', id);
-            itemForm.setAttribute('data-editing-category', category);
-            
-            // Show modal
-            itemModal.style.display = 'flex';
+        } catch (error) {
+            console.error('Error deleting menu item:', error);
+            showToast('Error deleting menu item. Please try again.', 'error');
+            closeDeleteModal();
         }
+    }
 
-        // Delete menu item
-        function deleteMenuItem(id, category) {
-            if (confirm('Are you sure you want to delete this menu item?')) {
-                menuData[category] = menuData[category].filter(item => item.id !== id);
-                renderMenuItems();
-                alert('Menu item deleted successfully!');
-            }
-        }
+    async function toggleAvailability(id) {
+        try {
+            const response = await fetch(API_BASE + 'toggle_menu_item.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: id })
+            });
 
-        // Search functionality
-        searchInput.addEventListener('input', debounce(function(e) {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            
-            if (searchTerm === '') {
-                renderMenuItems();
-                return;
-            }
-            
-            // Show loading for search
-            loadingOverlay.style.display = 'flex';
-            loadingOverlay.style.opacity = '1';
-            
-            // Filter items across all categories
-            setTimeout(() => {
-                Object.keys(menuData).forEach(category => {
-                    const container = document.getElementById(`${category}Items`);
-                    if (!container) return;
-                    
-                    // First filter by availability
-                    let filteredItems = filterItemsByAvailability(menuData[category]);
-                    
-                    // Then filter by search term
-                    filteredItems = filteredItems.filter(item => 
-                        item.name.toLowerCase().includes(searchTerm) ||
-                        item.description.toLowerCase().includes(searchTerm) ||
-                        (item.ingredients && item.ingredients.toLowerCase().includes(searchTerm))
-                    );
-                    
-                    if (filteredItems.length === 0) {
-                        container.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-search"></i>
-                                <h4>No results found</h4>
-                                <p>No ${category.replace('-', ' ')} items match your search</p>
-                            </div>
-                        `;
-                    } else {
-                        const fragment = document.createDocumentFragment();
-                        
-                        filteredItems.forEach(item => {
-                            const itemCard = document.createElement('div');
-                            itemCard.className = `menu-item-card ${!item.isAvailable ? 'unavailable' : ''}`;
-                            
-                            // Generate unavailable badge if needed
-                            const unavailableBadge = !item.isAvailable ? `
-                                <div class="unavailable-badge">
-                                    <i class="fas fa-ban"></i> Currently Unavailable
-                                </div>
-                            ` : '';
-                            
-                            // Generate tags HTML
-                            const tagsHTML = item.isSpecial ? `
-                                <div class="special-item-indicator">
-                                    <i class="fas fa-crown"></i> Special
-                                </div>
-                            ` : '';
-                            
-                            // Generate price display
-                            let priceDisplay = formatPrice(item.price);
-                            if (item.hasTakeaway && item.takeawayPrice > 0) {
-                                priceDisplay = `${formatPrice(item.price)}<br><small style="color: var(--text-light); font-size: 0.9rem;">Takeaway: ${formatPrice(item.takeawayPrice)}</small>`;
-                            } else if (item.price === 0) {
-                                priceDisplay = '<span style="color: var(--text-light);">Price on request</span>';
-                            }
-                            
-                            // Generate availability button text and icon
-                            const availabilityText = item.isAvailable ? 'Mark as Unavailable' : 'Mark as Available';
-                            const availabilityIcon = item.isAvailable ? 'fas fa-ban' : 'fas fa-check';
-                            const availabilityBtnClass = item.isAvailable ? 'availability-btn' : 'availability-btn unavailable';
-                            
-                            itemCard.innerHTML = `
-                                <div class="menu-item-image">
-                                    <img src="${item.image}" alt="${item.name}" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\"%3E%3Crect width=\"300\" height=\"200\" fill=\"%23f5f5f5\"/%3E%3Ctext x=\"50%25\" y=\"50%25\" font-family=\"Arial\" font-size=\"16\" fill=\"%23666\" text-anchor=\"middle\" dy=\".3em\"%3E${encodeURIComponent(item.name)}%3C/text%3E%3C/svg%3E'">
-                                    ${tagsHTML}
-                                    ${unavailableBadge}
-                                    <div class="menu-item-badge">${category.replace('-', ' ').toUpperCase()}</div>
-                                </div>
-                                <div class="menu-item-details">
-                                    <div class="menu-item-header">
-                                        <div class="menu-item-name">${item.name}</div>
-                                        <div class="menu-item-price">${priceDisplay}</div>
-                                    </div>
-                                    <div class="menu-item-description">${item.description}</div>
-                                    <div class="menu-item-meta">
-                                        ${item.prepTime > 0 ? `<span><i class="fas fa-clock"></i> ${item.prepTime} mins</span>` : ''}
-                                        ${item.calories > 0 ? `<span><i class="fas fa-fire"></i> ${item.calories} kcal</span>` : ''}
-                                        <span><i class="${getAvailabilityIcon(item.isAvailable)}" style="color: ${item.isAvailable ? 'var(--success)' : 'var(--danger)'};"></i> ${getAvailabilityText(item.isAvailable)}</span>
-                                    </div>
-                                    ${item.ingredients ? `<div style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 10px;"><strong>Ingredients:</strong> ${item.ingredients}</div>` : ''}
-                                    <div class="menu-item-actions">
-                                        <button class="action-btn edit-btn" data-id="${item.id}" data-category="${category}">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </button>
-                                        <button class="action-btn ${availabilityBtnClass}" data-id="${item.id}" data-category="${category}">
-                                            <i class="${availabilityIcon}"></i> ${availabilityText}
-                                        </button>
-                                        <button class="action-btn delete-btn" data-id="${item.id}" data-category="${category}">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
-                            fragment.appendChild(itemCard);
-                        });
-                        
-                        container.innerHTML = '';
-                        container.appendChild(fragment);
-                    }
-                });
-                
-                // Re-attach event listeners
-                addEventListeners();
-                
-                // Hide loading
-                setTimeout(() => {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
-                    }, 300);
-                }, 500);
-            }, 300);
-        }, 500));
+            const result = await response.json();
 
-        // Debounce function for search
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        // Form submission
-        itemForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const editingId = itemForm.getAttribute('data-editing-id');
-            const editingCategory = itemForm.getAttribute('data-editing-category');
-            
-            // Show loading
-            loadingOverlay.style.display = 'flex';
-            loadingOverlay.style.opacity = '1';
-            
-            setTimeout(() => {
-                if (editingId) {
-                    // Editing existing item
-                    const itemIndex = menuData[editingCategory].findIndex(item => item.id === parseInt(editingId));
-                    if (itemIndex !== -1) {
-                        // Get form values
-                        const name = document.getElementById('itemName').value;
-                        const description = document.getElementById('itemDescription').value;
-                        const price = parseFloat(document.getElementById('itemPrice').value) || 0;
-                        const category = document.getElementById('itemCategory').value;
-                        const prepTime = parseInt(document.getElementById('itemPrepTime').value) || 0;
-                        const calories = parseInt(document.getElementById('itemCalories').value) || 0;
-                        const ingredients = document.getElementById('itemIngredients').value;
-                        const isSpecial = document.getElementById('isSpecial').checked;
-                        const isAvailable = document.getElementById('isAvailable').checked;
-                        const hasTakeaway = document.getElementById('hasTakeawayPrice').checked;
-                        const takeawayPrice = hasTakeaway ? parseFloat(document.getElementById('takeawayPrice').value) || 0 : 0;
-                        
-                        // Handle image
-                        let image = menuData[editingCategory][itemIndex].image;
-                        if (imageInput.files && imageInput.files[0]) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                image = e.target.result;
-                                
-                                // Update item with new image
-                                updateMenuItem(
-                                    editingId, editingCategory, itemIndex,
-                                    name, description, price, category, 
-                                    prepTime, calories, image, ingredients,
-                                    isSpecial, isAvailable, hasTakeaway, takeawayPrice
-                                );
-                            };
-                            reader.readAsDataURL(imageInput.files[0]);
-                        } else {
-                            // No new image, update without changing image
-                            updateMenuItem(
-                                editingId, editingCategory, itemIndex,
-                                name, description, price, category, 
-                                prepTime, calories, image, ingredients,
-                                isSpecial, isAvailable, hasTakeaway, takeawayPrice
-                            );
-                        }
-                    }
-                } else {
-                    // Adding new item
-                    const name = document.getElementById('itemName').value;
-                    const description = document.getElementById('itemDescription').value;
-                    const price = parseFloat(document.getElementById('itemPrice').value) || 0;
-                    const category = document.getElementById('itemCategory').value;
-                    const prepTime = parseInt(document.getElementById('itemPrepTime').value) || 0;
-                    const calories = parseInt(document.getElementById('itemCalories').value) || 0;
-                    const ingredients = document.getElementById('itemIngredients').value;
-                    const isSpecial = document.getElementById('isSpecial').checked;
-                    const isAvailable = document.getElementById('isAvailable').checked;
-                    const hasTakeaway = document.getElementById('hasTakeawayPrice').checked;
-                    const takeawayPrice = hasTakeaway ? parseFloat(document.getElementById('takeawayPrice').value) || 0 : 0;
-                    
-                    // Handle image
-                    if (imageInput.files && imageInput.files[0]) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const image = e.target.result;
-                            
-                            // Create new item
-                            const newItem = {
-                                id: Date.now(),
-                                name,
-                                description,
-                                price,
-                                prepTime,
-                                calories,
-                                image,
-                                ingredients,
-                                isSpecial,
-                                tags: isSpecial ? ["Special"] : [],
-                                isAvailable,
-                                hasTakeaway,
-                                takeawayPrice
-                            };
-                            
-                            // Add to menu data
-                            if (!menuData[category]) menuData[category] = [];
-                            menuData[category].push(newItem);
-                            
-                            // Update UI
-                            renderMenuItems();
-                            
-                            // Close modal
-                            itemModal.style.display = 'none';
-                            
-                            // Show success message
-                            alert(`"${name}" has been added to the ${category} menu!`);
-                        };
-                        reader.readAsDataURL(imageInput.files[0]);
-                    } else {
-                        // No image provided, use default
-                        const newItem = {
-                            id: Date.now(),
-                            name,
-                            description,
-                            price,
-                            prepTime,
-                            calories,
-                            image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200"%3E%3Crect width="300" height="200" fill="%23f5f5f5"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="16" fill="%23666" text-anchor="middle" dy=".3em"%3E' + encodeURIComponent(name) + '%3C/text%3E%3C/svg%3E',
-                            ingredients,
-                            isSpecial,
-                            tags: isSpecial ? ["Special"] : [],
-                            isAvailable,
-                            hasTakeaway,
-                            takeawayPrice
-                        };
-                        
-                        // Add to menu data
-                        if (!menuData[category]) menuData[category] = [];
-                        menuData[category].push(newItem);
-                        
-                        // Update UI
-                        renderMenuItems();
-                        
-                        // Close modal
-                        itemModal.style.display = 'none';
-                        
-                        // Show success message
-                        alert(`"${name}" has been added to the ${category} menu!`);
-                    }
-                }
-            }, 300);
-        });
-
-        // Helper function to update menu item
-        function updateMenuItem(id, oldCategory, itemIndex, name, description, price, newCategory, prepTime, calories, image, ingredients, isSpecial, isAvailable, hasTakeaway, takeawayPrice) {
-            // Create updated item
-            const updatedItem = {
-                id: parseInt(id),
-                name,
-                description,
-                price,
-                prepTime,
-                calories,
-                image,
-                ingredients,
-                isSpecial,
-                tags: isSpecial ? ["Special"] : [],
-                isAvailable,
-                hasTakeaway,
-                takeawayPrice
-            };
-            
-            // If category changed, move item to new category
-            if (newCategory !== oldCategory) {
-                // Remove from old category
-                menuData[oldCategory].splice(itemIndex, 1);
-                // Add to new category
-                if (!menuData[newCategory]) menuData[newCategory] = [];
-                menuData[newCategory].push(updatedItem);
+            if (result.success) {
+                showToast(result.message || 'Availability updated successfully!', 'success');
+                await fetchMenuItems();
+                loadMenuItems();
+                updateStats();
             } else {
-                // Update in same category
-                menuData[oldCategory][itemIndex] = updatedItem;
+                showToast(result.message || 'Error updating availability', 'error');
             }
-            
-            // Update UI
-            renderMenuItems();
-            
-            // Close modal and reset form
-            itemModal.style.display = 'none';
-            itemForm.reset();
-            resetImagePreview();
-            itemForm.removeAttribute('data-editing-id');
-            itemForm.removeAttribute('data-editing-category');
-            takeawayPriceGroup.style.display = 'none';
-            
-            // Show success message
-            alert(`"${name}" has been updated successfully!`);
+        } catch (error) {
+            console.error('Error toggling availability:', error);
+            showToast('Error updating availability. Please try again.', 'error');
         }
+    }
 
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize notifications
-            renderNotifications();
+    function exportMenu() {
+        const dataStr = JSON.stringify(menuItems, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        const exportFileDefaultName = `josephs-pot-menu-${new Date().toISOString().split('T')[0]}.json`;
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+        
+        showToast('Menu exported successfully!', 'success');
+    }
+
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        
+        toastMessage.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.style.display = 'flex';
+        
+        // Set appropriate icon and color
+        const icon = toast.querySelector('i');
+        switch(type) {
+            case 'success':
+                icon.className = 'fas fa-check-circle';
+                toast.style.background = 'var(--brown)';
+                toast.style.borderLeftColor = 'var(--accent)';
+                break;
+            case 'error':
+                icon.className = 'fas fa-exclamation-circle';
+                toast.style.background = '#dc3545';
+                toast.style.borderLeftColor = '#c82333';
+                break;
+            case 'info':
+                icon.className = 'fas fa-info-circle';
+                toast.style.background = '#17a2b8';
+                toast.style.borderLeftColor = '#138496';
+                break;
+        }
+        
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    // Scroll Reveal Functionality
+    function revealOnScroll() {
+        const reveals = document.querySelectorAll('.reveal');
+        
+        for (let i = 0; i < reveals.length; i++) {
+            const windowHeight = window.innerHeight;
+            const elementTop = reveals[i].getBoundingClientRect().top;
+            const elementVisible = 150;
             
-            // Initial render
-            renderMenuItems();
-        });
-    </script>
+            if (elementTop < windowHeight - elementVisible) {
+                reveals[i].classList.add('active');
+            } else {
+                reveals[i].classList.remove('active');
+            }
+        }
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        const itemModal = document.getElementById('itemModal');
+        const deleteModal = document.getElementById('deleteModal');
+        
+        if (event.target === itemModal) {
+            closeModal();
+        }
+        if (event.target === deleteModal) {
+            closeDeleteModal();
+        }
+    }
+</script>
 </body>
 </html>

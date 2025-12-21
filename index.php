@@ -1,3 +1,7 @@
+<?php
+// Load appearance settings from database
+require_once __DIR__ . '/includes/appearance_settings.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,17 +14,36 @@
     <!-- Open Graph -->
     <meta property="og:title" content="Joseph's Pot - Authentic Nigerian Cuisine">
     <meta property="og:description" content="Where Taste Meets Irresistibility - Traditional Igbo foods in Owerri">
-    <meta property="og:image" content="./images/logo3.png">
+    <meta property="og:image" content="<?php echo $appearance['logo_path']; ?>">
     <meta property="og:url" content="https://josephspot.com">
     <meta property="og:type" content="website">
 
-    <link rel="icon" href="./images/logo3.png">
+    <link rel="icon" href="<?php echo $appearance['favicon_path']; ?>?v=<?php echo time(); ?>">
     <title>Joseph's Pot</title>
     <link rel="stylesheet" href="./fontawesome-free-6.7.2-web/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
     <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="CSS/index.css">
+    
+    <!-- Dynamic Theme Colors (must come after CSS to override) -->
+    <style id="dynamic-theme-colors">
+        /* Override CSS variables - using :root */
+        :root {
+            --brown: <?php echo $appearance['primary_color']; ?>;
+            --brown-light: <?php echo $appearance['primary_light']; ?>;
+            --brown-dark: <?php echo $appearance['primary_dark']; ?>;
+        }
+    </style>
+    <script>
+        // Force CSS variable update immediately (ensures override of static CSS)
+        (function() {
+            const root = document.documentElement;
+            root.style.setProperty('--brown', '<?php echo $appearance['primary_color']; ?>', 'important');
+            root.style.setProperty('--brown-light', '<?php echo $appearance['primary_light']; ?>', 'important');
+            root.style.setProperty('--brown-dark', '<?php echo $appearance['primary_dark']; ?>', 'important');
+        })();
+    </script>
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -93,7 +116,7 @@
     <header class="navbar" id="navbar">
         <div class="containerr">
           <div class="logo">
-           <a href=""><img src="./images/logo3.png" alt="logo" loading="lazy"></a>
+           <a href=""><img src="<?php echo $appearance['logo_path']; ?>?v=<?php echo time(); ?>" alt="logo" loading="lazy"></a>
           </div>
           <nav class="nav-links">
             <a href="index.php" class="active">Home</a>
@@ -285,54 +308,54 @@
     </div>
 
     <div class="flip-gallery">
-        <div class="flip-card reveal-on-scroll" onclick="location.href='breakfast.php';">
+        <div class="flip-card reveal-on-scroll" onclick="location.href='menu.php';">
             <div class="tap-hint">Tap image to explore</div>
             <div class="flip-inner" data-direction="left">
                 <div class="flip-front" style="background-image: url('./images/IMG-20251030-WA0028.jpg');">
-                    <a href="breakfast.php" class="flip-btn">Breakfast</a>
+                    <a href="menu.php" class="flip-btn">Breakfast</a>
                 </div>
                 <div class="flip-back" style="background-image: url('./images/IMG-20251030-WA0033.jpg');">
                     <div class="back-text">Start your day fresh with our gourmet breakfast menu!</div>
-                    <a href="breakfast.php" class="flip-btn">Explore</a>
+                    <a href="menu.php" class="flip-btn">Explore</a>
                 </div>
             </div>
         </div>
 
-        <div class="flip-card reveal-on-scroll reveal-delay-1" onclick="location.href='lunch.php';">
+        <div class="flip-card reveal-on-scroll reveal-delay-1" onclick="location.href='menu.php';">
             <div class="tap-hint">Tap image to explore</div>
             <div class="flip-inner" data-direction="right">
                 <div class="flip-front" style="background-image: url('./images/lunch1.jpg');">
-                    <a href="lunch.php" class="flip-btn">Lunch</a>
+                    <a href="menu.php" class="flip-btn">Lunch</a>
                 </div>
                 <div class="flip-back" style="background-image: url('./images/image8.jpg');">
                     <div class="back-text">Midday meals made magical—discover our special lunch offers.</div>
-                    <a href="lunch.php" class="flip-btn">Explore</a>
+                    <a href="menu.php" class="flip-btn">Explore</a>
                 </div>
             </div>
         </div>
 
-        <div class="flip-card reveal-on-scroll reveal-delay-2" onclick="location.href='dinner.php';">
+        <div class="flip-card reveal-on-scroll reveal-delay-2" onclick="location.href='menu.php';">
             <div class="tap-hint">Tap image to explore</div>
             <div class="flip-inner" data-direction="top">
                 <div class="flip-front" style="background-image: url('./images/ofe\ owerri1.jpg');">
-                    <a href="dinner.php" class="flip-btn">Dinner</a>
+                    <a href="menu.php" class="flip-btn">Dinner</a>
                 </div>
                 <div class="flip-back" style="background-image: url('./images/nsala.jpeg');">
                     <div class="back-text">An elegant end to your day—taste the best of our dinner dishes.</div>
-                    <a href="dinner.php" class="flip-btn">Explore</a>
+                    <a href="menu.php" class="flip-btn">Explore</a>
                 </div>
             </div>
         </div>
 
-        <div class="flip-card reveal-on-scroll reveal-delay-3" onclick="location.href='drink.php';">
+        <div class="flip-card reveal-on-scroll reveal-delay-3" onclick="location.href='menu.php';">
             <div class="tap-hint">Tap image to explore</div>
             <div class="flip-inner" data-direction="bottom">
                 <div class="flip-front" style="background-image: url('./images/malts.png');">
-                    <a href="drink.php" class="flip-btn">Drinks</a>
+                    <a href="menu.php" class="flip-btn">Drinks</a>
                 </div>
                 <div class="flip-back" style="background-image: url('./images/images\ \(11\).jpeg');">
                     <div class="back-text">Quench your thirst with our exotic and refreshing drink range.</div>
-                    <a href="drink.php" class="flip-btn">Explore</a>
+                    <a href="menu.php" class="flip-btn">Explore</a>
                 </div>
             </div>
         </div>
@@ -659,7 +682,7 @@
             <div class="footer-glass-inner">
                 <div class="footer-content">
                     <div class="footer-column reveal-on-scroll">
-                        <img src="./images/logo.jpg" loading="lazy" alt="Logo" height="80px">
+                        <img src="<?php echo $appearance['logo_path']; ?>?v=<?php echo time(); ?>" loading="lazy" alt="Logo" height="80px">
                         <p>Authentic taste, unforgettable experience.<br>Serving happiness from Owerri, Nigeria.</p>
                         <div class="social-links">
                             <a href="https://www.facebook.com/@cruisewithjoe" target="_blank"><i class="fab fa-facebook-f"></i></a>

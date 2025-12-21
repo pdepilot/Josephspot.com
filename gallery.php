@@ -1,3 +1,7 @@
+<?php
+// Load appearance settings from database
+require_once __DIR__ . '/includes/appearance_settings.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,10 +10,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gallery - Joseph's Pot</title>
     <link rel="stylesheet" href="./CSS/gallery.css" />
-    <link rel="icon" href="./images/logo3.png">
+    <link rel="icon" href="<?php echo $appearance['favicon_path']; ?>?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="./fontawesome-free-6.7.2-web/css/all.min.css">
     <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="./CSS/gallery.css">
+    <!-- Dynamic Theme Colors (must come after CSS to override) -->
+    <style id="dynamic-theme-colors">
+        /* Override CSS variables - using :root */
+        :root {
+            --brown: <?php echo $appearance['primary_color']; ?>;
+            --brown-light: <?php echo $appearance['primary_light']; ?>;
+            --brown-dark: <?php echo $appearance['primary_dark']; ?>;
+        }
+    </style>
+    <script>
+        // Force CSS variable update after page load (ensures override of static CSS)
+        (function() {
+            const root = document.documentElement;
+            root.style.setProperty('--brown', '<?php echo $appearance['primary_color']; ?>', 'important');
+            root.style.setProperty('--brown-light', '<?php echo $appearance['primary_light']; ?>', 'important');
+            root.style.setProperty('--brown-dark', '<?php echo $appearance['primary_dark']; ?>', 'important');
+        })();
+    </script>
 </head>
 
 <body>
@@ -17,7 +39,7 @@
     <header class="navbar" id="navbar">
         <div class="container">
             <div class="logo">
-                <a href="index.php"><img src="./images/logo3.png" alt="Joseph's Pot Logo"></a>
+                <a href="index.php"><img src="<?php echo $appearance['logo_path']; ?>?v=<?php echo time(); ?>" alt="Joseph's Pot Logo"></a>
             </div>
             <nav class="nav-links">
                 <a href="index.php">Home</a>
@@ -55,15 +77,17 @@
 <section class="gallery-grid" id="gallery">
     <?php
     // Include database connection
-    require_once 'admin/db-connection.php';
+    require_once 'db_connection.php';
     
     // Fetch gallery items from database
-    $sql = "SELECT * FROM gallery WHERE status = 'active' ORDER BY sort_order ASC, upload_date DESC";
-    $result = $conn->query($sql);
-    
-    if ($result && $result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $category = $row['category'];
+    try {
+        $sql = "SELECT * FROM gallery WHERE status = 'active' ORDER BY sort_order ASC, upload_date DESC";
+        $stmt = $pdo->query($sql);
+        $rows = $stmt->fetchAll();
+        
+        if (count($rows) > 0) {
+            foreach ($rows as $row) {
+                $category = $row['category'];
             $file_url = str_replace('../', './', $row['file_path']);
             
             // Use exact category from database for filtering
@@ -118,19 +142,23 @@
                         <div class="label-description">' . $display_description . '</div>
                     </div>
                 </div>';
+                }
             }
+        } else {
+            // Show a message when no gallery items exist
+            echo '<div class="no-gallery-items" style="grid-column: 1/-1; text-align: center; padding: 50px;">
+                    <i class="fas fa-image" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
+                    <h3 style="color: #666; margin-bottom: 10px;">Gallery Coming Soon</h3>
+                    <p style="color: #999;">Our gallery is being updated with delicious images and videos. Please check back later!</p>
+                  </div>';
         }
-    } else {
-        // Show a message when no gallery items exist
+    } catch(PDOException $e) {
+        // Show error message if database query fails
         echo '<div class="no-gallery-items" style="grid-column: 1/-1; text-align: center; padding: 50px;">
-                <i class="fas fa-image" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
-                <h3 style="color: #666; margin-bottom: 10px;">Gallery Coming Soon</h3>
-                <p style="color: #999;">Our gallery is being updated with delicious images and videos. Please check back later!</p>
+                <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
+                <h3 style="color: #666; margin-bottom: 10px;">Unable to Load Gallery</h3>
+                <p style="color: #999;">Please try again later.</p>
               </div>';
-    }
-    
-    if (isset($conn)) {
-        $conn->close();
     }
     ?>
 </section>
@@ -154,7 +182,7 @@
             <div class="footer-glass-inner">
                 <div class="footer-content">
                     <div class="footer-column">
-                        <img src="./images/logo.jpg" alt="" width="80px" />
+                        <img src="<?php echo $appearance['logo_path']; ?>?v=<?php echo time(); ?>" alt="Joseph's Pot Logo" width="80px" />
                         <p>Authentic taste, unforgettable experience.<br>Serving happiness from Owerri, Nigeria.</p>
                         <div class="social-links">
                             <a href="https://facebook.com/@cruisewithjoe" target="_blank"><i class="fab fa-facebook-f"></i></a>

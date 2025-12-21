@@ -1,3 +1,7 @@
+<?php
+// Load appearance settings from database
+require_once __DIR__ . '/includes/appearance_settings.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,7 +13,7 @@
       href="./fontawesome-free-6.7.2-web/fontawesome-free-6.7.2-web/css/all.min.css"
     />
     <!-- <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin> -->
-     <link rel="icon" href="./images/logo3.png">
+     <link rel="icon" href="<?php echo $appearance['favicon_path']; ?>?v=<?php echo time(); ?>">
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
       rel="stylesheet"
@@ -17,6 +21,24 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="./CSS/order-online.css">
+    <!-- Dynamic Theme Colors (must come after CSS to override) -->
+    <style id="dynamic-theme-colors">
+        /* Override CSS variables - using :root */
+        :root {
+            --brown: <?php echo $appearance['primary_color']; ?>;
+            --brown-light: <?php echo $appearance['primary_light']; ?>;
+            --brown-dark: <?php echo $appearance['primary_dark']; ?>;
+        }
+    </style>
+    <script>
+        // Force CSS variable update after page load (ensures override of static CSS)
+        (function() {
+            const root = document.documentElement;
+            root.style.setProperty('--brown', '<?php echo $appearance['primary_color']; ?>', 'important');
+            root.style.setProperty('--brown-light', '<?php echo $appearance['primary_light']; ?>', 'important');
+            root.style.setProperty('--brown-dark', '<?php echo $appearance['primary_dark']; ?>', 'important');
+        })();
+    </script>
   </head>
   <body>
 
@@ -24,7 +46,7 @@
     <header class="navbar" id="navbar">
       <div class="containerr">
         <div class="logo">
-          <a href=""><img src="./images/logo3.png" alt="logo" /></a>
+          <a href=""><img src="<?php echo $appearance['logo_path']; ?>?v=<?php echo time(); ?>" alt="logo" /></a>
         </div>
         <nav class="nav-links">
           <a href="index.php">Home</a>
@@ -298,7 +320,7 @@
         <div class="receipt-header">
           <div class="receipt-logo">
             <img
-              src="./images/logo3.png"
+              src="<?php echo $appearance['logo_path']; ?>?v=<?php echo time(); ?>"
               alt="Joseph's Pot Logo"
               class="logo-img"
             />
@@ -414,7 +436,7 @@
         <div class="footer-glass-inner">
           <div class="footer-content">
             <div class="footer-column">
-              <img src="./images/logo.jpg" alt="" width="60px" height="60px" />
+              <img src="<?php echo $appearance['logo_path']; ?>?v=<?php echo time(); ?>" alt="Joseph's Pot Logo" width="60px" height="60px" />
               <p>
                 Authentic taste, unforgettable experience.<br />Serving
                 happiness from Owerri, Nigeria.
