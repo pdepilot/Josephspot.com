@@ -116,24 +116,15 @@
                     <div class="chart-header">
                         <h3>Revenue Overview</h3>
                         <div class="chart-actions">
-                            <select>
-                                <option>Last 7 Days</option>
-                                <option>Last 30 Days</option>
-                                <option>Last 3 Months</option>
+                            <select id="revenuePeriodSelect">
+                                <option value="7">Last 7 Days</option>
+                                <option value="30">Last 30 Days</option>
+                                <option value="90">Last 3 Months</option>
                             </select>
                         </div>
                     </div>
                     <div class="chart-container">
-                        <!-- Chart would be rendered here with a library like Chart.js -->
-                        <div style="display: flex; align-items: flex-end; height: 100%; gap: 10px; padding: 20px 0;">
-                            <div style="flex: 1; background: linear-gradient(to top, var(--info), #a8d8ff); height: 40%; border-radius: 5px;"></div>
-                            <div style="flex: 1; background: linear-gradient(to top, var(--info), #a8d8ff); height: 60%; border-radius: 5px;"></div>
-                            <div style="flex: 1; background: linear-gradient(to top, var(--info), #a8d8ff); height: 80%; border-radius: 5px;"></div>
-                            <div style="flex: 1; background: linear-gradient(to top, var(--success), #a8f0b0); height: 100%; border-radius: 5px;"></div>
-                            <div style="flex: 1; background: linear-gradient(to top, var(--success), #a8f0b0); height: 70%; border-radius: 5px;"></div>
-                            <div style="flex: 1; background: linear-gradient(to top, var(--success), #a8f0b0); height: 90%; border-radius: 5px;"></div>
-                            <div style="flex: 1; background: linear-gradient(to top, var(--warning), #ffd8a8); height: 50%; border-radius: 5px;"></div>
-                        </div>
+                        <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
 
@@ -142,24 +133,8 @@
                         <h3>Order Status</h3>
                     </div>
                     <div class="chart-container">
-                        <!-- Pie chart would be rendered here -->
-                        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-                            <div style="width: 200px; height: 200px; border-radius: 50%; background: conic-gradient(var(--success) 0% 65%, var(--warning) 65% 85%, var(--danger) 85% 100%);"></div>
-                        </div>
-                        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px; flex-wrap: wrap;">
-                            <div style="display: flex; align-items: center;">
-                                <div style="width: 12px; height: 12px; background: var(--success); border-radius: 50%; margin-right: 5px;"></div>
-                                <span>Completed (65%)</span>
-                            </div>
-                            <div style="display: flex; align-items: center;">
-                                <div style="width: 12px; height: 12px; background: var(--warning); border-radius: 50%; margin-right: 5px;"></div>
-                                <span>Pending (20%)</span>
-                            </div>
-                            <div style="display: flex; align-items: center;">
-                                <div style="width: 12px; height: 12px; background: var(--danger); border-radius: 50%; margin-right: 5px;"></div>
-                                <span>Cancelled (15%)</span>
-                            </div>
-                        </div>
+                        <canvas id="orderStatusChart"></canvas>
+                        <div id="orderStatusLegend" style="display: flex; justify-content: center; gap: 20px; margin-top: 20px; flex-wrap: wrap;"></div>
                     </div>
                 </div>
             </div>
@@ -168,154 +143,15 @@
             <div class="activity-section">
                 <div class="activity-card reveal">
                     <h3>Recent Activity</h3>
-                    <ul class="activity-list">
-                        <?php
-                        // Try to get reservations from database
-                        $reservations = [];
-                        try {
-                            // Use the correct column names based on your database schema
-                            $result = $conn->query("SELECT name, guests, reservation_date, status FROM reservations ORDER BY reservation_date DESC LIMIT 5");
-                            if ($result) {
-                                while ($row = $result->fetch_assoc()) {
-                                    $reservations[] = $row;
-                                }
-                            }
-                        } catch (Exception $e) {
-                            // If error, use empty array
-                            error_log("Error fetching reservations: " . $e->getMessage());
-                        }
-
-                        if (!empty($reservations)):
-                            foreach ($reservations as $reservation):
-                                $time_ago = '';
-                                $now = time();
-                                $activity_time = strtotime($reservation['reservation_date']);
-                                $time_diff = $now - $activity_time;
-
-                                if ($time_diff < 60) {
-                                    $time_ago = 'Just now';
-                                } elseif ($time_diff < 3600) {
-                                    $minutes = floor($time_diff / 60);
-                                    $time_ago = $minutes . ' min ago';
-                                } elseif ($time_diff < 86400) {
-                                    $hours = floor($time_diff / 3600);
-                                    $time_ago = $hours . ' hour' . ($hours > 1 ? 's' : '') . ' ago';
-                                } else {
-                                    $days = floor($time_diff / 86400);
-                                    $time_ago = $days . ' day' . ($days > 1 ? 's' : '') . ' ago';
-                                }
-                        ?>
-                                <li class="activity-item">
-                                    <div class="activity-icon reservation">
-                                        <i class="fas fa-calendar-plus"></i>
-                                    </div>
-                                    <div class="activity-details">
-                                        <h4>Table Reservation</h4>
-                                        <p><?php echo htmlspecialchars($reservation['name']); ?> reserved a table for <?php echo $reservation['guests']; ?> people</p>
-                                    </div>
-                                    <div class="activity-time"><?php echo $time_ago; ?></div>
-                                </li>
-                            <?php endforeach;
-                        else:
-                            // Fallback to static data if no reservations
-                            ?>
-                            <li class="activity-item">
-                                <div class="activity-icon order">
-                                    <i class="fas fa-shopping-bag"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <h4>New Order Received</h4>
-                                    <p>Order #JP-2847 for 2 people</p>
-                                </div>
-                                <div class="activity-time">10 min ago</div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon reservation">
-                                    <i class="fas fa-calendar-plus"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <h4>Table Reservation</h4>
-                                    <p>John Smith reserved a table for 4</p>
-                                </div>
-                                <div class="activity-time">25 min ago</div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon review">
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <h4>New Review Posted</h4>
-                                    <p>Sarah Johnson rated 5 stars</p>
-                                </div>
-                                <div class="activity-time">1 hour ago</div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon payment">
-                                    <i class="fas fa-credit-card"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <h4>Payment Received</h4>
-                                    <p>₦12,500 for Order #JP-2841</p>
-                                </div>
-                                <div class="activity-time">2 hours ago</div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon order">
-                                    <i class="fas fa-shopping-bag"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <h4>Order Completed</h4>
-                                    <p>Order #JP-2839 marked as delivered</p>
-                                </div>
-                                <div class="activity-time">3 hours ago</div>
-                            </li>
-                        <?php endif; ?>
+                    <ul class="activity-list" id="activityList">
+                        <!-- Activity items will be loaded here -->
                     </ul>
                 </div>
 
                 <div class="top-items-card reveal reveal-delay-1">
                     <h3>Top Menu Items</h3>
-                    <ul class="top-items-list">
-                        <li class="top-item">
-                            <div class="item-rank rank-1">1</div>
-                            <div class="item-details">
-                                <h4>Ofe Owerri Special</h4>
-                                <p>Traditional Igbo soup</p>
-                            </div>
-                            <div class="item-sales">142 sales</div>
-                        </li>
-                        <li class="top-item">
-                            <div class="item-rank rank-2">2</div>
-                            <div class="item-details">
-                                <h4>Nkwobi</h4>
-                                <p>Spicy cow foot</p>
-                            </div>
-                            <div class="item-sales">128 sales</div>
-                        </li>
-                        <li class="top-item">
-                            <div class="item-rank rank-3">3</div>
-                            <div class="item-details">
-                                <h4>Egusi Delight</h4>
-                                <p>Melon seed soup</p>
-                            </div>
-                            <div class="item-sales">115 sales</div>
-                        </li>
-                        <li class="top-item">
-                            <div class="item-rank">4</div>
-                            <div class="item-details">
-                                <h4>Palm Wine</h4>
-                                <p>Traditional drink</p>
-                            </div>
-                            <div class="item-sales">98 sales</div>
-                        </li>
-                        <li class="top-item">
-                            <div class="item-rank">5</div>
-                            <div class="item-details">
-                                <h4>Jollof Rice</h4>
-                                <p>Party special</p>
-                            </div>
-                            <div class="item-sales">87 sales</div>
-                        </li>
+                    <ul class="top-items-list" id="topItemsList">
+                        <!-- Top items will be loaded here -->
                     </ul>
                 </div>
             </div>
@@ -661,59 +497,100 @@
         });
 
         // Notification functionality
-        function renderNotifications() {
+        function renderNotifications(notificationsData) {
+            if (!notificationList) return;
+            
             notificationList.innerHTML = '';
             
-            if (notifications.length === 0) {
+            if (!notificationsData || notificationsData.length === 0) {
                 notificationList.innerHTML = '<div class="notification-empty">No notifications</div>';
                 return;
             }
             
-            notifications.forEach(notification => {
+            notificationsData.forEach(notification => {
                 const notificationItem = document.createElement('li');
-                notificationItem.className = `notification-item ${notification.unread ? 'unread' : ''}`;
+                notificationItem.className = `notification-item ${!notification.is_read ? 'unread' : ''}`;
                 notificationItem.dataset.id = notification.id;
+                
+                const timeAgo = getTimeAgo(notification.created_at);
+                
                 notificationItem.innerHTML = `
-                    <div class="notification-dot" style="${notification.unread ? 'background: var(--primary)' : 'background: transparent'}"></div>
+                    <div class="notification-dot" style="${!notification.is_read ? 'background: var(--primary)' : 'background: transparent'}"></div>
                     <div class="notification-content">
                         <div class="notification-title">${notification.title}</div>
                         <div class="notification-message">${notification.message}</div>
-                        <div class="notification-time">${notification.time}</div>
+                        <div class="notification-time">${timeAgo}</div>
                     </div>
                 `;
                 
-                notificationItem.addEventListener('click', function() {
-                    markAsRead(notification.id);
-                });
+                if (!notification.is_read) {
+                    notificationItem.addEventListener('click', function() {
+                        markAsRead(notification.id);
+                    });
+                }
                 
                 notificationList.appendChild(notificationItem);
             });
-            
-            // Update badge count
-            updateNotificationBadge();
         }
 
-        function updateNotificationBadge() {
-            const unreadCount = notifications.filter(n => n.unread).length;
+        function updateNotificationBadge(count) {
             if (notificationBadge) {
-                notificationBadge.textContent = unreadCount;
-                notificationBadge.style.display = unreadCount > 0 ? 'flex' : 'none';
+                notificationBadge.textContent = count || 0;
+                notificationBadge.style.display = (count > 0) ? 'flex' : 'none';
             }
+        }
+
+        function loadNotifications() {
+            fetch('api/get-notifications.php?limit=10')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderNotifications(data.data);
+                        updateNotificationBadge(data.unread_count);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading notifications:', error);
+                });
         }
 
         function markAsRead(notificationId) {
-            const notification = notifications.find(n => n.id === notificationId);
-            if (notification && notification.unread) {
-                notification.unread = false;
-                renderNotifications();
-            }
+            fetch('api/mark-notification-read.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ notification_id: notificationId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload notifications to update UI
+                    loadNotifications();
+                }
+            })
+            .catch(error => {
+                console.error('Error marking notification as read:', error);
+            });
         }
 
         function markAllAsRead() {
-            notifications.forEach(notification => {
-                notification.unread = false;
+            fetch('api/mark-all-notifications-read.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload notifications to update UI
+                    loadNotifications();
+                }
+            })
+            .catch(error => {
+                console.error('Error marking all notifications as read:', error);
             });
-            renderNotifications();
         }
 
         // Toggle notification dropdown
@@ -744,6 +621,9 @@
                 markAllAsRead();
             });
         }
+        
+        // Initial notification load
+        loadNotifications();
 
         // Scroll Reveal Functionality
         function revealOnScroll() {
@@ -784,14 +664,307 @@
             // Initialize admin cards
             renderAdmins();
             
-            // Initialize notifications
-            renderNotifications();
+            // Load notifications
+            loadNotifications();
+            
+            // Poll for notifications every 45 seconds
+            setInterval(loadNotifications, 45000);
 
             // Initialize scroll reveal
             window.addEventListener('scroll', revealOnScroll);
             // Trigger once on load to check initial position
             revealOnScroll();
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Load activity feed and top items
+            loadActivityFeed();
+            loadTopMenuItems();
         });
+
+        // Chart.js initialization
+        let revenueChart = null;
+        let orderStatusChart = null;
+
+        function initializeCharts() {
+            // Initialize revenue chart
+            const revenueCtx = document.getElementById('revenueChart');
+            if (revenueCtx) {
+                revenueChart = new Chart(revenueCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Revenue (₦)',
+                            data: [],
+                            backgroundColor: 'rgba(33, 150, 243, 0.6)',
+                            borderColor: 'rgba(33, 150, 243, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₦' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Load initial revenue data
+                loadRevenueData(7);
+            }
+
+            // Initialize order status chart
+            const orderStatusCtx = document.getElementById('orderStatusChart');
+            if (orderStatusCtx) {
+                orderStatusChart = new Chart(orderStatusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            data: [],
+                            backgroundColor: [
+                                'rgba(76, 175, 80, 0.8)',
+                                'rgba(255, 152, 0, 0.8)',
+                                'rgba(244, 67, 54, 0.8)'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+                
+                // Load order status data
+                loadOrderStatusData();
+            }
+
+            // Bind revenue period selector
+            const periodSelect = document.getElementById('revenuePeriodSelect');
+            if (periodSelect) {
+                periodSelect.addEventListener('change', function() {
+                    const days = parseInt(this.value);
+                    loadRevenueData(days);
+                });
+            }
+        }
+
+        function loadRevenueData(days) {
+            fetch(`api/get-revenue.php?days=${days}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && revenueChart) {
+                        if (data.data && data.data.length > 0) {
+                            const labels = data.data.map(item => {
+                                const date = new Date(item.date);
+                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            });
+                            const revenues = data.data.map(item => parseFloat(item.revenue));
+                            
+                            revenueChart.data.labels = labels;
+                            revenueChart.data.datasets[0].data = revenues;
+                            revenueChart.update();
+                        } else {
+                            // Handle empty data
+                            revenueChart.data.labels = ['No data'];
+                            revenueChart.data.datasets[0].data = [0];
+                            revenueChart.update();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading revenue data:', error);
+                });
+        }
+
+        function loadOrderStatusData() {
+            fetch('api/get-order-status.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && orderStatusChart) {
+                        const labels = data.data.map(item => item.status.charAt(0).toUpperCase() + item.status.slice(1));
+                        const values = data.data.map(item => item.count);
+                        const percentages = data.data.map(item => item.percentage);
+                        
+                        orderStatusChart.data.labels = labels;
+                        orderStatusChart.data.datasets[0].data = values;
+                        orderStatusChart.update();
+                        
+                        // Update legend
+                        const legendDiv = document.getElementById('orderStatusLegend');
+                        if (legendDiv) {
+                            legendDiv.innerHTML = '';
+                            data.data.forEach((item, index) => {
+                                const colors = ['var(--success)', 'var(--warning)', 'var(--danger)'];
+                                const color = colors[index] || 'var(--gray)';
+                                const legendItem = document.createElement('div');
+                                legendItem.style.display = 'flex';
+                                legendItem.style.alignItems = 'center';
+                                legendItem.innerHTML = `
+                                    <div style="width: 12px; height: 12px; background: ${color}; border-radius: 50%; margin-right: 5px;"></div>
+                                    <span>${item.status.charAt(0).toUpperCase() + item.status.slice(1)} (${item.percentage}%)</span>
+                                `;
+                                legendDiv.appendChild(legendItem);
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading order status data:', error);
+                });
+        }
+
+        function loadActivityFeed() {
+            fetch('api/get-activity-feed.php?limit=5')
+                .then(response => response.json())
+                .then(data => {
+                    const activityList = document.getElementById('activityList');
+                    if (!activityList) return;
+                    
+                    if (data.success && data.data && data.data.length > 0) {
+                        activityList.innerHTML = '';
+                        data.data.forEach(activity => {
+                            const timeAgo = getTimeAgo(activity.timestamp);
+                            const iconClass = getActivityIcon(activity.type);
+                            const iconBg = getActivityIconBg(activity.type);
+                            
+                            const item = document.createElement('li');
+                            item.className = 'activity-item';
+                            item.innerHTML = `
+                                <div class="activity-icon ${iconBg}">
+                                    <i class="${iconClass}"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <h4>${activity.title}</h4>
+                                    <p>${activity.message}</p>
+                                </div>
+                                <div class="activity-time">${timeAgo}</div>
+                            `;
+                            activityList.appendChild(item);
+                        });
+                    } else {
+                        // Fallback static data
+                        activityList.innerHTML = `
+                            <li class="activity-item">
+                                <div class="activity-icon order">
+                                    <i class="fas fa-shopping-bag"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <h4>New Order Received</h4>
+                                    <p>Order #JP-2847 for 2 people</p>
+                                </div>
+                                <div class="activity-time">10 min ago</div>
+                            </li>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading activity feed:', error);
+                });
+        }
+
+        function loadTopMenuItems() {
+            fetch('api/get-top-menu-items.php')
+                .then(response => response.json())
+                .then(data => {
+                    const topItemsList = document.getElementById('topItemsList');
+                    if (!topItemsList) return;
+                    
+                    if (data.success && data.data && data.data.length > 0) {
+                        topItemsList.innerHTML = '';
+                        data.data.forEach((item, index) => {
+                            const rank = index + 1;
+                            const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                            const itemEl = document.createElement('li');
+                            itemEl.className = 'top-item';
+                            itemEl.innerHTML = `
+                                <div class="item-rank ${rankClass}">${rank}</div>
+                                <div class="item-details">
+                                    <h4>${item.item_name}</h4>
+                                    <p>Menu item</p>
+                                </div>
+                                <div class="item-sales">${item.total_quantity} sales</div>
+                            `;
+                            topItemsList.appendChild(itemEl);
+                        });
+                    } else {
+                        // Fallback static data
+                        topItemsList.innerHTML = `
+                            <li class="top-item">
+                                <div class="item-rank rank-1">1</div>
+                                <div class="item-details">
+                                    <h4>Ofe Owerri Special</h4>
+                                    <p>Traditional Igbo soup</p>
+                                </div>
+                                <div class="item-sales">142 sales</div>
+                            </li>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading top menu items:', error);
+                });
+        }
+
+        function getTimeAgo(timestamp) {
+            const now = Math.floor(Date.now() / 1000);
+            const time = Math.floor(new Date(timestamp).getTime() / 1000);
+            const diff = now - time;
+            
+            if (diff < 60) {
+                return 'Just now';
+            } else if (diff < 3600) {
+                const minutes = Math.floor(diff / 60);
+                return minutes + ' min ago';
+            } else if (diff < 86400) {
+                const hours = Math.floor(diff / 3600);
+                return hours + ' hour' + (hours > 1 ? 's' : '') + ' ago';
+            } else {
+                const days = Math.floor(diff / 86400);
+                return days + ' day' + (days > 1 ? 's' : '') + ' ago';
+            }
+        }
+
+        function getActivityIcon(type) {
+            const icons = {
+                'order': 'fas fa-shopping-bag',
+                'reservation': 'fas fa-calendar-plus',
+                'payment': 'fas fa-credit-card',
+                'review': 'fas fa-star'
+            };
+            return icons[type] || 'fas fa-circle';
+        }
+
+        function getActivityIconBg(type) {
+            const backgrounds = {
+                'order': 'order',
+                'reservation': 'reservation',
+                'payment': 'payment',
+                'review': 'review'
+            };
+            return backgrounds[type] || 'order';
+        }
     </script>
 </body>
 </html>

@@ -68,6 +68,36 @@ try {
         ':order_id' => $orderId
     ]);
 
+    // Create notification for order status change
+    try {
+        require_once '../includes/notification_helper.php';
+        $notif_conn = new mysqli('localhost', 'root', '', 'joseph_pot_admin');
+        if (!$notif_conn->connect_error) {
+            $notif_conn->set_charset("utf8mb4");
+            // Get order details for notification
+            $orderDetailSql = "SELECT customer_name, total_amount FROM orders WHERE order_id = ?";
+            $orderStmt = $notif_conn->prepare($orderDetailSql);
+            $orderStmt->bind_param("s", $orderId);
+            $orderStmt->execute();
+            $orderResult = $orderStmt->get_result();
+            if ($orderRow = $orderResult->fetch_assoc()) {
+                createNotification(
+                    $notif_conn,
+                    null, // notify all admins
+                    'order',
+                    'Order Status Changed',
+                    'Order #' . $orderId . ' status changed from ' . $order['order_status'] . ' to ' . $newStatus,
+                    $order['id']
+                );
+            }
+            $orderStmt->close();
+            $notif_conn->close();
+        }
+    } catch (Exception $e) {
+        // Silently fail notification creation
+        error_log('Notification error: ' . $e->getMessage());
+    }
+
     // Log the status change (optional - you can create an order_history table if needed)
     // For now, we'll just return success
 

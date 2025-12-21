@@ -189,6 +189,27 @@ try {
         // Commit transaction
         $pdo->commit();
 
+        // Create notification for new order (use mysqli for notifications)
+        try {
+            require_once 'admin/includes/notification_helper.php';
+            $notif_conn = new mysqli('localhost', 'root', '', 'joseph_pot_admin');
+            if (!$notif_conn->connect_error) {
+                $notif_conn->set_charset("utf8mb4");
+                createNotification(
+                    $notif_conn,
+                    null, // null = notify all admins
+                    'order',
+                    'New Order Placed',
+                    $customerName . ' placed order #' . $orderId . ' for ₦' . number_format($totalAmount, 2),
+                    null // reference_id for orders would need order table id, not order_id
+                );
+                $notif_conn->close();
+            }
+        } catch (Exception $e) {
+            // Silently fail notification creation
+            error_log('Notification error: ' . $e->getMessage());
+        }
+
         echo json_encode([
             'success' => true,
             'message' => 'Order submitted successfully',

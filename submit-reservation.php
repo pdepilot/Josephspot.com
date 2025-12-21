@@ -112,6 +112,27 @@ try {
     $reservationId = $pdo->lastInsertId();
     $dbSuccess = true;
 
+    // Create notification for new reservation
+    try {
+        require_once 'admin/includes/notification_helper.php';
+        $notif_conn = new mysqli('localhost', 'root', '', 'joseph_pot_admin');
+        if (!$notif_conn->connect_error) {
+            $notif_conn->set_charset("utf8mb4");
+            createNotification(
+                $notif_conn,
+                null, // null = notify all admins
+                'reservation',
+                'New Reservation',
+                $name . ' reserved a table for ' . $guests . ' people on ' . $date . ' at ' . $time,
+                $reservationId
+            );
+            $notif_conn->close();
+        }
+    } catch (Exception $e) {
+        // Silently fail notification creation
+        error_log('Notification error: ' . $e->getMessage());
+    }
+
 } catch (PDOException $e) {
     error_log("Database Error: " . $e->getMessage());
 }

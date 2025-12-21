@@ -375,6 +375,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Update existing reservation
             $id = intval($_POST['reservation_id']);
             if ($reservationModel->updateReservation($id, $reservationData)) {
+                // Create notification for reservation update
+                try {
+                    require_once 'includes/notification_helper.php';
+                    $notif_conn = new mysqli('localhost', 'root', '', 'joseph_pot_admin');
+                    if (!$notif_conn->connect_error) {
+                        $notif_conn->set_charset("utf8mb4");
+                        createNotification(
+                            $notif_conn,
+                            null, // notify all admins
+                            'reservation',
+                            'Reservation Updated',
+                            'Reservation #' . $id . ' has been updated',
+                            $id
+                        );
+                        $notif_conn->close();
+                    }
+                } catch (Exception $e) {
+                    error_log('Notification error: ' . $e->getMessage());
+                }
                 $message = "Reservation updated successfully!";
                 $messageType = "success";
             } else {
@@ -385,6 +404,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Create new reservation
             $newId = $reservationModel->createReservation($reservationData);
             if ($newId) {
+                // Create notification for new reservation
+                try {
+                    require_once 'includes/notification_helper.php';
+                    $notif_conn = new mysqli('localhost', 'root', '', 'joseph_pot_admin');
+                    if (!$notif_conn->connect_error) {
+                        $notif_conn->set_charset("utf8mb4");
+                        $customerName = htmlspecialchars($reservationData['customer_name']);
+                        $partySize = $reservationData['party_size'];
+                        createNotification(
+                            $notif_conn,
+                            null, // notify all admins
+                            'reservation',
+                            'New Reservation',
+                            $customerName . ' reserved a table for ' . $partySize . ' people',
+                            $newId
+                        );
+                        $notif_conn->close();
+                    }
+                } catch (Exception $e) {
+                    error_log('Notification error: ' . $e->getMessage());
+                }
                 $message = "Reservation created successfully!";
                 $messageType = "success";
             } else {

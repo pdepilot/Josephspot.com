@@ -78,6 +78,22 @@ $stmt->bind_param("ssiss", $name, $email, $rating, $review, $image_url);
 if ($stmt->execute()) {
     $review_id = $stmt->insert_id;
     
+    // Create notification for new review
+    try {
+        require_once 'admin/includes/notification_helper.php';
+        createNotification(
+            $conn,
+            null, // notify all admins
+            'review',
+            'New Review Submitted',
+            $name . ' submitted a ' . $rating . '-star review',
+            $review_id
+        );
+    } catch (Exception $e) {
+        // Silently fail notification creation
+        error_log('Notification error: ' . $e->getMessage());
+    }
+    
     echo json_encode([
         'success' => true, 
         'message' => 'Review submitted for approval',
