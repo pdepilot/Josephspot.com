@@ -1,0 +1,1999 @@
+Raw input: {"name":"Palm-wine","category":"drinks","price":10000,"displayPrice":"₦10,000","description":"A mildly alcoholic, naturally sparkling brew made from palm sap. It features a unique, delicate balance of sweetness, a hint of sourness, and a smooth, creamy undertone.","icon":"fas fa-tree","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Palm-wine
+    [category] => drinks
+    [price] => 10000
+    [displayPrice] => ₦10,000
+    [description] => A mildly alcoholic, naturally sparkling brew made from palm sap. It features a unique, delicate balance of sweetness, a hint of sourness, and a smooth, creamy undertone.
+    [icon] => fas fa-tree
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Palm-wine
+Category: drinks
+Price: 10000
+Description: A mildly alcoholic, naturally sparkling brew made from palm sap. It features a unique, delicate balance of sweetness, a hint of sourness, and a smooth, creamy undertone.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Palm-wine
+    [1] => drinks
+    [2] => 10000
+    [3] => ₦10,000
+    [4] => A mildly alcoholic, naturally sparkling brew made from palm sap. It features a unique, delicate balance of sweetness, a hint of sourness, and a smooth, creamy undertone.
+    [5] => fas fa-tree
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Black Bullet","category":"drinks","price":3500,"displayPrice":"₦3,500","description":"A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.","icon":"fas fa-bottle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Black Bullet
+    [category] => drinks
+    [price] => 3500
+    [displayPrice] => ₦3,500
+    [description] => A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.
+    [icon] => fas fa-bottle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Black Bullet
+Category: drinks
+Price: 3500
+Description: A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Black Bullet
+    [1] => drinks
+    [2] => 3500
+    [3] => ₦3,500
+    [4] => A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.
+    [5] => fas fa-bottle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Black Bullet","category":"drinks","price":3500,"displayPrice":"₦3,500","description":"A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.","icon":"fas fa-can","tags":[],"isSpecial":false,"isAvailable":true,"id":10}
+Processed data: Array
+(
+    [name] => Black Bullet
+    [category] => drinks
+    [price] => 3500
+    [displayPrice] => ₦3,500
+    [description] => A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.
+    [icon] => fas fa-can
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+    [id] => 10
+)
+
+Data to save:
+ID: 10
+Name: Black Bullet
+Category: drinks
+Price: 3500
+Description: A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.
+SQL: UPDATE food_menu_manager SET 
+                name = ?, 
+                category = ?, 
+                price = ?, 
+                display_price = ?, 
+                description = ?, 
+                icon = ?, 
+                tags = ?, 
+                is_special = ?, 
+                is_available = ?,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+Params: Array
+(
+    [0] => Black Bullet
+    [1] => drinks
+    [2] => 3500
+    [3] => ₦3,500
+    [4] => A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.
+    [5] => fas fa-can
+    [6] => 
+    [7] => 0
+    [8] => 1
+    [9] => 10
+)
+
+Raw input: {"name":"Black Bullet","category":"drinks","price":3500,"displayPrice":"₦3,500","description":"A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true,"id":10}
+Processed data: Array
+(
+    [name] => Black Bullet
+    [category] => drinks
+    [price] => 3500
+    [displayPrice] => ₦3,500
+    [description] => A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+    [id] => 10
+)
+
+Data to save:
+ID: 10
+Name: Black Bullet
+Category: drinks
+Price: 3500
+Description: A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.
+SQL: UPDATE food_menu_manager SET 
+                name = ?, 
+                category = ?, 
+                price = ?, 
+                display_price = ?, 
+                description = ?, 
+                icon = ?, 
+                tags = ?, 
+                is_special = ?, 
+                is_available = ?,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+Params: Array
+(
+    [0] => Black Bullet
+    [1] => drinks
+    [2] => 3500
+    [3] => ₦3,500
+    [4] => A punchy, non-alcoholic premium energy drink that delivers an instant boost. Packed with invigorating flavors, caffeine, taurine, and B-group vitamins to awaken your senses and keep you focused and refreshed all day.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+    [9] => 10
+)
+
+Raw input: {"name":"Hollandia youghurt","category":"drinks","price":4000,"displayPrice":"₦4,000","description":"Recharge with this wholesome and invigorating drinking yoghurt. Made from high-quality milk with a perfectly balanced sweet and tart flavour, it's fortified with vitamins, minerals, and live cultures to support your energy levels and digestive health.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Hollandia youghurt
+    [category] => drinks
+    [price] => 4000
+    [displayPrice] => ₦4,000
+    [description] => Recharge with this wholesome and invigorating drinking yoghurt. Made from high-quality milk with a perfectly balanced sweet and tart flavour, it's fortified with vitamins, minerals, and live cultures to support your energy levels and digestive health.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Hollandia youghurt
+Category: drinks
+Price: 4000
+Description: Recharge with this wholesome and invigorating drinking yoghurt. Made from high-quality milk with a perfectly balanced sweet and tart flavour, it's fortified with vitamins, minerals, and live cultures to support your energy levels and digestive health.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Hollandia youghurt
+    [1] => drinks
+    [2] => 4000
+    [3] => ₦4,000
+    [4] => Recharge with this wholesome and invigorating drinking yoghurt. Made from high-quality milk with a perfectly balanced sweet and tart flavour, it's fortified with vitamins, minerals, and live cultures to support your energy levels and digestive health.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Chi Exotic","category":"drinks","price":4000,"displayPrice":"₦4,000","description":"Indulge in a rich, velvety blend of tropical fruits, offering a sweet and tangy taste that's both healthy and revitalizing. Choose from our popular flavors, including Pineapple & Coconut, Mango, or Multifruita (a mix of pineapple, orange, banana, and lemon).","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Chi Exotic
+    [category] => drinks
+    [price] => 4000
+    [displayPrice] => ₦4,000
+    [description] => Indulge in a rich, velvety blend of tropical fruits, offering a sweet and tangy taste that's both healthy and revitalizing. Choose from our popular flavors, including Pineapple & Coconut, Mango, or Multifruita (a mix of pineapple, orange, banana, and lemon).
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Chi Exotic
+Category: drinks
+Price: 4000
+Description: Indulge in a rich, velvety blend of tropical fruits, offering a sweet and tangy taste that's both healthy and revitalizing. Choose from our popular flavors, including Pineapple & Coconut, Mango, or Multifruita (a mix of pineapple, orange, banana, and lemon).
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Chi Exotic
+    [1] => drinks
+    [2] => 4000
+    [3] => ₦4,000
+    [4] => Indulge in a rich, velvety blend of tropical fruits, offering a sweet and tangy taste that's both healthy and revitalizing. Choose from our popular flavors, including Pineapple & Coconut, Mango, or Multifruita (a mix of pineapple, orange, banana, and lemon).
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Heineken","category":"drinks","price":3500,"displayPrice":"₦3,500","description":"A globally recognized, crisp, and refreshing pale lager with a mild, balanced bitterness and clean finish.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Heineken
+    [category] => drinks
+    [price] => 3500
+    [displayPrice] => ₦3,500
+    [description] => A globally recognized, crisp, and refreshing pale lager with a mild, balanced bitterness and clean finish.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Heineken
+Category: drinks
+Price: 3500
+Description: A globally recognized, crisp, and refreshing pale lager with a mild, balanced bitterness and clean finish.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Heineken
+    [1] => drinks
+    [2] => 3500
+    [3] => ₦3,500
+    [4] => A globally recognized, crisp, and refreshing pale lager with a mild, balanced bitterness and clean finish.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"G.Stout","category":"drinks","price":3500,"displayPrice":"₦3,500","description":"A bold, rich, and full-bodied Nigerian stout with a perfect bitter-sweet balance and notes of roasted coffee and chocolate","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => G.Stout
+    [category] => drinks
+    [price] => 3500
+    [displayPrice] => ₦3,500
+    [description] => A bold, rich, and full-bodied Nigerian stout with a perfect bitter-sweet balance and notes of roasted coffee and chocolate
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: G.Stout
+Category: drinks
+Price: 3500
+Description: A bold, rich, and full-bodied Nigerian stout with a perfect bitter-sweet balance and notes of roasted coffee and chocolate
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => G.Stout
+    [1] => drinks
+    [2] => 3500
+    [3] => ₦3,500
+    [4] => A bold, rich, and full-bodied Nigerian stout with a perfect bitter-sweet balance and notes of roasted coffee and chocolate
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Star Radler","category":"drinks","price":2200,"displayPrice":"₦2,200","description":"A light and refreshing fusion of Nigeria's own Star Lager beer and natural fruit juices. With only 2% alcohol, it offers a crisp, thirst-quenching taste, perfect as a mealtime companion. (Available in Citrus or Red Fruits).","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Star Radler
+    [category] => drinks
+    [price] => 2200
+    [displayPrice] => ₦2,200
+    [description] => A light and refreshing fusion of Nigeria's own Star Lager beer and natural fruit juices. With only 2% alcohol, it offers a crisp, thirst-quenching taste, perfect as a mealtime companion. (Available in Citrus or Red Fruits).
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Star Radler
+Category: drinks
+Price: 2200
+Description: A light and refreshing fusion of Nigeria's own Star Lager beer and natural fruit juices. With only 2% alcohol, it offers a crisp, thirst-quenching taste, perfect as a mealtime companion. (Available in Citrus or Red Fruits).
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Star Radler
+    [1] => drinks
+    [2] => 2200
+    [3] => ₦2,200
+    [4] => A light and refreshing fusion of Nigeria's own Star Lager beer and natural fruit juices. With only 2% alcohol, it offers a crisp, thirst-quenching taste, perfect as a mealtime companion. (Available in Citrus or Red Fruits).
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Desperado","category":"drinks","price":3500,"displayPrice":"₦3,500","description":"This lager is blended with tequila essence, offering a balanced profile with spicy and citrusy notes.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Desperado
+    [category] => drinks
+    [price] => 3500
+    [displayPrice] => ₦3,500
+    [description] => This lager is blended with tequila essence, offering a balanced profile with spicy and citrusy notes.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Desperado
+Category: drinks
+Price: 3500
+Description: This lager is blended with tequila essence, offering a balanced profile with spicy and citrusy notes.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Desperado
+    [1] => drinks
+    [2] => 3500
+    [3] => ₦3,500
+    [4] => This lager is blended with tequila essence, offering a balanced profile with spicy and citrusy notes.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Smirnoff Ice","category":"drinks","price":2200,"displayPrice":"₦2,200","description":"A sparkling, citrus-flavored alcoholic drink.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Smirnoff Ice
+    [category] => drinks
+    [price] => 2200
+    [displayPrice] => ₦2,200
+    [description] => A sparkling, citrus-flavored alcoholic drink.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Smirnoff Ice
+Category: drinks
+Price: 2200
+Description: A sparkling, citrus-flavored alcoholic drink.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Smirnoff Ice
+    [1] => drinks
+    [2] => 2200
+    [3] => ₦2,200
+    [4] => A sparkling, citrus-flavored alcoholic drink.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Hero","category":"drinks","price":2200,"displayPrice":"₦2,200","description":"A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Hero
+    [category] => drinks
+    [price] => 2200
+    [displayPrice] => ₦2,200
+    [description] => A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Hero
+Category: drinks
+Price: 2200
+Description: A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Hero
+    [1] => drinks
+    [2] => 2200
+    [3] => ₦2,200
+    [4] => A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Life","category":"drinks","price":2200,"displayPrice":"₦2,200","description":"prepared from finely blended whole-grain oats.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Life
+    [category] => drinks
+    [price] => 2200
+    [displayPrice] => ₦2,200
+    [description] => prepared from finely blended whole-grain oats.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Life
+Category: drinks
+Price: 2200
+Description: prepared from finely blended whole-grain oats.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Life
+    [1] => drinks
+    [2] => 2200
+    [3] => ₦2,200
+    [4] => prepared from finely blended whole-grain oats.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Flying Fish","category":"drinks","price":2200,"displayPrice":"₦2,200","description":"a dense, smooth dough made from finely ground, unripe plantains","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Flying Fish
+    [category] => drinks
+    [price] => 2200
+    [displayPrice] => ₦2,200
+    [description] => a dense, smooth dough made from finely ground, unripe plantains
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Flying Fish
+Category: drinks
+Price: 2200
+Description: a dense, smooth dough made from finely ground, unripe plantains
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Flying Fish
+    [1] => drinks
+    [2] => 2200
+    [3] => ₦2,200
+    [4] => a dense, smooth dough made from finely ground, unripe plantains
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Fayrouz","category":"drinks","price":1500,"displayPrice":"₦1,500","description":"A premium, sparkling non-alcoholic malt beverage that offers a sophisticated and refreshing alternative to regular soft drinks.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Fayrouz
+    [category] => drinks
+    [price] => 1500
+    [displayPrice] => ₦1,500
+    [description] => A premium, sparkling non-alcoholic malt beverage that offers a sophisticated and refreshing alternative to regular soft drinks.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Fayrouz
+Category: drinks
+Price: 1500
+Description: A premium, sparkling non-alcoholic malt beverage that offers a sophisticated and refreshing alternative to regular soft drinks.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Fayrouz
+    [1] => drinks
+    [2] => 1500
+    [3] => ₦1,500
+    [4] => A premium, sparkling non-alcoholic malt beverage that offers a sophisticated and refreshing alternative to regular soft drinks.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Malt","category":"drinks","price":1500,"displayPrice":"₦1,500","description":"A classic non-alcoholic, nutrient-rich malt drink that is a popular accompaniment to meals. It has a smooth, creamy, and sweet taste, known for providing energy and a rich flavour loved by all ages.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Malt
+    [category] => drinks
+    [price] => 1500
+    [displayPrice] => ₦1,500
+    [description] => A classic non-alcoholic, nutrient-rich malt drink that is a popular accompaniment to meals. It has a smooth, creamy, and sweet taste, known for providing energy and a rich flavour loved by all ages.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Malt
+Category: drinks
+Price: 1500
+Description: A classic non-alcoholic, nutrient-rich malt drink that is a popular accompaniment to meals. It has a smooth, creamy, and sweet taste, known for providing energy and a rich flavour loved by all ages.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Malt
+    [1] => drinks
+    [2] => 1500
+    [3] => ₦1,500
+    [4] => A classic non-alcoholic, nutrient-rich malt drink that is a popular accompaniment to meals. It has a smooth, creamy, and sweet taste, known for providing energy and a rich flavour loved by all ages.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Soft drinks","category":"drinks","price":1500,"displayPrice":"₦1,500","description":"The universally loved, classic carbonated soft drink. A cold, fizzy cola with its distinct, sweet flavour is a perfect thirst quencher and a popular treat with various meals.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Soft drinks
+    [category] => drinks
+    [price] => 1500
+    [displayPrice] => ₦1,500
+    [description] => The universally loved, classic carbonated soft drink. A cold, fizzy cola with its distinct, sweet flavour is a perfect thirst quencher and a popular treat with various meals.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Soft drinks
+Category: drinks
+Price: 1500
+Description: The universally loved, classic carbonated soft drink. A cold, fizzy cola with its distinct, sweet flavour is a perfect thirst quencher and a popular treat with various meals.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Soft drinks
+    [1] => drinks
+    [2] => 1500
+    [3] => ₦1,500
+    [4] => The universally loved, classic carbonated soft drink. A cold, fizzy cola with its distinct, sweet flavour is a perfect thirst quencher and a popular treat with various meals.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Can exotic","category":"drinks","price":1500,"displayPrice":"₦1,500","description":"a vibrant array of tropical and classic fruit flavours with this refreshing beverage.","icon":"","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Can exotic
+    [category] => drinks
+    [price] => 1500
+    [displayPrice] => ₦1,500
+    [description] => a vibrant array of tropical and classic fruit flavours with this refreshing beverage.
+    [icon] => 
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Can exotic
+Category: drinks
+Price: 1500
+Description: a vibrant array of tropical and classic fruit flavours with this refreshing beverage.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Can exotic
+    [1] => drinks
+    [2] => 1500
+    [3] => ₦1,500
+    [4] => a vibrant array of tropical and classic fruit flavours with this refreshing beverage.
+    [5] => 
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Small water","category":"drinks","price":500,"displayPrice":"₦500","description":"Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Small water
+    [category] => drinks
+    [price] => 500
+    [displayPrice] => ₦500
+    [description] => Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Small water
+Category: drinks
+Price: 500
+Description: Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Small water
+    [1] => drinks
+    [2] => 500
+    [3] => ₦500
+    [4] => Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Big Eva water","category":"drinks","price":2000,"displayPrice":"₦2,000","description":"A large bottle of clean, premium table water, ideal for sharing or ensuring ample hydration throughout your meal. This generous size of Eva water provides refreshing, clean hydration for a satisfying dining experience.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Big Eva water
+    [category] => drinks
+    [price] => 2000
+    [displayPrice] => ₦2,000
+    [description] => A large bottle of clean, premium table water, ideal for sharing or ensuring ample hydration throughout your meal. This generous size of Eva water provides refreshing, clean hydration for a satisfying dining experience.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Big Eva water
+Category: drinks
+Price: 2000
+Description: A large bottle of clean, premium table water, ideal for sharing or ensuring ample hydration throughout your meal. This generous size of Eva water provides refreshing, clean hydration for a satisfying dining experience.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Big Eva water
+    [1] => drinks
+    [2] => 2000
+    [3] => ₦2,000
+    [4] => A large bottle of clean, premium table water, ideal for sharing or ensuring ample hydration throughout your meal. This generous size of Eva water provides refreshing, clean hydration for a satisfying dining experience.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Noodles","category":"main-course","price":6000,"displayPrice":"₦6,000","description":"Our signature instant noodles cooked to perfection in a spicy sauce of sautéed tomatoes, onions, and fresh peppers, accompanied by (Noodles wey dey boost belle)","icon":"fas fa-spoon","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Noodles
+    [category] => main-course
+    [price] => 6000
+    [displayPrice] => ₦6,000
+    [description] => Our signature instant noodles cooked to perfection in a spicy sauce of sautéed tomatoes, onions, and fresh peppers, accompanied by (Noodles wey dey boost belle)
+    [icon] => fas fa-spoon
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Noodles
+Category: main-course
+Price: 6000
+Description: Our signature instant noodles cooked to perfection in a spicy sauce of sautéed tomatoes, onions, and fresh peppers, accompanied by (Noodles wey dey boost belle)
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Noodles
+    [1] => main-course
+    [2] => 6000
+    [3] => ₦6,000
+    [4] => Our signature instant noodles cooked to perfection in a spicy sauce of sautéed tomatoes, onions, and fresh peppers, accompanied by (Noodles wey dey boost belle)
+    [5] => fas fa-spoon
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Fried Rice","category":"main-course","price":4000,"displayPrice":"₦4,000","description":"flavorful, curry-infused rice stir-fried to perfection with a colorful medley of fresh vegetables and succulent pieces of chicken or beef liver","icon":"fas fa-spoon","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Fried Rice
+    [category] => main-course
+    [price] => 4000
+    [displayPrice] => ₦4,000
+    [description] => flavorful, curry-infused rice stir-fried to perfection with a colorful medley of fresh vegetables and succulent pieces of chicken or beef liver
+    [icon] => fas fa-spoon
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Fried Rice
+Category: main-course
+Price: 4000
+Description: flavorful, curry-infused rice stir-fried to perfection with a colorful medley of fresh vegetables and succulent pieces of chicken or beef liver
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Fried Rice
+    [1] => main-course
+    [2] => 4000
+    [3] => ₦4,000
+    [4] => flavorful, curry-infused rice stir-fried to perfection with a colorful medley of fresh vegetables and succulent pieces of chicken or beef liver
+    [5] => fas fa-spoon
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Native Rice","category":"main-course","price":3900,"displayPrice":"₦3,900","description":"Traditional rice prepared with fresh fish and egg","icon":"fas fa-fish","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Native Rice
+    [category] => main-course
+    [price] => 3900
+    [displayPrice] => ₦3,900
+    [description] => Traditional rice prepared with fresh fish and egg
+    [icon] => fas fa-fish
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Native Rice
+Category: main-course
+Price: 3900
+Description: Traditional rice prepared with fresh fish and egg
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Native Rice
+    [1] => main-course
+    [2] => 3900
+    [3] => ₦3,900
+    [4] => Traditional rice prepared with fresh fish and egg
+    [5] => fas fa-fish
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Porridge","category":"main-course","price":4000,"displayPrice":"₦4,000","description":"Hearty and comforting traditional porridge","icon":"fas fa-utensils","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Porridge
+    [category] => main-course
+    [price] => 4000
+    [displayPrice] => ₦4,000
+    [description] => Hearty and comforting traditional porridge
+    [icon] => fas fa-utensils
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Porridge
+Category: main-course
+Price: 4000
+Description: Hearty and comforting traditional porridge
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Porridge
+    [1] => main-course
+    [2] => 4000
+    [3] => ₦4,000
+    [4] => Hearty and comforting traditional porridge
+    [5] => fas fa-utensils
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Noodles & Turkey/Chicken","category":"main-course","price":3000,"displayPrice":"₦3,000","description":"Flavorful noodles served with your choice of protein","icon":"fas fa-egg","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Noodles & Turkey/Chicken
+    [category] => main-course
+    [price] => 3000
+    [displayPrice] => ₦3,000
+    [description] => Flavorful noodles served with your choice of protein
+    [icon] => fas fa-egg
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Noodles & Turkey/Chicken
+Category: main-course
+Price: 3000
+Description: Flavorful noodles served with your choice of protein
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Noodles & Turkey/Chicken
+    [1] => main-course
+    [2] => 3000
+    [3] => ₦3,000
+    [4] => Flavorful noodles served with your choice of protein
+    [5] => fas fa-egg
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Goat Meat Nkwobi","category":"main-course","price":3000,"displayPrice":"₦3,000","description":"Spicy goat meat prepared in traditional Nkwobi style","icon":"fas fa-drumstick-bite","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Goat Meat Nkwobi
+    [category] => main-course
+    [price] => 3000
+    [displayPrice] => ₦3,000
+    [description] => Spicy goat meat prepared in traditional Nkwobi style
+    [icon] => fas fa-drumstick-bite
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Goat Meat Nkwobi
+Category: main-course
+Price: 3000
+Description: Spicy goat meat prepared in traditional Nkwobi style
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Goat Meat Nkwobi
+    [1] => main-course
+    [2] => 3000
+    [3] => ₦3,000
+    [4] => Spicy goat meat prepared in traditional Nkwobi style
+    [5] => fas fa-drumstick-bite
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Cowtail Nkwobi","category":"main-course","price":5000,"displayPrice":"₦5,000","description":"Tender cowtail prepared in rich Nkwobi sauce","icon":"fas fa-bone","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Cowtail Nkwobi
+    [category] => main-course
+    [price] => 5000
+    [displayPrice] => ₦5,000
+    [description] => Tender cowtail prepared in rich Nkwobi sauce
+    [icon] => fas fa-bone
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Cowtail Nkwobi
+Category: main-course
+Price: 5000
+Description: Tender cowtail prepared in rich Nkwobi sauce
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Cowtail Nkwobi
+    [1] => main-course
+    [2] => 5000
+    [3] => ₦5,000
+    [4] => Tender cowtail prepared in rich Nkwobi sauce
+    [5] => fas fa-bone
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Roasted Plantain/Ugba","category":"main-course","price":4500,"displayPrice":"₦4,500","description":"Roasted plantain served with traditional Ugba","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Roasted Plantain/Ugba
+    [category] => main-course
+    [price] => 4500
+    [displayPrice] => ₦4,500
+    [description] => Roasted plantain served with traditional Ugba
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Roasted Plantain/Ugba
+Category: main-course
+Price: 4500
+Description: Roasted plantain served with traditional Ugba
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Roasted Plantain/Ugba
+    [1] => main-course
+    [2] => 4500
+    [3] => ₦4,500
+    [4] => Roasted plantain served with traditional Ugba
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Small water","category":"drinks","price":500,"displayPrice":"₦500","description":"Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.","icon":"fas fa-bottled-water","tags":[],"isSpecial":false,"isAvailable":true,"id":25}
+Processed data: Array
+(
+    [name] => Small water
+    [category] => drinks
+    [price] => 500
+    [displayPrice] => ₦500
+    [description] => Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.
+    [icon] => fas fa-bottled-water
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+    [id] => 25
+)
+
+Data to save:
+ID: 25
+Name: Small water
+Category: drinks
+Price: 500
+Description: Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.
+SQL: UPDATE food_menu_manager SET 
+                name = ?, 
+                category = ?, 
+                price = ?, 
+                display_price = ?, 
+                description = ?, 
+                icon = ?, 
+                tags = ?, 
+                is_special = ?, 
+                is_available = ?,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+Params: Array
+(
+    [0] => Small water
+    [1] => drinks
+    [2] => 500
+    [3] => ₦500
+    [4] => Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.
+    [5] => fas fa-bottled-water
+    [6] => 
+    [7] => 0
+    [8] => 1
+    [9] => 25
+)
+
+Raw input: {"name":"Small water","category":"drinks","price":500,"displayPrice":"₦500","description":"Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.","icon":"fas fa-trophy","tags":[],"isSpecial":false,"isAvailable":true,"id":25}
+Processed data: Array
+(
+    [name] => Small water
+    [category] => drinks
+    [price] => 500
+    [displayPrice] => ₦500
+    [description] => Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.
+    [icon] => fas fa-trophy
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+    [id] => 25
+)
+
+Data to save:
+ID: 25
+Name: Small water
+Category: drinks
+Price: 500
+Description: Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.
+SQL: UPDATE food_menu_manager SET 
+                name = ?, 
+                category = ?, 
+                price = ?, 
+                display_price = ?, 
+                description = ?, 
+                icon = ?, 
+                tags = ?, 
+                is_special = ?, 
+                is_available = ?,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+Params: Array
+(
+    [0] => Small water
+    [1] => drinks
+    [2] => 500
+    [3] => ₦500
+    [4] => Conveniently sized for individual hydration on the go, this small bottle of Eva premium table water is crisp, clean, and refreshing. The perfect accompaniment to any meal for a quick, pure water quench.
+    [5] => fas fa-trophy
+    [6] => 
+    [7] => 0
+    [8] => 1
+    [9] => 25
+)
+
+Raw input: {"name":"Stir-fry Pasta","category":"main-course","price":1500,"displayPrice":"₦1,500","description":"Pasta stir-fried with fresh vegetables and seasonings","icon":"fas fa-fire","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Stir-fry Pasta
+    [category] => main-course
+    [price] => 1500
+    [displayPrice] => ₦1,500
+    [description] => Pasta stir-fried with fresh vegetables and seasonings
+    [icon] => fas fa-fire
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Stir-fry Pasta
+Category: main-course
+Price: 1500
+Description: Pasta stir-fried with fresh vegetables and seasonings
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Stir-fry Pasta
+    [1] => main-course
+    [2] => 1500
+    [3] => ₦1,500
+    [4] => Pasta stir-fried with fresh vegetables and seasonings
+    [5] => fas fa-fire
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Goat Meat Jollof Rice","category":"main-course","price":6500,"displayPrice":"₦6,500","description":"Premium jollof rice with tender goat meat","icon":"fas fa-crown","tags":[],"isSpecial":true,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Goat Meat Jollof Rice
+    [category] => main-course
+    [price] => 6500
+    [displayPrice] => ₦6,500
+    [description] => Premium jollof rice with tender goat meat
+    [icon] => fas fa-crown
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 1
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Goat Meat Jollof Rice
+Category: main-course
+Price: 6500
+Description: Premium jollof rice with tender goat meat
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Goat Meat Jollof Rice
+    [1] => main-course
+    [2] => 6500
+    [3] => ₦6,500
+    [4] => Premium jollof rice with tender goat meat
+    [5] => fas fa-crown
+    [6] => 
+    [7] => 1
+    [8] => 1
+)
+
+Raw input: {"name":"Cowtail","category":"proteins","price":7000,"displayPrice":"₦7,000","description":"its rich, deep beef flavor and succulent, gelatinous texture with Joseph's traditional spices","icon":"fas fa-turkey","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Cowtail
+    [category] => proteins
+    [price] => 7000
+    [displayPrice] => ₦7,000
+    [description] => its rich, deep beef flavor and succulent, gelatinous texture with Joseph's traditional spices
+    [icon] => fas fa-turkey
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Cowtail
+Category: proteins
+Price: 7000
+Description: its rich, deep beef flavor and succulent, gelatinous texture with Joseph's traditional spices
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Cowtail
+    [1] => proteins
+    [2] => 7000
+    [3] => ₦7,000
+    [4] => its rich, deep beef flavor and succulent, gelatinous texture with Joseph's traditional spices
+    [5] => fas fa-turkey
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Cowtail","category":"proteins","price":7000,"displayPrice":"₦7,000","description":"its rich, deep beef flavor and succulent, gelatinous texture with Joseph's traditional spices","icon":"fas fa-bone","tags":[],"isSpecial":false,"isAvailable":true,"id":37}
+Processed data: Array
+(
+    [name] => Cowtail
+    [category] => proteins
+    [price] => 7000
+    [displayPrice] => ₦7,000
+    [description] => its rich, deep beef flavor and succulent, gelatinous texture with Joseph's traditional spices
+    [icon] => fas fa-bone
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+    [id] => 37
+)
+
+Data to save:
+ID: 37
+Name: Cowtail
+Category: proteins
+Price: 7000
+Description: its rich, deep beef flavor and succulent, gelatinous texture with Joseph's traditional spices
+SQL: UPDATE food_menu_manager SET 
+                name = ?, 
+                category = ?, 
+                price = ?, 
+                display_price = ?, 
+                description = ?, 
+                icon = ?, 
+                tags = ?, 
+                is_special = ?, 
+                is_available = ?,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+Params: Array
+(
+    [0] => Cowtail
+    [1] => proteins
+    [2] => 7000
+    [3] => ₦7,000
+    [4] => its rich, deep beef flavor and succulent, gelatinous texture with Joseph's traditional spices
+    [5] => fas fa-bone
+    [6] => 
+    [7] => 0
+    [8] => 1
+    [9] => 37
+)
+
+Raw input: {"name":"Beef","category":"proteins","price":5000,"displayPrice":"₦5,000","description":"Succulent pieces of beef, fried and then tossed in a fiery, flavorful sauce of blended peppers and onions.","icon":"fas fa-beef","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Beef
+    [category] => proteins
+    [price] => 5000
+    [displayPrice] => ₦5,000
+    [description] => Succulent pieces of beef, fried and then tossed in a fiery, flavorful sauce of blended peppers and onions.
+    [icon] => fas fa-beef
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Beef
+Category: proteins
+Price: 5000
+Description: Succulent pieces of beef, fried and then tossed in a fiery, flavorful sauce of blended peppers and onions.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Beef
+    [1] => proteins
+    [2] => 5000
+    [3] => ₦5,000
+    [4] => Succulent pieces of beef, fried and then tossed in a fiery, flavorful sauce of blended peppers and onions.
+    [5] => fas fa-beef
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Beef","category":"proteins","price":5000,"displayPrice":"₦5,000","description":"Succulent pieces of beef, fried and then tossed in a fiery, flavorful sauce of blended peppers and onions.","icon":"fas fa-cow","tags":[],"isSpecial":false,"isAvailable":true,"id":38}
+Processed data: Array
+(
+    [name] => Beef
+    [category] => proteins
+    [price] => 5000
+    [displayPrice] => ₦5,000
+    [description] => Succulent pieces of beef, fried and then tossed in a fiery, flavorful sauce of blended peppers and onions.
+    [icon] => fas fa-cow
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+    [id] => 38
+)
+
+Data to save:
+ID: 38
+Name: Beef
+Category: proteins
+Price: 5000
+Description: Succulent pieces of beef, fried and then tossed in a fiery, flavorful sauce of blended peppers and onions.
+SQL: UPDATE food_menu_manager SET 
+                name = ?, 
+                category = ?, 
+                price = ?, 
+                display_price = ?, 
+                description = ?, 
+                icon = ?, 
+                tags = ?, 
+                is_special = ?, 
+                is_available = ?,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+Params: Array
+(
+    [0] => Beef
+    [1] => proteins
+    [2] => 5000
+    [3] => ₦5,000
+    [4] => Succulent pieces of beef, fried and then tossed in a fiery, flavorful sauce of blended peppers and onions.
+    [5] => fas fa-cow
+    [6] => 
+    [7] => 0
+    [8] => 1
+    [9] => 38
+)
+
+Raw input: {"name":"Dry Fish","category":"proteins","price":8000,"displayPrice":"₦8,000","description":"Smoked and cured fish, rehydrated to tender perfection, offering a rich, savory, and smoky flavor burst.","icon":"fas fa-fish","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Dry Fish
+    [category] => proteins
+    [price] => 8000
+    [displayPrice] => ₦8,000
+    [description] => Smoked and cured fish, rehydrated to tender perfection, offering a rich, savory, and smoky flavor burst.
+    [icon] => fas fa-fish
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Dry Fish
+Category: proteins
+Price: 8000
+Description: Smoked and cured fish, rehydrated to tender perfection, offering a rich, savory, and smoky flavor burst.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Dry Fish
+    [1] => proteins
+    [2] => 8000
+    [3] => ₦8,000
+    [4] => Smoked and cured fish, rehydrated to tender perfection, offering a rich, savory, and smoky flavor burst.
+    [5] => fas fa-fish
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Assorted","category":"proteins","price":5000,"displayPrice":"₦5,000","description":"Tender goat meat and viscera with traditional spices","icon":"fas fa-paw","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Assorted
+    [category] => proteins
+    [price] => 5000
+    [displayPrice] => ₦5,000
+    [description] => Tender goat meat and viscera with traditional spices
+    [icon] => fas fa-paw
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Assorted
+Category: proteins
+Price: 5000
+Description: Tender goat meat and viscera with traditional spices
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Assorted
+    [1] => proteins
+    [2] => 5000
+    [3] => ₦5,000
+    [4] => Tender goat meat and viscera with traditional spices
+    [5] => fas fa-paw
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Snail","category":"proteins","price":8000,"displayPrice":"₦8,000","description":"succulent African land snails sautéed in a fiery blend of scotch bonnet and bell peppers, onions, and signature spices for that perfect \"crunch\".","icon":"fas fa-cow","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Snail
+    [category] => proteins
+    [price] => 8000
+    [displayPrice] => ₦8,000
+    [description] => succulent African land snails sautéed in a fiery blend of scotch bonnet and bell peppers, onions, and signature spices for that perfect "crunch".
+    [icon] => fas fa-cow
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Snail
+Category: proteins
+Price: 8000
+Description: succulent African land snails sautéed in a fiery blend of scotch bonnet and bell peppers, onions, and signature spices for that perfect "crunch".
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Snail
+    [1] => proteins
+    [2] => 8000
+    [3] => ₦8,000
+    [4] => succulent African land snails sautéed in a fiery blend of scotch bonnet and bell peppers, onions, and signature spices for that perfect "crunch".
+    [5] => fas fa-cow
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Snail","category":"proteins","price":8000,"displayPrice":"₦8,000","description":"succulent African land snails sautéed in a fiery blend of scotch bonnet and bell peppers, onions, and signature spices for that perfect \"crunch\".","icon":"fas fa-paw","tags":[],"isSpecial":false,"isAvailable":true,"id":41}
+Processed data: Array
+(
+    [name] => Snail
+    [category] => proteins
+    [price] => 8000
+    [displayPrice] => ₦8,000
+    [description] => succulent African land snails sautéed in a fiery blend of scotch bonnet and bell peppers, onions, and signature spices for that perfect "crunch".
+    [icon] => fas fa-paw
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+    [id] => 41
+)
+
+Data to save:
+ID: 41
+Name: Snail
+Category: proteins
+Price: 8000
+Description: succulent African land snails sautéed in a fiery blend of scotch bonnet and bell peppers, onions, and signature spices for that perfect "crunch".
+SQL: UPDATE food_menu_manager SET 
+                name = ?, 
+                category = ?, 
+                price = ?, 
+                display_price = ?, 
+                description = ?, 
+                icon = ?, 
+                tags = ?, 
+                is_special = ?, 
+                is_available = ?,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+Params: Array
+(
+    [0] => Snail
+    [1] => proteins
+    [2] => 8000
+    [3] => ₦8,000
+    [4] => succulent African land snails sautéed in a fiery blend of scotch bonnet and bell peppers, onions, and signature spices for that perfect "crunch".
+    [5] => fas fa-paw
+    [6] => 
+    [7] => 0
+    [8] => 1
+    [9] => 41
+)
+
+Raw input: {"name":"Goat Meat","category":"proteins","price":8000,"displayPrice":"₦8,000","description":"Succulent pieces of seasoned goat meat, fried or grilled to perfection, then coated in a rich, flavourful, and spicy sauce made from a blend of fresh peppers and onions.","icon":"fas fa-cow","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Goat Meat
+    [category] => proteins
+    [price] => 8000
+    [displayPrice] => ₦8,000
+    [description] => Succulent pieces of seasoned goat meat, fried or grilled to perfection, then coated in a rich, flavourful, and spicy sauce made from a blend of fresh peppers and onions.
+    [icon] => fas fa-cow
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Goat Meat
+Category: proteins
+Price: 8000
+Description: Succulent pieces of seasoned goat meat, fried or grilled to perfection, then coated in a rich, flavourful, and spicy sauce made from a blend of fresh peppers and onions.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Goat Meat
+    [1] => proteins
+    [2] => 8000
+    [3] => ₦8,000
+    [4] => Succulent pieces of seasoned goat meat, fried or grilled to perfection, then coated in a rich, flavourful, and spicy sauce made from a blend of fresh peppers and onions.
+    [5] => fas fa-cow
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Fish Big-sized","category":"proteins","price":5000,"displayPrice":"₦5,000","description":"Soft, white, and flaky Hake fish cooked in a vibrant and spicy pepper sauce. The fish absorbs the rich flavors of the sauce, offering a delightful texture","icon":"fas fa-fish","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Fish Big-sized
+    [category] => proteins
+    [price] => 5000
+    [displayPrice] => ₦5,000
+    [description] => Soft, white, and flaky Hake fish cooked in a vibrant and spicy pepper sauce. The fish absorbs the rich flavors of the sauce, offering a delightful texture
+    [icon] => fas fa-fish
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Fish Big-sized
+Category: proteins
+Price: 5000
+Description: Soft, white, and flaky Hake fish cooked in a vibrant and spicy pepper sauce. The fish absorbs the rich flavors of the sauce, offering a delightful texture
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Fish Big-sized
+    [1] => proteins
+    [2] => 5000
+    [3] => ₦5,000
+    [4] => Soft, white, and flaky Hake fish cooked in a vibrant and spicy pepper sauce. The fish absorbs the rich flavors of the sauce, offering a delightful texture
+    [5] => fas fa-fish
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Fish Small-sized","category":"proteins","price":3000,"displayPrice":"₦3,000","description":"Soft, white, and flaky Hake fish cooked in a vibrant and spicy pepper sauce. The fish absorbs the rich flavors of the sauce, offering a delightful texture","icon":"fas fa-fish","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Fish Small-sized
+    [category] => proteins
+    [price] => 3000
+    [displayPrice] => ₦3,000
+    [description] => Soft, white, and flaky Hake fish cooked in a vibrant and spicy pepper sauce. The fish absorbs the rich flavors of the sauce, offering a delightful texture
+    [icon] => fas fa-fish
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Fish Small-sized
+Category: proteins
+Price: 3000
+Description: Soft, white, and flaky Hake fish cooked in a vibrant and spicy pepper sauce. The fish absorbs the rich flavors of the sauce, offering a delightful texture
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Fish Small-sized
+    [1] => proteins
+    [2] => 3000
+    [3] => ₦3,000
+    [4] => Soft, white, and flaky Hake fish cooked in a vibrant and spicy pepper sauce. The fish absorbs the rich flavors of the sauce, offering a delightful texture
+    [5] => fas fa-fish
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Semolina","category":"swallow","price":1500,"displayPrice":"₦1,500","description":"(dough-like staple) made from coarsely ground durum wheat semolina. It has a smooth, moldable texture and a mild flavor","icon":"fas fa-seedling","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Semolina
+    [category] => swallow
+    [price] => 1500
+    [displayPrice] => ₦1,500
+    [description] => (dough-like staple) made from coarsely ground durum wheat semolina. It has a smooth, moldable texture and a mild flavor
+    [icon] => fas fa-seedling
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Semolina
+Category: swallow
+Price: 1500
+Description: (dough-like staple) made from coarsely ground durum wheat semolina. It has a smooth, moldable texture and a mild flavor
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Semolina
+    [1] => swallow
+    [2] => 1500
+    [3] => ₦1,500
+    [4] => (dough-like staple) made from coarsely ground durum wheat semolina. It has a smooth, moldable texture and a mild flavor
+    [5] => fas fa-seedling
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Garri","category":"swallow","price":1500,"displayPrice":"₦1,500","description":"A traditional, smooth, and stretchy dough-like staple made from fermented cassava.","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Garri
+    [category] => swallow
+    [price] => 1500
+    [displayPrice] => ₦1,500
+    [description] => A traditional, smooth, and stretchy dough-like staple made from fermented cassava.
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Garri
+Category: swallow
+Price: 1500
+Description: A traditional, smooth, and stretchy dough-like staple made from fermented cassava.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Garri
+    [1] => swallow
+    [2] => 1500
+    [3] => ₦1,500
+    [4] => A traditional, smooth, and stretchy dough-like staple made from fermented cassava.
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Poundo","category":"swallow","price":3000,"displayPrice":"₦3,000","description":"A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Poundo
+    [category] => swallow
+    [price] => 3000
+    [displayPrice] => ₦3,000
+    [description] => A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Poundo
+Category: swallow
+Price: 3000
+Description: A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Poundo
+    [1] => swallow
+    [2] => 3000
+    [3] => ₦3,000
+    [4] => A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Oat-meal","category":"swallow","price":3000,"displayPrice":"₦3,000","description":"prepared from finely blended whole-grain oats.","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Oat-meal
+    [category] => swallow
+    [price] => 3000
+    [displayPrice] => ₦3,000
+    [description] => prepared from finely blended whole-grain oats.
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Oat-meal
+Category: swallow
+Price: 3000
+Description: prepared from finely blended whole-grain oats.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Oat-meal
+    [1] => swallow
+    [2] => 3000
+    [3] => ₦3,000
+    [4] => prepared from finely blended whole-grain oats.
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Poundo","category":"swallow","price":3000,"displayPrice":"₦3,000","description":"A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true,"id":47}
+Processed data: Array
+(
+    [name] => Poundo
+    [category] => swallow
+    [price] => 3000
+    [displayPrice] => ₦3,000
+    [description] => A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+    [id] => 47
+)
+
+Data to save:
+ID: 47
+Name: Poundo
+Category: swallow
+Price: 3000
+Description: A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.
+SQL: UPDATE food_menu_manager SET 
+                name = ?, 
+                category = ?, 
+                price = ?, 
+                display_price = ?, 
+                description = ?, 
+                icon = ?, 
+                tags = ?, 
+                is_special = ?, 
+                is_available = ?,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+Params: Array
+(
+    [0] => Poundo
+    [1] => swallow
+    [2] => 3000
+    [3] => ₦3,000
+    [4] => A traditional West African staple of boiled yams, hand-pounded to a soft, smooth, and elastic dough.
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+    [9] => 47
+)
+
+Raw input: {"name":"Plantain Flour","category":"swallow","price":3000,"displayPrice":"₦3,000","description":"A dense, smooth dough made from finely ground, unripe plantains","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Plantain Flour
+    [category] => swallow
+    [price] => 3000
+    [displayPrice] => ₦3,000
+    [description] => A dense, smooth dough made from finely ground, unripe plantains
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Plantain Flour
+Category: swallow
+Price: 3000
+Description: A dense, smooth dough made from finely ground, unripe plantains
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Plantain Flour
+    [1] => swallow
+    [2] => 3000
+    [3] => ₦3,000
+    [4] => A dense, smooth dough made from finely ground, unripe plantains
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+

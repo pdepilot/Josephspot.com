@@ -1362,6 +1362,7 @@ if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
         { id: 'lunch', name: 'Lunch', icon: 'fas fa-utensils' },
         { id: 'dinner', name: 'Dinner', icon: 'fas fa-moon' },
         { id: 'drinks', name: 'Drinks', icon: 'fas fa-trophy' }
+        
     ];
 
     // App state
