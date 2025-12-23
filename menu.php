@@ -3,6 +3,9 @@
 require_once 'db_connection.php';
 require_once __DIR__ . '/includes/appearance_settings.php';
 
+// Load restaurant information from database
+require_once __DIR__ . '/includes/restaurant_info.php';
+
 // Fetch menu items from database
 try {
     $sql = "SELECT * FROM food_menu_manager WHERE is_available = 1 ORDER BY 
@@ -45,7 +48,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joseph's Pot - Authentic Igbo Cuisine</title>
+    <title><?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?> - Authentic Igbo Cuisine</title>
     <link rel="icon" href="<?php echo $appearance['favicon_path']; ?>?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="./fontawesome-free-6.7.2-web/css/all.min.css">
     <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
@@ -105,8 +108,8 @@ try {
     <div class="menu-filter">
         <button class="filter-btn active" data-filter="all">All Items</button>
         <button class="filter-btn" data-filter="breakfast">Breakfast</button>
-        <button class="filter-btn" data-filter="lunch">Lunch</button>
-        <button class="filter-btn" data-filter="dinner">Dinner</button>
+        <!-- <button class="filter-btn" data-filter="lunch">Lunch</button> -->
+        <!-- <button class="filter-btn" data-filter="dinner">Dinner</button> -->
         <button class="filter-btn" data-filter="main-course">Main Course</button>
         <button class="filter-btn" data-filter="proteins">Proteins</button>
         <button class="filter-btn" data-filter="swallow">Swallow</button>
@@ -416,7 +419,7 @@ try {
     <footer class="menu-footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h3><i class="fas fa-utensils"></i> Joseph's Pot</h3>
+                <h3><i class="fas fa-utensils"></i> <?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?></h3>
                 <p>Authentic Igbo cuisine served with love and tradition. Experience the true taste of Eastern Nigeria.</p>
                 <div class="qr-container">
                     <div class="qr-code">
@@ -428,17 +431,29 @@ try {
             
             <div class="footer-section">
                 <h3><i class="fas fa-clock"></i> Opening Hours</h3>
-                <p>Monday - Friday: 8:30 AM - 9:00 PM</p>
-                <p>Saturday: 8:00 AM - 9:00 PM</p>
-                <p>Sunday: 12:00 PM - 9:00 PM</p>
+                <?php if (!empty($restaurant_info['opening_hours'])): ?>
+                    <p><?php echo nl2br(htmlspecialchars($restaurant_info['opening_hours'])); ?></p>
+                <?php else: ?>
+                    <p>Monday - Friday: 8:30 AM - 9:00 PM</p>
+                    <p>Saturday: 8:00 AM - 9:00 PM</p>
+                    <p>Sunday: 12:00 PM - 9:00 PM</p>
+                <?php endif; ?>
             </div>
             
             <div class="footer-section">
                 <h3><i class="fas fa-map-marker-alt"></i> Visit Us</h3>
-                <p>Plot 120, Ikenegbu Layout</p>
-                <p>Maris Junction, Owerri</p>
-                <p>Imo State, Nigeria</p>
-                <p><i class="fas fa-phone"></i> 08104344994</p>
+                <?php if (!empty($restaurant_info['restaurant_address'])): ?>
+                    <p><?php echo nl2br(htmlspecialchars($restaurant_info['restaurant_address'])); ?></p>
+                <?php else: ?>
+                    <p>Plot 120, Ikenegbu Layout</p>
+                    <p>Maris Junction, Owerri</p>
+                    <p>Imo State, Nigeria</p>
+                <?php endif; ?>
+                <?php if (!empty($restaurant_info['restaurant_phone'])): ?>
+                    <p><i class="fas fa-phone"></i> <?php echo htmlspecialchars($restaurant_info['restaurant_phone']); ?></p>
+                <?php else: ?>
+                    <p><i class="fas fa-phone"></i> 08104344994</p>
+                <?php endif; ?>
                 <div class="social-icons">
                     <a href="https://facebook.com/@cruisewithjoe"><i class="fab fa-facebook-f"></i></a>
                     <a href="https://instagram.com/@cruisewithjoe"><i class="fab fa-instagram"></i></a>
@@ -449,7 +464,7 @@ try {
         </div>
         
         <div class="footer-bottom">
-            <p>&copy; 2025 Joseph's Pot. All Rights Reserved | Developed by ERIBS Tech</p>
+            <p>&copy; 2025 <?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?>. All Rights Reserved | Developed by ERIBS Tech</p>
         </div>
     </footer>
 

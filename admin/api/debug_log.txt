@@ -1997,3 +1997,2640 @@ Params: Array
     [8] => 1
 )
 
+Raw input: {"name":"1.5 liter of Ofe-Anara","category":"bulk-orders","price":20000,"displayPrice":"20000","description":"Traditional Anara soup with assorted proteins","icon":"fas fa-soup","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1.5 liter of Ofe-Anara
+    [category] => bulk-orders
+    [price] => 20000
+    [displayPrice] => 20000
+    [description] => Traditional Anara soup with assorted proteins
+    [icon] => fas fa-soup
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1.5 liter of Ofe-Anara
+Category: bulk-orders
+Price: 20000
+Description: Traditional Anara soup with assorted proteins
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1.5 liter of Ofe-Anara
+    [1] => bulk-orders
+    [2] => 20000
+    [3] => 20000
+    [4] => Traditional Anara soup with assorted proteins
+    [5] => fas fa-soup
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1.5 liter of Ofe-Anara","category":"bulk-orders","price":20000,"displayPrice":"20000","description":"Traditional Anara soup with assorted proteins","icon":"fas fa-soup","tags":[],"isSpecial":false,"isAvailable":true,"id":50}
+Processed data: Array
+(
+    [name] => 1.5 liter of Ofe-Anara
+    [category] => bulk-orders
+    [price] => 20000
+    [displayPrice] => 20000
+    [description] => Traditional Anara soup with assorted proteins
+    [icon] => fas fa-soup
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+    [id] => 50
+)
+
+Data to save:
+ID: 50
+Name: 1.5 liter of Ofe-Anara
+Category: bulk-orders
+Price: 20000
+Description: Traditional Anara soup with assorted proteins
+SQL: UPDATE food_menu_manager SET 
+                name = ?, 
+                category = ?, 
+                price = ?, 
+                display_price = ?, 
+                description = ?, 
+                icon = ?, 
+                tags = ?, 
+                is_special = ?, 
+                is_available = ?,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+Params: Array
+(
+    [0] => 1.5 liter of Ofe-Anara
+    [1] => bulk-orders
+    [2] => 20000
+    [3] => 20000
+    [4] => Traditional Anara soup with assorted proteins
+    [5] => fas fa-soup
+    [6] => 
+    [7] => 0
+    [8] => 1
+    [9] => 50
+)
+
+Raw input: {"name":"1.5 liter of Snail-Soup","category":"bulk-orders","price":25000,"displayPrice":"25000","description":"Rich soup with fresh snails and traditional spices","icon":"fas fa-cow","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1.5 liter of Snail-Soup
+    [category] => bulk-orders
+    [price] => 25000
+    [displayPrice] => 25000
+    [description] => Rich soup with fresh snails and traditional spices
+    [icon] => fas fa-cow
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1.5 liter of Snail-Soup
+Category: bulk-orders
+Price: 25000
+Description: Rich soup with fresh snails and traditional spices
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1.5 liter of Snail-Soup
+    [1] => bulk-orders
+    [2] => 25000
+    [3] => 25000
+    [4] => Rich soup with fresh snails and traditional spices
+    [5] => fas fa-cow
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1.5 liter of Snail-Soup","category":"bulk-orders","price":25000,"displayPrice":"25000","description":"Rich soup with fresh snails and traditional spices","icon":"fas fa-soup","tags":[],"isSpecial":false,"isAvailable":true,"id":51}
+Processed data: Array
+(
+    [name] => 1.5 liter of Snail-Soup
+    [category] => bulk-orders
+    [price] => 25000
+    [displayPrice] => 25000
+    [description] => Rich soup with fresh snails and traditional spices
+    [icon] => fas fa-soup
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+    [id] => 51
+)
+
+Data to save:
+ID: 51
+Name: 1.5 liter of Snail-Soup
+Category: bulk-orders
+Price: 25000
+Description: Rich soup with fresh snails and traditional spices
+SQL: UPDATE food_menu_manager SET 
+                name = ?, 
+                category = ?, 
+                price = ?, 
+                display_price = ?, 
+                description = ?, 
+                icon = ?, 
+                tags = ?, 
+                is_special = ?, 
+                is_available = ?,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+Params: Array
+(
+    [0] => 1.5 liter of Snail-Soup
+    [1] => bulk-orders
+    [2] => 25000
+    [3] => 25000
+    [4] => Rich soup with fresh snails and traditional spices
+    [5] => fas fa-soup
+    [6] => 
+    [7] => 0
+    [8] => 1
+    [9] => 51
+)
+
+Raw input: {"name":"1.5 liter of White-Soup","category":"bulk-orders","price":23000,"displayPrice":"23000","description":"Traditional white soup with utazi leaves","icon":"fas fa-cow","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1.5 liter of White-Soup
+    [category] => bulk-orders
+    [price] => 23000
+    [displayPrice] => 23000
+    [description] => Traditional white soup with utazi leaves
+    [icon] => fas fa-cow
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1.5 liter of White-Soup
+Category: bulk-orders
+Price: 23000
+Description: Traditional white soup with utazi leaves
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1.5 liter of White-Soup
+    [1] => bulk-orders
+    [2] => 23000
+    [3] => 23000
+    [4] => Traditional white soup with utazi leaves
+    [5] => fas fa-cow
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1.5 liter of White-Soup","category":"bulk-orders","price":23000,"displayPrice":"23000","description":"Traditional white soup with utazi leaves","icon":"fas fa-cow","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1.5 liter of White-Soup
+    [category] => bulk-orders
+    [price] => 23000
+    [displayPrice] => 23000
+    [description] => Traditional white soup with utazi leaves
+    [icon] => fas fa-cow
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1.5 liter of White-Soup
+Category: bulk-orders
+Price: 23000
+Description: Traditional white soup with utazi leaves
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1.5 liter of White-Soup
+    [1] => bulk-orders
+    [2] => 23000
+    [3] => 23000
+    [4] => Traditional white soup with utazi leaves
+    [5] => fas fa-cow
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1.5 liter of White-Soup","category":"bulk-orders","price":23000,"displayPrice":"23000","description":"Traditional white soup with utazi leaves","icon":"fas fa-cow","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1.5 liter of White-Soup
+    [category] => bulk-orders
+    [price] => 23000
+    [displayPrice] => 23000
+    [description] => Traditional white soup with utazi leaves
+    [icon] => fas fa-cow
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1.5 liter of White-Soup
+Category: bulk-orders
+Price: 23000
+Description: Traditional white soup with utazi leaves
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1.5 liter of White-Soup
+    [1] => bulk-orders
+    [2] => 23000
+    [3] => 23000
+    [4] => Traditional white soup with utazi leaves
+    [5] => fas fa-cow
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Banga-Stew","category":"bulk-orders","price":7000,"displayPrice":"₦7,000","description":"Palm fruit stew with traditional seasonings","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Banga-Stew
+    [category] => bulk-orders
+    [price] => 7000
+    [displayPrice] => ₦7,000
+    [description] => Palm fruit stew with traditional seasonings
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Banga-Stew
+Category: bulk-orders
+Price: 7000
+Description: Palm fruit stew with traditional seasonings
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Banga-Stew
+    [1] => bulk-orders
+    [2] => 7000
+    [3] => ₦7,000
+    [4] => Palm fruit stew with traditional seasonings
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Oha-Soup with Beef/Fish","category":"bulk-orders","price":8500,"displayPrice":"₦8,500","description":"Traditional Oha soup with beef or fish","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Oha-Soup with Beef/Fish
+    [category] => bulk-orders
+    [price] => 8500
+    [displayPrice] => ₦8,500
+    [description] => Traditional Oha soup with beef or fish
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Oha-Soup with Beef/Fish
+Category: bulk-orders
+Price: 8500
+Description: Traditional Oha soup with beef or fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Oha-Soup with Beef/Fish
+    [1] => bulk-orders
+    [2] => 8500
+    [3] => ₦8,500
+    [4] => Traditional Oha soup with beef or fish
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Oha-Soup with Goat","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Traditional Oha soup with goat meat","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Oha-Soup with Goat
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Traditional Oha soup with goat meat
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Oha-Soup with Goat
+Category: bulk-orders
+Price: 11000
+Description: Traditional Oha soup with goat meat
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Oha-Soup with Goat
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Traditional Oha soup with goat meat
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Oha-Soup with Snail","category":"bulk-orders","price":12000,"displayPrice":"₦12,000","description":"Traditional Oha soup with snails","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Oha-Soup with Snail
+    [category] => bulk-orders
+    [price] => 12000
+    [displayPrice] => ₦12,000
+    [description] => Traditional Oha soup with snails
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Oha-Soup with Snail
+Category: bulk-orders
+Price: 12000
+Description: Traditional Oha soup with snails
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Oha-Soup with Snail
+    [1] => bulk-orders
+    [2] => 12000
+    [3] => ₦12,000
+    [4] => Traditional Oha soup with snails
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Oha-Soup with Cowtail","category":"bulk-orders","price":10000,"displayPrice":"₦10,000","description":"Traditional Oha soup with cowtail","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Oha-Soup with Cowtail
+    [category] => bulk-orders
+    [price] => 10000
+    [displayPrice] => ₦10,000
+    [description] => Traditional Oha soup with cowtail
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Oha-Soup with Cowtail
+Category: bulk-orders
+Price: 10000
+Description: Traditional Oha soup with cowtail
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Oha-Soup with Cowtail
+    [1] => bulk-orders
+    [2] => 10000
+    [3] => ₦10,000
+    [4] => Traditional Oha soup with cowtail
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Oha-Soup with Assorted","category":"bulk-orders","price":8500,"displayPrice":"₦8,500","description":"Traditional Oha soup with assorted meats","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Oha-Soup with Assorted
+    [category] => bulk-orders
+    [price] => 8500
+    [displayPrice] => ₦8,500
+    [description] => Traditional Oha soup with assorted meats
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Oha-Soup with Assorted
+Category: bulk-orders
+Price: 8500
+Description: Traditional Oha soup with assorted meats
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Oha-Soup with Assorted
+    [1] => bulk-orders
+    [2] => 8500
+    [3] => ₦8,500
+    [4] => Traditional Oha soup with assorted meats
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Oha-Soup with Chicken","category":"bulk-orders","price":10000,"displayPrice":"₦10,000","description":"Traditional Oha soup with chicken","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Oha-Soup with Chicken
+    [category] => bulk-orders
+    [price] => 10000
+    [displayPrice] => ₦10,000
+    [description] => Traditional Oha soup with chicken
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Oha-Soup with Chicken
+Category: bulk-orders
+Price: 10000
+Description: Traditional Oha soup with chicken
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Oha-Soup with Chicken
+    [1] => bulk-orders
+    [2] => 10000
+    [3] => ₦10,000
+    [4] => Traditional Oha soup with chicken
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Oha-Soup with Dry Fish","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Traditional Oha soup with dry fish","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Oha-Soup with Dry Fish
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Traditional Oha soup with dry fish
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Oha-Soup with Dry Fish
+Category: bulk-orders
+Price: 11000
+Description: Traditional Oha soup with dry fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Oha-Soup with Dry Fish
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Traditional Oha soup with dry fish
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1.5 liter of Oha-Soup","category":"bulk-orders","price":27000,"displayPrice":"₦27,000","description":"Traditional Oha soup in larger quantity","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1.5 liter of Oha-Soup
+    [category] => bulk-orders
+    [price] => 27000
+    [displayPrice] => ₦27,000
+    [description] => Traditional Oha soup in larger quantity
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1.5 liter of Oha-Soup
+Category: bulk-orders
+Price: 27000
+Description: Traditional Oha soup in larger quantity
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1.5 liter of Oha-Soup
+    [1] => bulk-orders
+    [2] => 27000
+    [3] => ₦27,000
+    [4] => Traditional Oha soup in larger quantity
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Veg-Soup with Beef/Fish","category":"bulk-orders","price":8500,"displayPrice":"₦8,500","description":"Vegetable soup with beef or fish","icon":"fas fa-carrot","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Veg-Soup with Beef/Fish
+    [category] => bulk-orders
+    [price] => 8500
+    [displayPrice] => ₦8,500
+    [description] => Vegetable soup with beef or fish
+    [icon] => fas fa-carrot
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Veg-Soup with Beef/Fish
+Category: bulk-orders
+Price: 8500
+Description: Vegetable soup with beef or fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Veg-Soup with Beef/Fish
+    [1] => bulk-orders
+    [2] => 8500
+    [3] => ₦8,500
+    [4] => Vegetable soup with beef or fish
+    [5] => fas fa-carrot
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Veg-Soup with Goat","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Vegetable soup with goat meat","icon":"fas fa-carrot","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Veg-Soup with Goat
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Vegetable soup with goat meat
+    [icon] => fas fa-carrot
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Veg-Soup with Goat
+Category: bulk-orders
+Price: 11000
+Description: Vegetable soup with goat meat
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Veg-Soup with Goat
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Vegetable soup with goat meat
+    [5] => fas fa-carrot
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Veg-Soup with Snail","category":"bulk-orders","price":12000,"displayPrice":"₦12,000","description":"Vegetable soup with snails","icon":"fas fa-carrot","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Veg-Soup with Snail
+    [category] => bulk-orders
+    [price] => 12000
+    [displayPrice] => ₦12,000
+    [description] => Vegetable soup with snails
+    [icon] => fas fa-carrot
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Veg-Soup with Snail
+Category: bulk-orders
+Price: 12000
+Description: Vegetable soup with snails
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Veg-Soup with Snail
+    [1] => bulk-orders
+    [2] => 12000
+    [3] => ₦12,000
+    [4] => Vegetable soup with snails
+    [5] => fas fa-carrot
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Veg-Soup with Chicken","category":"bulk-orders","price":9000,"displayPrice":"₦9,000","description":"Vegetable soup with chicken","icon":"fas fa-carrot","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Veg-Soup with Chicken
+    [category] => bulk-orders
+    [price] => 9000
+    [displayPrice] => ₦9,000
+    [description] => Vegetable soup with chicken
+    [icon] => fas fa-carrot
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Veg-Soup with Chicken
+Category: bulk-orders
+Price: 9000
+Description: Vegetable soup with chicken
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Veg-Soup with Chicken
+    [1] => bulk-orders
+    [2] => 9000
+    [3] => ₦9,000
+    [4] => Vegetable soup with chicken
+    [5] => fas fa-carrot
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Veg-Soup with Dry Fish","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Vegetable soup with dry fish","icon":"fas fa-carrot","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Veg-Soup with Dry Fish
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Vegetable soup with dry fish
+    [icon] => fas fa-carrot
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Veg-Soup with Dry Fish
+Category: bulk-orders
+Price: 11000
+Description: Vegetable soup with dry fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Veg-Soup with Dry Fish
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Vegetable soup with dry fish
+    [5] => fas fa-carrot
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1.5 liters of Veg-Soup","category":"bulk-orders","price":29000,"displayPrice":"₦29,000","description":"Vegetable soup in larger quantity","icon":"fas fa-carrot","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1.5 liters of Veg-Soup
+    [category] => bulk-orders
+    [price] => 29000
+    [displayPrice] => ₦29,000
+    [description] => Vegetable soup in larger quantity
+    [icon] => fas fa-carrot
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1.5 liters of Veg-Soup
+Category: bulk-orders
+Price: 29000
+Description: Vegetable soup in larger quantity
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1.5 liters of Veg-Soup
+    [1] => bulk-orders
+    [2] => 29000
+    [3] => ₦29,000
+    [4] => Vegetable soup in larger quantity
+    [5] => fas fa-carrot
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Okra-Soup with Beef/Fish","category":"bulk-orders","price":8500,"displayPrice":"₦8,500","description":"Okra soup with beef or fish","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Okra-Soup with Beef/Fish
+    [category] => bulk-orders
+    [price] => 8500
+    [displayPrice] => ₦8,500
+    [description] => Okra soup with beef or fish
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Okra-Soup with Beef/Fish
+Category: bulk-orders
+Price: 8500
+Description: Okra soup with beef or fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Okra-Soup with Beef/Fish
+    [1] => bulk-orders
+    [2] => 8500
+    [3] => ₦8,500
+    [4] => Okra soup with beef or fish
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Okra-Soup with Goat","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Okra soup with goat meat","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Okra-Soup with Goat
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Okra soup with goat meat
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Okra-Soup with Goat
+Category: bulk-orders
+Price: 11000
+Description: Okra soup with goat meat
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Okra-Soup with Goat
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Okra soup with goat meat
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Okra-Soup with Snail","category":"bulk-orders","price":12000,"displayPrice":"₦12,000","description":"Okra soup with snails","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Okra-Soup with Snail
+    [category] => bulk-orders
+    [price] => 12000
+    [displayPrice] => ₦12,000
+    [description] => Okra soup with snails
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Okra-Soup with Snail
+Category: bulk-orders
+Price: 12000
+Description: Okra soup with snails
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Okra-Soup with Snail
+    [1] => bulk-orders
+    [2] => 12000
+    [3] => ₦12,000
+    [4] => Okra soup with snails
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Okra-Soup with Cowtail","category":"bulk-orders","price":10000,"displayPrice":"₦10,000","description":"Okra soup with cowtail","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Okra-Soup with Cowtail
+    [category] => bulk-orders
+    [price] => 10000
+    [displayPrice] => ₦10,000
+    [description] => Okra soup with cowtail
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Okra-Soup with Cowtail
+Category: bulk-orders
+Price: 10000
+Description: Okra soup with cowtail
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Okra-Soup with Cowtail
+    [1] => bulk-orders
+    [2] => 10000
+    [3] => ₦10,000
+    [4] => Okra soup with cowtail
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Okra-Soup with Assorted","category":"bulk-orders","price":8500,"displayPrice":"₦8,500","description":"Okra soup with assorted meats","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Okra-Soup with Assorted
+    [category] => bulk-orders
+    [price] => 8500
+    [displayPrice] => ₦8,500
+    [description] => Okra soup with assorted meats
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Okra-Soup with Assorted
+Category: bulk-orders
+Price: 8500
+Description: Okra soup with assorted meats
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Okra-Soup with Assorted
+    [1] => bulk-orders
+    [2] => 8500
+    [3] => ₦8,500
+    [4] => Okra soup with assorted meats
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Okra-Soup with Dry Fish","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Okra soup with dry fish","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Okra-Soup with Dry Fish
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Okra soup with dry fish
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Okra-Soup with Dry Fish
+Category: bulk-orders
+Price: 11000
+Description: Okra soup with dry fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Okra-Soup with Dry Fish
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Okra soup with dry fish
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1.5 liters of Okra-Soup","category":"bulk-orders","price":27000,"displayPrice":"₦27,000","description":"Okra soup in larger quantity","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1.5 liters of Okra-Soup
+    [category] => bulk-orders
+    [price] => 27000
+    [displayPrice] => ₦27,000
+    [description] => Okra soup in larger quantity
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1.5 liters of Okra-Soup
+Category: bulk-orders
+Price: 27000
+Description: Okra soup in larger quantity
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1.5 liters of Okra-Soup
+    [1] => bulk-orders
+    [2] => 27000
+    [3] => ₦27,000
+    [4] => Okra soup in larger quantity
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Bitterleaf/Okazi Soup with Beef/Fish","category":"bulk-orders","price":8500,"displayPrice":"₦8,500","description":"Bitterleaf or Okazi soup with beef or fish","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Bitterleaf/Okazi Soup with Beef/Fish
+    [category] => bulk-orders
+    [price] => 8500
+    [displayPrice] => ₦8,500
+    [description] => Bitterleaf or Okazi soup with beef or fish
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Bitterleaf/Okazi Soup with Beef/Fish
+Category: bulk-orders
+Price: 8500
+Description: Bitterleaf or Okazi soup with beef or fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Bitterleaf/Okazi Soup with Beef/Fish
+    [1] => bulk-orders
+    [2] => 8500
+    [3] => ₦8,500
+    [4] => Bitterleaf or Okazi soup with beef or fish
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Bitterleaf/Okazi Soup with Goat","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Bitterleaf or Okazi soup with goat meat","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Bitterleaf/Okazi Soup with Goat
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Bitterleaf or Okazi soup with goat meat
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Bitterleaf/Okazi Soup with Goat
+Category: bulk-orders
+Price: 11000
+Description: Bitterleaf or Okazi soup with goat meat
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Bitterleaf/Okazi Soup with Goat
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Bitterleaf or Okazi soup with goat meat
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Bitterleaf/Okazi Soup with Goat","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Bitterleaf or Okazi soup with goat meat","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Bitterleaf/Okazi Soup with Goat
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Bitterleaf or Okazi soup with goat meat
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Bitterleaf/Okazi Soup with Goat
+Category: bulk-orders
+Price: 11000
+Description: Bitterleaf or Okazi soup with goat meat
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Bitterleaf/Okazi Soup with Goat
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Bitterleaf or Okazi soup with goat meat
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Bitterleaf/Okazi Soup with Snail","category":"bulk-orders","price":12000,"displayPrice":"₦12,000","description":"Bitterleaf or Okazi soup with snails","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Bitterleaf/Okazi Soup with Snail
+    [category] => bulk-orders
+    [price] => 12000
+    [displayPrice] => ₦12,000
+    [description] => Bitterleaf or Okazi soup with snails
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Bitterleaf/Okazi Soup with Snail
+Category: bulk-orders
+Price: 12000
+Description: Bitterleaf or Okazi soup with snails
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Bitterleaf/Okazi Soup with Snail
+    [1] => bulk-orders
+    [2] => 12000
+    [3] => ₦12,000
+    [4] => Bitterleaf or Okazi soup with snails
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Bitterleaf/Okazi Soup with Cowtail","category":"bulk-orders","price":10000,"displayPrice":"₦10,000","description":"Bitterleaf or Okazi soup with cowtail","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Bitterleaf/Okazi Soup with Cowtail
+    [category] => bulk-orders
+    [price] => 10000
+    [displayPrice] => ₦10,000
+    [description] => Bitterleaf or Okazi soup with cowtail
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Bitterleaf/Okazi Soup with Cowtail
+Category: bulk-orders
+Price: 10000
+Description: Bitterleaf or Okazi soup with cowtail
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Bitterleaf/Okazi Soup with Cowtail
+    [1] => bulk-orders
+    [2] => 10000
+    [3] => ₦10,000
+    [4] => Bitterleaf or Okazi soup with cowtail
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Bitterleaf/Okazi Soup with Assorted","category":"bulk-orders","price":8500,"displayPrice":"₦8,500","description":"Bitterleaf or Okazi soup with assorted meats","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Bitterleaf/Okazi Soup with Assorted
+    [category] => bulk-orders
+    [price] => 8500
+    [displayPrice] => ₦8,500
+    [description] => Bitterleaf or Okazi soup with assorted meats
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Bitterleaf/Okazi Soup with Assorted
+Category: bulk-orders
+Price: 8500
+Description: Bitterleaf or Okazi soup with assorted meats
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Bitterleaf/Okazi Soup with Assorted
+    [1] => bulk-orders
+    [2] => 8500
+    [3] => ₦8,500
+    [4] => Bitterleaf or Okazi soup with assorted meats
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Bitterleaf/Okazi Soup with Chicken","category":"bulk-orders","price":9000,"displayPrice":"₦9,000","description":"Bitterleaf or Okazi soup with chicken","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Bitterleaf/Okazi Soup with Chicken
+    [category] => bulk-orders
+    [price] => 9000
+    [displayPrice] => ₦9,000
+    [description] => Bitterleaf or Okazi soup with chicken
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Bitterleaf/Okazi Soup with Chicken
+Category: bulk-orders
+Price: 9000
+Description: Bitterleaf or Okazi soup with chicken
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Bitterleaf/Okazi Soup with Chicken
+    [1] => bulk-orders
+    [2] => 9000
+    [3] => ₦9,000
+    [4] => Bitterleaf or Okazi soup with chicken
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Bitterleaf/Okazi Soup with Dry Fish","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Bitterleaf or Okazi soup with dry fish","icon":"fas fa-fish","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Bitterleaf/Okazi Soup with Dry Fish
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Bitterleaf or Okazi soup with dry fish
+    [icon] => fas fa-fish
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Bitterleaf/Okazi Soup with Dry Fish
+Category: bulk-orders
+Price: 11000
+Description: Bitterleaf or Okazi soup with dry fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Bitterleaf/Okazi Soup with Dry Fish
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Bitterleaf or Okazi soup with dry fish
+    [5] => fas fa-fish
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1.5 liters of Bitterleaf/Okazi Soup","category":"bulk-orders","price":27000,"displayPrice":"₦27,000","description":"Bitterleaf or Okazi soup in larger quantity","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1.5 liters of Bitterleaf/Okazi Soup
+    [category] => bulk-orders
+    [price] => 27000
+    [displayPrice] => ₦27,000
+    [description] => Bitterleaf or Okazi soup in larger quantity
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1.5 liters of Bitterleaf/Okazi Soup
+Category: bulk-orders
+Price: 27000
+Description: Bitterleaf or Okazi soup in larger quantity
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1.5 liters of Bitterleaf/Okazi Soup
+    [1] => bulk-orders
+    [2] => 27000
+    [3] => ₦27,000
+    [4] => Bitterleaf or Okazi soup in larger quantity
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Afang-Soup with Beef/Fish","category":"bulk-orders","price":8500,"displayPrice":"₦8,500","description":"Afang soup with beef or fish","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Afang-Soup with Beef/Fish
+    [category] => bulk-orders
+    [price] => 8500
+    [displayPrice] => ₦8,500
+    [description] => Afang soup with beef or fish
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Afang-Soup with Beef/Fish
+Category: bulk-orders
+Price: 8500
+Description: Afang soup with beef or fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Afang-Soup with Beef/Fish
+    [1] => bulk-orders
+    [2] => 8500
+    [3] => ₦8,500
+    [4] => Afang soup with beef or fish
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Afang-Soup with Goat","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Afang soup with goat meat","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Afang-Soup with Goat
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Afang soup with goat meat
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Afang-Soup with Goat
+Category: bulk-orders
+Price: 11000
+Description: Afang soup with goat meat
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Afang-Soup with Goat
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Afang soup with goat meat
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Afang-Soup with Snail","category":"bulk-orders","price":12000,"displayPrice":"₦12,000","description":"Afang soup with snails","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Afang-Soup with Snail
+    [category] => bulk-orders
+    [price] => 12000
+    [displayPrice] => ₦12,000
+    [description] => Afang soup with snails
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Afang-Soup with Snail
+Category: bulk-orders
+Price: 12000
+Description: Afang soup with snails
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Afang-Soup with Snail
+    [1] => bulk-orders
+    [2] => 12000
+    [3] => ₦12,000
+    [4] => Afang soup with snails
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Afang-Soup with Cowtail","category":"bulk-orders","price":10000,"displayPrice":"₦10,000","description":"Afang soup with cowtail","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Afang-Soup with Cowtail
+    [category] => bulk-orders
+    [price] => 10000
+    [displayPrice] => ₦10,000
+    [description] => Afang soup with cowtail
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Afang-Soup with Cowtail
+Category: bulk-orders
+Price: 10000
+Description: Afang soup with cowtail
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Afang-Soup with Cowtail
+    [1] => bulk-orders
+    [2] => 10000
+    [3] => ₦10,000
+    [4] => Afang soup with cowtail
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Afang-Soup with Assorted","category":"bulk-orders","price":8500,"displayPrice":"₦8,500","description":"Afang soup with assorted meats","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Afang-Soup with Assorted
+    [category] => bulk-orders
+    [price] => 8500
+    [displayPrice] => ₦8,500
+    [description] => Afang soup with assorted meats
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Afang-Soup with Assorted
+Category: bulk-orders
+Price: 8500
+Description: Afang soup with assorted meats
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Afang-Soup with Assorted
+    [1] => bulk-orders
+    [2] => 8500
+    [3] => ₦8,500
+    [4] => Afang soup with assorted meats
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Afang-Soup with Chicken","category":"bulk-orders","price":9000,"displayPrice":"₦9,000","description":"Afang soup with chicken","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Afang-Soup with Chicken
+    [category] => bulk-orders
+    [price] => 9000
+    [displayPrice] => ₦9,000
+    [description] => Afang soup with chicken
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Afang-Soup with Chicken
+Category: bulk-orders
+Price: 9000
+Description: Afang soup with chicken
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Afang-Soup with Chicken
+    [1] => bulk-orders
+    [2] => 9000
+    [3] => ₦9,000
+    [4] => Afang soup with chicken
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Afang-Soup with Dry Fish","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Afang soup with dry fish","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Afang-Soup with Dry Fish
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Afang soup with dry fish
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Afang-Soup with Dry Fish
+Category: bulk-orders
+Price: 11000
+Description: Afang soup with dry fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Afang-Soup with Dry Fish
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Afang soup with dry fish
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1.5 liters of Afang-Soup","category":"bulk-orders","price":29000,"displayPrice":"₦29,000","description":"Afang soup in larger quantity","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1.5 liters of Afang-Soup
+    [category] => bulk-orders
+    [price] => 29000
+    [displayPrice] => ₦29,000
+    [description] => Afang soup in larger quantity
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1.5 liters of Afang-Soup
+Category: bulk-orders
+Price: 29000
+Description: Afang soup in larger quantity
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1.5 liters of Afang-Soup
+    [1] => bulk-orders
+    [2] => 29000
+    [3] => ₦29,000
+    [4] => Afang soup in larger quantity
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Egusi-Soup with Beef/Fish","category":"bulk-orders","price":8500,"displayPrice":"₦8,500","description":"Egusi soup with beef or fish","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Egusi-Soup with Beef/Fish
+    [category] => bulk-orders
+    [price] => 8500
+    [displayPrice] => ₦8,500
+    [description] => Egusi soup with beef or fish
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Egusi-Soup with Beef/Fish
+Category: bulk-orders
+Price: 8500
+Description: Egusi soup with beef or fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Egusi-Soup with Beef/Fish
+    [1] => bulk-orders
+    [2] => 8500
+    [3] => ₦8,500
+    [4] => Egusi soup with beef or fish
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Egusi-Soup with Goat","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Egusi soup with goat meat","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Egusi-Soup with Goat
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Egusi soup with goat meat
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Egusi-Soup with Goat
+Category: bulk-orders
+Price: 11000
+Description: Egusi soup with goat meat
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Egusi-Soup with Goat
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Egusi soup with goat meat
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Egusi-Soup with Snail","category":"bulk-orders","price":12000,"displayPrice":"₦12,000","description":"Egusi soup with snails","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Egusi-Soup with Snail
+    [category] => bulk-orders
+    [price] => 12000
+    [displayPrice] => ₦12,000
+    [description] => Egusi soup with snails
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Egusi-Soup with Snail
+Category: bulk-orders
+Price: 12000
+Description: Egusi soup with snails
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Egusi-Soup with Snail
+    [1] => bulk-orders
+    [2] => 12000
+    [3] => ₦12,000
+    [4] => Egusi soup with snails
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Egusi-Soup with Cowtail","category":"bulk-orders","price":10000,"displayPrice":"₦10,000","description":"Egusi soup with cowtail","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Egusi-Soup with Cowtail
+    [category] => bulk-orders
+    [price] => 10000
+    [displayPrice] => ₦10,000
+    [description] => Egusi soup with cowtail
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Egusi-Soup with Cowtail
+Category: bulk-orders
+Price: 10000
+Description: Egusi soup with cowtail
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Egusi-Soup with Cowtail
+    [1] => bulk-orders
+    [2] => 10000
+    [3] => ₦10,000
+    [4] => Egusi soup with cowtail
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Egusi-Soup with Assorted","category":"bulk-orders","price":8500,"displayPrice":"₦8,500","description":"Egusi soup with assorted meats","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Egusi-Soup with Assorted
+    [category] => bulk-orders
+    [price] => 8500
+    [displayPrice] => ₦8,500
+    [description] => Egusi soup with assorted meats
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Egusi-Soup with Assorted
+Category: bulk-orders
+Price: 8500
+Description: Egusi soup with assorted meats
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Egusi-Soup with Assorted
+    [1] => bulk-orders
+    [2] => 8500
+    [3] => ₦8,500
+    [4] => Egusi soup with assorted meats
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Egusi-Soup with Chicken","category":"bulk-orders","price":9000,"displayPrice":"₦9,000","description":"Egusi soup with chicken","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Egusi-Soup with Chicken
+    [category] => bulk-orders
+    [price] => 9000
+    [displayPrice] => ₦9,000
+    [description] => Egusi soup with chicken
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Egusi-Soup with Chicken
+Category: bulk-orders
+Price: 9000
+Description: Egusi soup with chicken
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Egusi-Soup with Chicken
+    [1] => bulk-orders
+    [2] => 9000
+    [3] => ₦9,000
+    [4] => Egusi soup with chicken
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 liter of Egusi-Soup with Dry Fish","category":"bulk-orders","price":11000,"displayPrice":"₦11,000","description":"Egusi soup with dry fish","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 liter of Egusi-Soup with Dry Fish
+    [category] => bulk-orders
+    [price] => 11000
+    [displayPrice] => ₦11,000
+    [description] => Egusi soup with dry fish
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 liter of Egusi-Soup with Dry Fish
+Category: bulk-orders
+Price: 11000
+Description: Egusi soup with dry fish
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 liter of Egusi-Soup with Dry Fish
+    [1] => bulk-orders
+    [2] => 11000
+    [3] => ₦11,000
+    [4] => Egusi soup with dry fish
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1.5 liters of Egusi-Soup","category":"bulk-orders","price":27000,"displayPrice":"₦27,000","description":"Egusi soup in larger quantity","icon":"fas fa-leaf","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1.5 liters of Egusi-Soup
+    [category] => bulk-orders
+    [price] => 27000
+    [displayPrice] => ₦27,000
+    [description] => Egusi soup in larger quantity
+    [icon] => fas fa-leaf
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1.5 liters of Egusi-Soup
+Category: bulk-orders
+Price: 27000
+Description: Egusi soup in larger quantity
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1.5 liters of Egusi-Soup
+    [1] => bulk-orders
+    [2] => 27000
+    [3] => ₦27,000
+    [4] => Egusi soup in larger quantity
+    [5] => fas fa-leaf
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Coconut Rice","category":"bulk-orders","price":3900,"displayPrice":"₦3,900","description":"A rich and savory one-pot meal of rice cooked in fresh coconut milk and a flavorful broth, bursting with spices","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Coconut Rice
+    [category] => bulk-orders
+    [price] => 3900
+    [displayPrice] => ₦3,900
+    [description] => A rich and savory one-pot meal of rice cooked in fresh coconut milk and a flavorful broth, bursting with spices
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Coconut Rice
+Category: bulk-orders
+Price: 3900
+Description: A rich and savory one-pot meal of rice cooked in fresh coconut milk and a flavorful broth, bursting with spices
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Coconut Rice
+    [1] => bulk-orders
+    [2] => 3900
+    [3] => ₦3,900
+    [4] => A rich and savory one-pot meal of rice cooked in fresh coconut milk and a flavorful broth, bursting with spices
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Jollof Rice","category":"bulk-orders","price":3900,"displayPrice":"₦3,900","description":"flavorful, bold tomato and red pepper base, seasoned with our signature blend of spices","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Jollof Rice
+    [category] => bulk-orders
+    [price] => 3900
+    [displayPrice] => ₦3,900
+    [description] => flavorful, bold tomato and red pepper base, seasoned with our signature blend of spices
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Jollof Rice
+Category: bulk-orders
+Price: 3900
+Description: flavorful, bold tomato and red pepper base, seasoned with our signature blend of spices
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Jollof Rice
+    [1] => bulk-orders
+    [2] => 3900
+    [3] => ₦3,900
+    [4] => flavorful, bold tomato and red pepper base, seasoned with our signature blend of spices
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Ofe Akwu","category":"bulk-orders","price":3900,"displayPrice":"₦3,900","description":"A rich and aromatic Nigerian stew made from concentrated palm fruit extract, simmered with assorted meats, smoked fish, and traditional native Joesph's spices.","icon":"fas fa-tree","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Ofe Akwu
+    [category] => bulk-orders
+    [price] => 3900
+    [displayPrice] => ₦3,900
+    [description] => A rich and aromatic Nigerian stew made from concentrated palm fruit extract, simmered with assorted meats, smoked fish, and traditional native Joesph's spices.
+    [icon] => fas fa-tree
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Ofe Akwu
+Category: bulk-orders
+Price: 3900
+Description: A rich and aromatic Nigerian stew made from concentrated palm fruit extract, simmered with assorted meats, smoked fish, and traditional native Joesph's spices.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Ofe Akwu
+    [1] => bulk-orders
+    [2] => 3900
+    [3] => ₦3,900
+    [4] => A rich and aromatic Nigerian stew made from concentrated palm fruit extract, simmered with assorted meats, smoked fish, and traditional native Joesph's spices.
+    [5] => fas fa-tree
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Asun Rice","category":"bulk-orders","price":3900,"displayPrice":"₦3,900","description":"A fiery combination of stir-fried rice and peppered, smoky grilled goat meat, delivering an irresistible burst of flavor.","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Asun Rice
+    [category] => bulk-orders
+    [price] => 3900
+    [displayPrice] => ₦3,900
+    [description] => A fiery combination of stir-fried rice and peppered, smoky grilled goat meat, delivering an irresistible burst of flavor.
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Asun Rice
+Category: bulk-orders
+Price: 3900
+Description: A fiery combination of stir-fried rice and peppered, smoky grilled goat meat, delivering an irresistible burst of flavor.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Asun Rice
+    [1] => bulk-orders
+    [2] => 3900
+    [3] => ₦3,900
+    [4] => A fiery combination of stir-fried rice and peppered, smoky grilled goat meat, delivering an irresistible burst of flavor.
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Curry Sauce Rice","category":"bulk-orders","price":3900,"displayPrice":"₦3,900","description":"A comforting bowl of perfectly cooked rice paired with a savory, spiced curry sauce.","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Curry Sauce Rice
+    [category] => bulk-orders
+    [price] => 3900
+    [displayPrice] => ₦3,900
+    [description] => A comforting bowl of perfectly cooked rice paired with a savory, spiced curry sauce.
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Curry Sauce Rice
+Category: bulk-orders
+Price: 3900
+Description: A comforting bowl of perfectly cooked rice paired with a savory, spiced curry sauce.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Curry Sauce Rice
+    [1] => bulk-orders
+    [2] => 3900
+    [3] => ₦3,900
+    [4] => A comforting bowl of perfectly cooked rice paired with a savory, spiced curry sauce.
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Native Rice","category":"bulk-orders","price":3900,"displayPrice":"₦3,900","description":"A true taste of tradition. Our Joseph's pot Native Rice combines local unpolished grains with the bold flavors of palm oil, assorted smoked fish, and indigenous Joseph's spices","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Native Rice
+    [category] => bulk-orders
+    [price] => 3900
+    [displayPrice] => ₦3,900
+    [description] => A true taste of tradition. Our Joseph's pot Native Rice combines local unpolished grains with the bold flavors of palm oil, assorted smoked fish, and indigenous Joseph's spices
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Native Rice
+Category: bulk-orders
+Price: 3900
+Description: A true taste of tradition. Our Joseph's pot Native Rice combines local unpolished grains with the bold flavors of palm oil, assorted smoked fish, and indigenous Joseph's spices
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Native Rice
+    [1] => bulk-orders
+    [2] => 3900
+    [3] => ₦3,900
+    [4] => A true taste of tradition. Our Joseph's pot Native Rice combines local unpolished grains with the bold flavors of palm oil, assorted smoked fish, and indigenous Joseph's spices
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 litre of Jitazzi","category":"bulk-orders","price":8000,"displayPrice":"₦8,000","description":"A vibrant and savory Nigerian specialty featuring a delectable mix of tender, marinated chicken gizzards and sweet, perfectly fried plantains. Both are tossed in a rich, spicy sauce made with sautéed tomatoes, bell peppers, onions, garlic, and a hint of ginger.","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 litre of Jitazzi
+    [category] => bulk-orders
+    [price] => 8000
+    [displayPrice] => ₦8,000
+    [description] => A vibrant and savory Nigerian specialty featuring a delectable mix of tender, marinated chicken gizzards and sweet, perfectly fried plantains. Both are tossed in a rich, spicy sauce made with sautéed tomatoes, bell peppers, onions, garlic, and a hint of ginger.
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 litre of Jitazzi
+Category: bulk-orders
+Price: 8000
+Description: A vibrant and savory Nigerian specialty featuring a delectable mix of tender, marinated chicken gizzards and sweet, perfectly fried plantains. Both are tossed in a rich, spicy sauce made with sautéed tomatoes, bell peppers, onions, garlic, and a hint of ginger.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 litre of Jitazzi
+    [1] => bulk-orders
+    [2] => 8000
+    [3] => ₦8,000
+    [4] => A vibrant and savory Nigerian specialty featuring a delectable mix of tender, marinated chicken gizzards and sweet, perfectly fried plantains. Both are tossed in a rich, spicy sauce made with sautéed tomatoes, bell peppers, onions, garlic, and a hint of ginger.
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1 litre of plantaintazi","category":"bulk-orders","price":7000,"displayPrice":"₦7,000","description":"Boiled and mashed green plantains, offering a hearty, earthy base for vibrant toppings.","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1 litre of plantaintazi
+    [category] => bulk-orders
+    [price] => 7000
+    [displayPrice] => ₦7,000
+    [description] => Boiled and mashed green plantains, offering a hearty, earthy base for vibrant toppings.
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1 litre of plantaintazi
+Category: bulk-orders
+Price: 7000
+Description: Boiled and mashed green plantains, offering a hearty, earthy base for vibrant toppings.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1 litre of plantaintazi
+    [1] => bulk-orders
+    [2] => 7000
+    [3] => ₦7,000
+    [4] => Boiled and mashed green plantains, offering a hearty, earthy base for vibrant toppings.
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"1000 Menu","category":"main-course","price":500000,"displayPrice":"Price on Request","description":"Large catering orders for events and special occasions","icon":"fas fa-cow","tags":["Events","Catering"],"isSpecial":true,"isAvailable":true}
+Processed data: Array
+(
+    [name] => 1000 Menu
+    [category] => main-course
+    [price] => 500000
+    [displayPrice] => Price on Request
+    [description] => Large catering orders for events and special occasions
+    [icon] => fas fa-cow
+    [tags] => Array
+        (
+            [0] => Events
+            [1] => Catering
+        )
+
+    [isSpecial] => 1
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: 1000 Menu
+Category: main-course
+Price: 500000
+Description: Large catering orders for events and special occasions
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => 1000 Menu
+    [1] => main-course
+    [2] => 500000
+    [3] => Price on Request
+    [4] => Large catering orders for events and special occasions
+    [5] => fas fa-cow
+    [6] => Events,Catering
+    [7] => 1
+    [8] => 1
+)
+
+Raw input: {"name":"Nwa Eze","category":"breakfast","price":18000,"displayPrice":"₦18,000","description":"2 ABA, Otu Odu Azu, 4 Eggs Rolled up, One tin milk, A cup of honey, A rose of Plantain, Custard 50g, 1 water TomTom and a Prosperous day.","icon":"fas fa-utensils","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Nwa Eze
+    [category] => breakfast
+    [price] => 18000
+    [displayPrice] => ₦18,000
+    [description] => 2 ABA, Otu Odu Azu, 4 Eggs Rolled up, One tin milk, A cup of honey, A rose of Plantain, Custard 50g, 1 water TomTom and a Prosperous day.
+    [icon] => fas fa-utensils
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Nwa Eze
+Category: breakfast
+Price: 18000
+Description: 2 ABA, Otu Odu Azu, 4 Eggs Rolled up, One tin milk, A cup of honey, A rose of Plantain, Custard 50g, 1 water TomTom and a Prosperous day.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Nwa Eze
+    [1] => breakfast
+    [2] => 18000
+    [3] => ₦18,000
+    [4] => 2 ABA, Otu Odu Azu, 4 Eggs Rolled up, One tin milk, A cup of honey, A rose of Plantain, Custard 50g, 1 water TomTom and a Prosperous day.
+    [5] => fas fa-utensils
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Nwa Dinta","category":"breakfast","price":7000,"displayPrice":"₦7,000","description":"Two Big Special Akara, Custard Peppered Fish, Evap.Milk, Water, Sugar TomTom and a great day.","icon":"fas fa-utensils","tags":[],"isSpecial":false,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Nwa Dinta
+    [category] => breakfast
+    [price] => 7000
+    [displayPrice] => ₦7,000
+    [description] => Two Big Special Akara, Custard Peppered Fish, Evap.Milk, Water, Sugar TomTom and a great day.
+    [icon] => fas fa-utensils
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Nwa Dinta
+Category: breakfast
+Price: 7000
+Description: Two Big Special Akara, Custard Peppered Fish, Evap.Milk, Water, Sugar TomTom and a great day.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Nwa Dinta
+    [1] => breakfast
+    [2] => 7000
+    [3] => ₦7,000
+    [4] => Two Big Special Akara, Custard Peppered Fish, Evap.Milk, Water, Sugar TomTom and a great day.
+    [5] => fas fa-utensils
+    [6] => 
+    [7] => 0
+    [8] => 1
+)
+
+Raw input: {"name":"Umu Agu","category":"breakfast","price":34000,"displayPrice":"₦34,000","description":"3 Big Special Akara, 2 AB rectangle, 1 Akamu 50g, 1 Custard 50g, 1 Moi-Moi Nze Native Moi-Moi, 1 Rose of Plantain, 1 honey 50g, 2 tin milk, 2 Big Fish tail, 2 Bottle water, 1 dried peppered Fish, & egg rollups and Long life.","icon":"fas fa-mortar-pestle","tags":[],"isSpecial":true,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Umu Agu
+    [category] => breakfast
+    [price] => 34000
+    [displayPrice] => ₦34,000
+    [description] => 3 Big Special Akara, 2 AB rectangle, 1 Akamu 50g, 1 Custard 50g, 1 Moi-Moi Nze Native Moi-Moi, 1 Rose of Plantain, 1 honey 50g, 2 tin milk, 2 Big Fish tail, 2 Bottle water, 1 dried peppered Fish, & egg rollups and Long life.
+    [icon] => fas fa-mortar-pestle
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 1
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Umu Agu
+Category: breakfast
+Price: 34000
+Description: 3 Big Special Akara, 2 AB rectangle, 1 Akamu 50g, 1 Custard 50g, 1 Moi-Moi Nze Native Moi-Moi, 1 Rose of Plantain, 1 honey 50g, 2 tin milk, 2 Big Fish tail, 2 Bottle water, 1 dried peppered Fish, & egg rollups and Long life.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Umu Agu
+    [1] => breakfast
+    [2] => 34000
+    [3] => ₦34,000
+    [4] => 3 Big Special Akara, 2 AB rectangle, 1 Akamu 50g, 1 Custard 50g, 1 Moi-Moi Nze Native Moi-Moi, 1 Rose of Plantain, 1 honey 50g, 2 tin milk, 2 Big Fish tail, 2 Bottle water, 1 dried peppered Fish, & egg rollups and Long life.
+    [5] => fas fa-mortar-pestle
+    [6] => 
+    [7] => 1
+    [8] => 1
+)
+
+Raw input: {"name":"Special request","category":"breakfast","price":10000,"displayPrice":"special breakfast","description":"Served on handcrafted wooden platters with edible flower garnishes.","icon":"","tags":[],"isSpecial":true,"isAvailable":true}
+Processed data: Array
+(
+    [name] => Special request
+    [category] => breakfast
+    [price] => 10000
+    [displayPrice] => special breakfast
+    [description] => Served on handcrafted wooden platters with edible flower garnishes.
+    [icon] => 
+    [tags] => Array
+        (
+        )
+
+    [isSpecial] => 1
+    [isAvailable] => 1
+)
+
+Data to save:
+ID: 
+Name: Special request
+Category: breakfast
+Price: 10000
+Description: Served on handcrafted wooden platters with edible flower garnishes.
+SQL: INSERT INTO food_menu_manager 
+                (name, category, price, display_price, description, icon, tags, is_special, is_available) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Params: Array
+(
+    [0] => Special request
+    [1] => breakfast
+    [2] => 10000
+    [3] => special breakfast
+    [4] => Served on handcrafted wooden platters with edible flower garnishes.
+    [5] => 
+    [6] => 
+    [7] => 1
+    [8] => 1
+)
+

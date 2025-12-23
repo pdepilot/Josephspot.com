@@ -1,0 +1,140 @@
+{
+    "general_settings": [
+        {
+            "setting_key": "site_name",
+            "setting_value": "Joseph's Pot"
+        },
+        {
+            "setting_key": "site_description",
+            "setting_value": "Authentic Nigerian cuisine restaurant offering traditional dishes in a warm and welcoming atmosphere."
+        },
+        {
+            "setting_key": "currency",
+            "setting_value": "NGN"
+        },
+        {
+            "setting_key": "timezone",
+            "setting_value": "Africa\/Lagos"
+        },
+        {
+            "setting_key": "date_format",
+            "setting_value": "DD\/MM\/YYYY"
+        },
+        {
+            "setting_key": "maintenance_mode",
+            "setting_value": "0"
+        }
+    ],
+    "restaurant_settings": [
+        {
+            "setting_key": "restaurant_name",
+            "setting_value": "Joseph's Pot"
+        },
+        {
+            "setting_key": "restaurant_tagline",
+            "setting_value": "Authentic Nigerian Cuisine"
+        },
+        {
+            "setting_key": "restaurant_address",
+            "setting_value": "123 Food Street, Victoria Island, Lagos, Nigeria"
+        },
+        {
+            "setting_key": "restaurant_phone",
+            "setting_value": "+234 801 234 5678"
+        },
+        {
+            "setting_key": "restaurant_email",
+            "setting_value": "info@josephspot.com"
+        },
+        {
+            "setting_key": "opening_hours",
+            "setting_value": "Monday - Friday: 8:00 AM - 10:00 PM\nSaturday - Sunday: 9:00 AM - 11:00 PM"
+        }
+    ],
+    "notification_settings": [
+        {
+            "setting_key": "email_orders",
+            "setting_value": "1"
+        },
+        {
+            "setting_key": "email_reservations",
+            "setting_value": "1"
+        },
+        {
+            "setting_key": "email_reviews",
+            "setting_value": "0"
+        },
+        {
+            "setting_key": "email_promotions",
+            "setting_value": "1"
+        },
+        {
+            "setting_key": "push_orders",
+            "setting_value": "1"
+        },
+        {
+            "setting_key": "push_reservations",
+            "setting_value": "0"
+        },
+        {
+            "setting_key": "push_low_stock",
+            "setting_value": "1"
+        },
+        {
+            "setting_key": "notification_sound",
+            "setting_value": "default"
+        }
+    ],
+    "security_settings": [
+        {
+            "setting_key": "password_min_length",
+            "setting_value": "8"
+        },
+        {
+            "setting_key": "password_require_uppercase",
+            "setting_value": "1"
+        },
+        {
+            "setting_key": "password_require_lowercase",
+            "setting_value": "1"
+        },
+        {
+            "setting_key": "password_require_numbers",
+            "setting_value": "1"
+        },
+        {
+            "setting_key": "password_require_special",
+            "setting_value": "0"
+        },
+        {
+            "setting_key": "session_timeout",
+            "setting_value": "30"
+        },
+        {
+            "setting_key": "login_attempts",
+            "setting_value": "5"
+        },
+        {
+            "setting_key": "two_factor_auth",
+            "setting_value": "0"
+        }
+    ],
+    "appearance_settings": [
+        {
+            "setting_key": "theme",
+            "setting_value": "warm_brown"
+        },
+        {
+            "setting_key": "primary_color",
+            "setting_value": "#8b4513"
+        },
+        {
+            "setting_key": "logo_path",
+            "setting_value": "uploads\/settings\/logo_1766295426_69478782b4db3.png"
+        },
+        {
+            "setting_key": "favicon_path",
+            "setting_value": "uploads\/settings\/favicon_1766294267_694782fb46439.png"
+        }
+    ]
+}

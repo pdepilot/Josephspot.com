@@ -1529,6 +1529,189 @@ function formatTime($date) {
             }
         }
 
+        /* Notification Bell Styles */
+        .notification-user-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .notification-icon:hover {
+            background: var(--gray);
+        }
+
+        .notification-icon i {
+            font-size: 1.3rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .notification-icon:hover i {
+            color: var(--secondary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            min-width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            pointer-events: none;
+            font-weight: 600;
+            padding: 0 4px;
+        }
+
+        .notification-badge:empty {
+            display: none;
+        }
+
+        /* Notification Dropdown */
+        .notification-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 350px;
+            max-height: 500px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+        }
+
+        .notification-dropdown.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .notification-dropdown-header {
+            padding: 15px 20px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .notification-dropdown-header h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .mark-all-read {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .mark-all-read:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .notification-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--gray-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .notification-item:hover {
+            background: var(--gray);
+        }
+
+        .notification-item.unread {
+            background: rgba(139, 69, 19, 0.05);
+        }
+
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        .notification-message {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            color: var(--text-light);
+            font-size: 0.75rem;
+        }
+
+        .notification-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -1844,6 +2027,24 @@ function formatTime($date) {
                         <input type="hidden" name="date_to" value="<?php echo htmlspecialchars($dateTo); ?>">
                         <input type="hidden" name="country" value="<?php echo htmlspecialchars($countryFilter); ?>">
                     </form>
+                    <div class="notification-user-container">
+                        <div class="notification-icon" id="contactNotificationIcon">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="contactNotificationBadge"><?php echo $stats['unread']; ?></span>
+                            <div class="notification-dropdown" id="contactNotificationDropdown">
+                                <div class="notification-dropdown-header">
+                                    <h4>Contact Messages</h4>
+                                    <button class="mark-all-read" id="markAllContactRead">Mark all as read</button>
+                                </div>
+                                <ul class="notification-list" id="contactNotificationList">
+                                    <!-- Notifications will be loaded here -->
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="user-menu" id="userMenuBtn" onclick="window.location.href='admin-settings.php'">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                    </div>
                     <div class="user-menu-mobile">
                         <i class="fas fa-user-circle"></i>
                     </div>
@@ -3001,6 +3202,183 @@ function formatTime($date) {
         window.addEventListener('scroll', revealOnScroll);
         // Trigger once on load to check initial position
         revealOnScroll();
+
+        // Notification Bell Functionality
+        const contactNotificationIcon = document.getElementById('contactNotificationIcon');
+        const contactNotificationDropdown = document.getElementById('contactNotificationDropdown');
+        const contactNotificationList = document.getElementById('contactNotificationList');
+        const contactNotificationBadge = document.getElementById('contactNotificationBadge');
+        const markAllContactRead = document.getElementById('markAllContactRead');
+
+        // Toggle notification dropdown
+        if (contactNotificationIcon) {
+            contactNotificationIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                contactNotificationDropdown.classList.toggle('active');
+                if (contactNotificationDropdown.classList.contains('active')) {
+                    loadContactNotifications();
+                }
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (contactNotificationIcon && !contactNotificationIcon.contains(e.target) && 
+                !contactNotificationDropdown.contains(e.target)) {
+                contactNotificationDropdown.classList.remove('active');
+            }
+        });
+
+        // Load contact message notifications
+        function loadContactNotifications() {
+            fetch('api/get-contact-notifications.php?limit=10')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderContactNotifications(data.data);
+                        updateContactNotificationBadge(data.unread_count);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading contact notifications:', error);
+                });
+        }
+
+        // Render contact notifications
+        function renderContactNotifications(notifications) {
+            if (!contactNotificationList) return;
+            
+            contactNotificationList.innerHTML = '';
+            
+            if (!notifications || notifications.length === 0) {
+                contactNotificationList.innerHTML = '<div class="notification-empty">No new messages</div>';
+                return;
+            }
+            
+            notifications.forEach(notification => {
+                const notificationItem = document.createElement('li');
+                notificationItem.className = `notification-item ${!notification.is_read ? 'unread' : ''}`;
+                notificationItem.dataset.id = notification.id;
+                
+                const timeAgo = getTimeAgo(notification.created_at);
+                
+                notificationItem.innerHTML = `
+                    <div class="notification-dot" style="${!notification.is_read ? 'background: var(--primary)' : 'background: transparent'}"></div>
+                    <div class="notification-content">
+                        <div class="notification-title">${notification.name || 'New Message'}</div>
+                        <div class="notification-message">${notification.subject || notification.message}</div>
+                        <div class="notification-time">${timeAgo}</div>
+                    </div>
+                `;
+                
+                notificationItem.addEventListener('click', function() {
+                    if (!notification.is_read) {
+                        markContactAsRead(notification.id);
+                    }
+                    window.location.href = 'admin-contact-messages.php?message_id=' + notification.id;
+                });
+                
+                contactNotificationList.appendChild(notificationItem);
+            });
+        }
+
+        // Update notification badge
+        function updateContactNotificationBadge(count) {
+            if (contactNotificationBadge) {
+                contactNotificationBadge.textContent = count || 0;
+                contactNotificationBadge.style.display = (count > 0) ? 'flex' : 'none';
+            }
+        }
+
+        // Mark contact message as read
+        function markContactAsRead(messageId) {
+            fetch('api/mark-contact-read.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message_id: messageId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadContactNotifications();
+                }
+            })
+            .catch(error => {
+                console.error('Error marking contact as read:', error);
+            });
+        }
+
+        // Mark all contact messages as read
+        if (markAllContactRead) {
+            markAllContactRead.addEventListener('click', function(e) {
+                e.stopPropagation();
+                fetch('api/mark-all-contact-read.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadContactNotifications();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking all as read:', error);
+                });
+            });
+        }
+
+        // Get time ago
+        function getTimeAgo(timestamp) {
+            const now = Math.floor(Date.now() / 1000);
+            const time = Math.floor(new Date(timestamp).getTime() / 1000);
+            const diff = now - time;
+            
+            if (diff < 60) {
+                return 'Just now';
+            } else if (diff < 3600) {
+                const minutes = Math.floor(diff / 60);
+                return minutes + ' min ago';
+            } else if (diff < 86400) {
+                const hours = Math.floor(diff / 3600);
+                return hours + ' hour' + (hours > 1 ? 's' : '') + ' ago';
+            } else {
+                const days = Math.floor(diff / 86400);
+                return days + ' day' + (days > 1 ? 's' : '') + ' ago';
+            }
+        }
+
+        // Initialize WebSocket for real-time updates
+        let contactWS = null;
+        try {
+            // Load WebSocket client
+            const script = document.createElement('script');
+            script.src = 'js/websocket-client.js';
+            script.onload = function() {
+                contactWS = initWebSocket('contact_messages');
+                if (contactWS) {
+                    contactWS.on('new_message', function(data) {
+                        updateContactNotificationBadge(data.count);
+                        loadContactNotifications();
+                        // Show toast notification
+                        showNotification('New contact message received!', 'info');
+                    });
+                }
+            };
+            document.head.appendChild(script);
+        } catch (e) {
+            console.error('WebSocket initialization error:', e);
+        }
+
+        // Load notifications on page load
+        loadContactNotifications();
+        
+        // Poll for updates every 30 seconds (fallback if WebSocket fails)
+        setInterval(loadContactNotifications, 30000);
     </script>
 </body>
 </html>

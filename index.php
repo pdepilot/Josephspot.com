@@ -1,25 +1,28 @@
 <?php
 // Load appearance settings from database
 require_once __DIR__ . '/includes/appearance_settings.php';
+
+// Load restaurant information from database
+require_once __DIR__ . '/includes/restaurant_info.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Joseph's Pot - Authentic Nigerian cuisine in Owerri. Experience traditional Igbo foods like Ofe Owerri, Egusi, and Palm Wine in a cultural setting.">
+    <meta name="description" content="<?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?> - Authentic Nigerian cuisine in Owerri. Experience traditional Igbo foods like Ofe Owerri, Egusi, and Palm Wine in a cultural setting.">
     <meta name="keywords" content="Nigerian food, Owerri restaurant, Igbo cuisine, Ofe Owerri, Egusi, Palm Wine">
-    <meta name="author" content="Joseph's Pot">
+    <meta name="author" content="<?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?>">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Joseph's Pot - Authentic Nigerian Cuisine">
+    <meta property="og:title" content="<?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?> - Authentic Nigerian Cuisine">
     <meta property="og:description" content="Where Taste Meets Irresistibility - Traditional Igbo foods in Owerri">
     <meta property="og:image" content="<?php echo $appearance['logo_path']; ?>">
     <meta property="og:url" content="https://josephspot.com">
     <meta property="og:type" content="website">
 
     <link rel="icon" href="<?php echo $appearance['favicon_path']; ?>?v=<?php echo time(); ?>">
-    <title>Joseph's Pot</title>
+    <title><?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?></title>
     <link rel="stylesheet" href="./fontawesome-free-6.7.2-web/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
@@ -50,19 +53,19 @@ require_once __DIR__ . '/includes/appearance_settings.php';
         {
             "@context": "https://schema.org",
             "@type": "Restaurant",
-            "name": "Joseph's Pot",
+            "name": "<?php echo !empty($restaurant_info['restaurant_name']) ? addslashes($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?>",
             "description": "Authentic Nigerian cuisine restaurant serving traditional Igbo foods",
             "url": "https://josephspot.com",
             "address": {
                 "@type": "PostalAddress",
-                "streetAddress": "120 Ikenegbu Layout",
+                "streetAddress": "<?php echo !empty($restaurant_info['restaurant_address']) ? addslashes($restaurant_info['restaurant_address']) : '120 Ikenegbu Layout'; ?>",
                 "addressLocality": "Owerri",
                 "addressRegion": "Imo State",
                 "addressCountry": "Nigeria"
             },
             "servesCuisine": "Nigerian",
             "priceRange": "$$",
-            "telephone": "+234-810-434-4994"
+            "telephone": "<?php echo !empty($restaurant_info['restaurant_phone']) ? addslashes($restaurant_info['restaurant_phone']) : '+234-810-434-4994'; ?>"
         }
     </script>
 </head>
@@ -708,18 +711,26 @@ require_once __DIR__ . '/includes/appearance_settings.php';
                     <div class="footer-column reveal-on-scroll reveal-delay-2">
                         <h4><i class="fas fa-clock"></i> Opening Hours</h4>
                         <p>
-                            Monday – Friday: 08:30 AM – 9:00 PM<br>
-                            Saturday: 08:00 AM – 09:00 PM<br>
-                            Sunday: 12:00 PM – 09:00 PM
+                            <?php if (!empty($restaurant_info['opening_hours'])): ?>
+                                <?php echo nl2br(htmlspecialchars($restaurant_info['opening_hours'])); ?>
+                            <?php else: ?>
+                                Monday – Friday: 08:30 AM – 9:00 PM<br>
+                                Saturday: 08:00 AM – 09:00 PM<br>
+                                Sunday: 12:00 PM – 09:00 PM
+                            <?php endif; ?>
                         </p>
                     </div>
                     <div class="footer-column reveal-on-scroll reveal-delay-3">
                         <h4><i class="fas fa-map-marker-alt"></i>Visit Us</h4>
                         <p>
-                            123 Food Street,<br>
-                            Ikenegbu Layout, Owerri<br>
-                            Imo State, Nigeria<br>
-                            <a href="https://maps.google.com?q=Joseph's Pot Owerri" target="_blank">📍 <span>
+                            <?php if (!empty($restaurant_info['restaurant_address'])): ?>
+                                <?php echo nl2br(htmlspecialchars($restaurant_info['restaurant_address'])); ?><br>
+                            <?php else: ?>
+                                123 Food Street,<br>
+                                Ikenegbu Layout, Owerri<br>
+                                Imo State, Nigeria<br>
+                            <?php endif; ?>
+                            <a href="https://maps.google.com?q=<?php echo urlencode(!empty($restaurant_info['restaurant_name']) ? $restaurant_info['restaurant_name'] . ' Owerri' : "Joseph's Pot Owerri"); ?>" target="_blank">📍 <span>
                                     Get Directions</span></a>
 
                         </p>
@@ -727,7 +738,7 @@ require_once __DIR__ . '/includes/appearance_settings.php';
                 </div>
 
                 <div class="footer-bottom">
-                    <p>&copy; 2025 Joseph's Pot. All Rights Reserved | Developed by ERIBS Tech</p>
+                    <p>&copy; 2025 <?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?>. All Rights Reserved | Developed by ERIBS Tech</p>
                 </div>
             </div>
         </div>

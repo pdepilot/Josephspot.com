@@ -1072,7 +1072,7 @@ if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="admin-order-online.php">
+                    <a href="admin-orders.php">
                         <i class="fas fa-shopping-cart"></i>
                         <span>Orders</span>
                     </a>
@@ -1250,8 +1250,6 @@ if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
                                 <option value="swallow">Swallow</option>
                                 <option value="bulk-orders">Bulk Orders</option>
                                 <option value="breakfast">Breakfast</option>
-                                <option value="lunch">Lunch</option>
-                                <option value="dinner">Dinner</option>
                                 <option value="drinks">Drinks</option>
                             </select>
                         </div>
@@ -1359,8 +1357,6 @@ if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
         { id: 'swallow', name: 'Swallow', icon: 'fas fa-bread-slice' },
         { id: 'bulk-orders', name: 'Bulk Orders', icon: 'fas fa-people-carry' },
         { id: 'breakfast', name: 'Breakfast', icon: 'fas fa-sun' },
-        { id: 'lunch', name: 'Lunch', icon: 'fas fa-utensils' },
-        { id: 'dinner', name: 'Dinner', icon: 'fas fa-moon' },
         { id: 'drinks', name: 'Drinks', icon: 'fas fa-trophy' }
         
     ];

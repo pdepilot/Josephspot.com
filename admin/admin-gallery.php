@@ -19,8 +19,10 @@ $user_initials = 'AJ';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../images/logo3.png">
     <title>Gallery Management - Joseph's Pot</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../fontawesome-free-6.7.2-web/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <style>
         :root {
             --primary: #8b4513;
@@ -60,6 +62,71 @@ $user_initials = 'AJ';
             display: flex;
             min-height: 100vh;
             position: relative;
+        }
+
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        .toast {
+            min-width: 260px;
+            background: #ffffff;
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 5px solid var(--primary);
+            animation: slideIn 0.25s ease, fadeOut 0.3s ease 3.2s forwards;
+            pointer-events: all;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+        }
+
+        .toast .icon {
+            font-size: 1.1rem;
+        }
+
+        .toast.success .icon {
+            color: var(--success);
+        }
+
+        .toast.error .icon {
+            color: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px) translateX(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) translateX(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
         }
 
         /* Mobile Menu Toggle Button */
@@ -1062,6 +1129,78 @@ $user_initials = 'AJ';
                 font-size: 0.9rem;
             }
         }
+
+        /* SweetAlert2 Custom Styling to Match Dashboard */
+        .swal2-popup {
+            font-family: 'Poppins', sans-serif !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+            padding: 2rem !important;
+        }
+
+        .swal2-title {
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 1.5rem !important;
+            color: var(--text) !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .swal2-html-container {
+            font-family: 'Poppins', sans-serif !important;
+            color: var(--text) !important;
+            font-size: 1rem !important;
+            line-height: 1.6 !important;
+        }
+
+        .swal2-html-container strong {
+            color: var(--primary) !important;
+            font-weight: 600 !important;
+        }
+
+        .swal2-actions {
+            margin-top: 1.5rem !important;
+            gap: 10px !important;
+        }
+
+        .swal2-confirm {
+            background-color: var(--danger) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 12px 24px !important;
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 500 !important;
+            font-size: 0.95rem !important;
+            transition: var(--transition) !important;
+            box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3) !important;
+        }
+
+        .swal2-confirm:hover {
+            background-color: #d32f2f !important;
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .swal2-cancel {
+            background-color: var(--gray-dark) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 12px 24px !important;
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 500 !important;
+            font-size: 0.95rem !important;
+            color: var(--text) !important;
+            transition: var(--transition) !important;
+        }
+
+        .swal2-cancel:hover {
+            background-color: #d0d0d0 !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .swal2-loader {
+            border-color: var(--danger) transparent var(--danger) transparent !important;
+        }
     </style>
 </head>
 <body>
@@ -1331,14 +1470,101 @@ $user_initials = 'AJ';
     </div>
 
     <script>
+    // Verify SweetAlert2 is loaded
+    if (typeof Swal === 'undefined') {
+        console.error('SweetAlert2 is not loaded!');
+    }
+
     // Logout confirmation function
     function confirmLogout() {
         return confirm('Are you sure you want to logout?');
     }
 
+    /**
+     * Reusable delete confirmation function using SweetAlert2
+     * @param {Object} options - Configuration object
+     * @param {string} options.title - Modal title (default: "Delete image?")
+     * @param {string} options.name - Item name to display
+     * @param {Function} options.onConfirm - Callback function to execute on confirmation
+     */
+    async function confirmDelete({ title = 'Delete image?', name, onConfirm }) {
+        if (!name) {
+            console.error('Item name is required for delete confirmation');
+            return;
+        }
+
+        if (!onConfirm || typeof onConfirm !== 'function') {
+            console.error('onConfirm callback is required');
+            return;
+        }
+
+        const result = await Swal.fire({
+            title: title,
+            html: `
+                <p style="margin-bottom: 0.5rem;">Are you sure you want to delete</p>
+                <p style="margin-top: 0;"><strong>"${name}"</strong>?</p>
+                <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">This action cannot be undone.</p>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#F44336',
+            cancelButtonColor: '#e0e0e0',
+            reverseButtons: true,
+            allowOutsideClick: false,
+            allowEscapeKey: true,
+            customClass: {
+                popup: 'swal2-popup',
+                title: 'swal2-title',
+                htmlContainer: 'swal2-html-container',
+                confirmButton: 'swal2-confirm',
+                cancelButton: 'swal2-cancel'
+            },
+            buttonsStyling: true,
+            showLoaderOnConfirm: true,
+            preConfirm: async () => {
+                try {
+                    await onConfirm();
+                } catch (error) {
+                    Swal.showValidationMessage(`Error: ${error.message}`);
+                    return false;
+                }
+            }
+        });
+
+        return result;
+    }
+
     // Global variables
     let galleryItems = [];
     let currentFilter = 'all';
+
+    // Toast helper
+    function showToast(message, type = 'success') {
+        let container = document.querySelector('.toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        const icon = type === 'success' ? '✅' : '⚠️';
+        toast.innerHTML = `
+            <span class="icon">${icon}</span>
+            <div class="text">${message}</div>
+        `;
+
+        container.appendChild(toast);
+
+        // Remove after animation
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3400);
+    }
 
     // DOM Elements
     const sidebar = document.getElementById('sidebar');
@@ -1797,12 +2023,24 @@ $user_initials = 'AJ';
         const item = galleryItems.find(i => i.id == itemId);
         
         if (!item) {
-            alert('Item not found!');
+            await Swal.fire({
+                title: 'Error',
+                text: 'Item not found!',
+                icon: 'error',
+                confirmButtonColor: '#F44336',
+                customClass: {
+                    popup: 'swal2-popup',
+                    title: 'swal2-title',
+                    confirmButton: 'swal2-confirm'
+                }
+            });
             return;
         }
         
-        if (confirm(`Are you sure you want to delete "${item.title}"? This action cannot be undone.`)) {
-            try {
+        const result = await confirmDelete({
+            title: 'Delete image?',
+            name: item.title,
+            onConfirm: async () => {
                 const formData = new FormData();
                 formData.append('id', itemId);
                 
@@ -1811,18 +2049,27 @@ $user_initials = 'AJ';
                     body: formData
                 });
                 
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
                 const result = await response.json();
                 
-                if (result.success) {
-                    alert('Gallery item deleted successfully!');
-                    loadGalleryItems(); // Reload gallery items
-                } else {
-                    alert('Error: ' + result.message);
+                if (!result.success) {
+                    throw new Error(result.message || 'Delete failed');
                 }
-            } catch (error) {
-                alert('Error deleting item: ' + error.message);
+                
+                // Success - reload gallery items
+                loadGalleryItems();
+                
+                // Show success toast
+                showToast('Gallery item deleted successfully!', 'success');
             }
-        }
+        });
+        
+        // If user cancelled, do nothing (modal already closed)
+        // If confirmed, success is handled in onConfirm
+        // If error occurred, SweetAlert shows it via showValidationMessage
     }
 
     // Upload area click handler

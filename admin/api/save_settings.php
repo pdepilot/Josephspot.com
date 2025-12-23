@@ -42,9 +42,20 @@ if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || !hash_equ
 
 // Get section and data
 $section = isset($_POST['section']) ? trim($_POST['section']) : '';
-$data = isset($_POST['data']) ? $_POST['data'] : [];
+$data_raw = isset($_POST['data']) ? $_POST['data'] : '';
 
-if (empty($section) || empty($data)) {
+// Decode JSON string if it's a string, otherwise use as-is
+if (is_string($data_raw) && !empty($data_raw)) {
+    $data = json_decode($data_raw, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        // If JSON decode fails, try using as array
+        $data = [];
+    }
+} else {
+    $data = is_array($data_raw) ? $data_raw : [];
+}
+
+if (empty($section) || empty($data) || !is_array($data)) {
     ob_clean();
     echo json_encode(['success' => false, 'message' => 'Invalid request']);
     exit;
@@ -74,6 +85,54 @@ try {
     } else {
         // Other settings are global
         $table = $section . '_settings';
+        
+        // Validate security settings if section is security
+        if ($section === 'security') {
+            // Validate password minimum length
+            if (isset($data['password_min_length'])) {
+                $password_min_length = intval($data['password_min_length']);
+                if ($password_min_length < 6 || $password_min_length > 20) {
+                    $pdo->rollBack();
+                    ob_clean();
+                    echo json_encode(['success' => false, 'message' => 'Password minimum length must be between 6 and 20']);
+                    exit;
+                }
+            }
+            
+            // Validate session timeout
+            if (isset($data['session_timeout'])) {
+                $session_timeout = intval($data['session_timeout']);
+                if ($session_timeout < 5 || $session_timeout > 240) {
+                    $pdo->rollBack();
+                    ob_clean();
+                    echo json_encode(['success' => false, 'message' => 'Session timeout must be between 5 and 240 minutes']);
+                    exit;
+                }
+            }
+            
+            // Validate login attempts
+            if (isset($data['login_attempts'])) {
+                $login_attempts = intval($data['login_attempts']);
+                if ($login_attempts < 3 || $login_attempts > 10) {
+                    $pdo->rollBack();
+                    ob_clean();
+                    echo json_encode(['success' => false, 'message' => 'Max login attempts must be between 3 and 10']);
+                    exit;
+                }
+            }
+        }
+        
+        // Validate backup settings if present (in general section)
+        if ($section === 'general' && isset($data['backup_retention'])) {
+            $backup_retention = intval($data['backup_retention']);
+            if ($backup_retention < 7 || $backup_retention > 365) {
+                $pdo->rollBack();
+                ob_clean();
+                echo json_encode(['success' => false, 'message' => 'Backup retention must be between 7 and 365 days']);
+                exit;
+            }
+        }
+        
         foreach ($data as $key => $value) {
             // Normalize boolean values
             if (is_bool($value) || $value === 'true' || $value === '1') {

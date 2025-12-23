@@ -1,13 +1,16 @@
 <?php
 // Load appearance settings from database
 require_once __DIR__ . '/includes/appearance_settings.php';
+
+// Load restaurant information from database
+require_once __DIR__ . '/includes/restaurant_info.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Order Online | Joseph's Pot</title>
+    <title>Order Online | <?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?></title>
     <link
       rel="stylesheet"
       href="./fontawesome-free-6.7.2-web/fontawesome-free-6.7.2-web/css/all.min.css"
@@ -472,20 +475,28 @@ require_once __DIR__ . '/includes/appearance_settings.php';
             <div class="footer-column">
               <h4><i class="fas fa-clock"></i> Opening Hours</h4>
               <p>
-                Monday – Friday: 08:30 AM – 9:00 PM<br />
-                Saturday: 08:00 AM – 09:00 PM<br />
-                Sunday: 12:00 PM – 09:00 PM
+                <?php if (!empty($restaurant_info['opening_hours'])): ?>
+                    <?php echo nl2br(htmlspecialchars($restaurant_info['opening_hours'])); ?>
+                <?php else: ?>
+                    Monday – Friday: 08:30 AM – 9:00 PM<br />
+                    Saturday: 08:00 AM – 09:00 PM<br />
+                    Sunday: 12:00 PM – 09:00 PM
+                <?php endif; ?>
               </p>
             </div>
 
             <div class="footer-column">
               <h4><i class="fas fa-map-marker-alt"></i> Visit Us</h4>
               <p>
-                 Plot 120,<br>
-                  Ikenegbu Layout by Maris Junction, Owerri<br>
-                  Imo State, Nigeria<br>
+                <?php if (!empty($restaurant_info['restaurant_address'])): ?>
+                    <?php echo nl2br(htmlspecialchars($restaurant_info['restaurant_address'])); ?><br>
+                <?php else: ?>
+                    Plot 120,<br>
+                    Ikenegbu Layout by Maris Junction, Owerri<br>
+                    Imo State, Nigeria<br>
+                <?php endif; ?>
                 <a
-                  href="https://maps.google.com?q=Joseph's Pot Owerri"
+                  href="https://maps.google.com?q=<?php echo urlencode(!empty($restaurant_info['restaurant_name']) ? $restaurant_info['restaurant_name'] . ' Owerri' : "Joseph's Pot Owerri"); ?>"
                   target="_blank"
                   >📍 <span> Get Directions</span></a
                 >
@@ -494,7 +505,7 @@ require_once __DIR__ . '/includes/appearance_settings.php';
           </div>
 
           <div class="footer-bottom">
-            <p>&copy; 2025 Joseph's Pot. All Rights Reserved | Developed by ERIBS Tech</p>
+            <p>&copy; 2025 <?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?>. All Rights Reserved | Developed by ERIBS Tech</p>
           </div>
         </div>
       </div>
@@ -505,7 +516,7 @@ require_once __DIR__ . '/includes/appearance_settings.php';
     </button>
 
     <!-- WhatsApp Chat Bubble -->
-    <a href="https://wa.me/2348104344994" class="whatsapp-chat" target="_blank">
+    <a href="https://wa.me/<?php echo !empty($restaurant_info['restaurant_phone']) ? preg_replace('/[^0-9]/', '', $restaurant_info['restaurant_phone']) : '2348104344994'; ?>" class="whatsapp-chat" target="_blank">
       <img
         src="https://cdn-icons-png.flaticon.com/512/124/124034.png"
         alt="WhatsApp"

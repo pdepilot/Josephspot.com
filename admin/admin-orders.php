@@ -1861,30 +1861,56 @@ require_once 'db_config.php';
             }
         });
 
-        // Load notifications
+        // Load notifications from API
         function loadNotifications() {
+            fetch('api/get-order-notifications.php?limit=10')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderNotifications(data.data);
+                        updateNotificationBadge(data.unread_count);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading notifications:', error);
+                });
+        }
+
+        // Render notifications
+        function renderNotifications(notifications) {
+            if (!notificationList) return;
+            
             notificationList.innerHTML = '';
             
-            const unreadNotifications = notifications.filter(n => !n.read);
-            
-            if (unreadNotifications.length === 0) {
-                emptyNotifications.style.display = 'block';
+            if (!notifications || notifications.length === 0) {
+                if (emptyNotifications) {
+                    emptyNotifications.style.display = 'block';
+                }
                 return;
             }
             
-            emptyNotifications.style.display = 'none';
+            if (emptyNotifications) {
+                emptyNotifications.style.display = 'none';
+            }
             
-            unreadNotifications.forEach(notification => {
+            notifications.forEach(notification => {
                 const notificationItem = document.createElement('div');
-                notificationItem.className = 'notification-item unread';
+                notificationItem.className = `notification-item ${!notification.is_read ? 'unread' : ''}`;
+                notificationItem.dataset.id = notification.id;
                 notificationItem.innerHTML = `
-                    <div class="notification-title">${notification.title}</div>
-                    <div class="notification-message">${notification.message}</div>
-                    <div class="notification-time">${notification.time}</div>
+                    <div class="notification-title">${escapeHtml(notification.title)}</div>
+                    <div class="notification-message">${escapeHtml(notification.message)}</div>
+                    <div class="notification-time">${getTimeAgo(notification.created_at)}</div>
                 `;
                 
                 notificationItem.addEventListener('click', () => {
-                    markNotificationAsRead(notification.id);
+                    if (!notification.is_read) {
+                        markNotificationAsRead(notification.id);
+                    }
+                    if (notification.reference_id) {
+                        // Navigate to order details
+                        showOrderDetails(notification.reference_id);
+                    }
                 });
                 
                 notificationList.appendChild(notificationItem);
@@ -1892,30 +1918,82 @@ require_once 'db_config.php';
         }
 
         function markNotificationAsRead(notificationId) {
-            const notification = notifications.find(n => n.id === notificationId);
-            if (notification && !notification.read) {
-                notification.read = true;
-                loadNotifications();
-                updateNotificationBadge();
-            }
+            fetch('api/mark-notification-read.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ notification_id: notificationId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadNotifications();
+                }
+            })
+            .catch(error => {
+                console.error('Error marking notification as read:', error);
+            });
         }
 
         function markAllNotificationsAsRead() {
-            notifications.forEach(notification => {
-                notification.read = true;
+            fetch('api/mark-all-notifications-read.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadNotifications();
+                }
+            })
+            .catch(error => {
+                console.error('Error marking all as read:', error);
             });
-            loadNotifications();
-            updateNotificationBadge();
         }
 
-        function updateNotificationBadge() {
-            const unreadCount = notifications.filter(n => !n.read).length;
-            const badge = notificationIcon.querySelector('.notification-badge');
-            if (unreadCount > 0) {
-                badge.textContent = unreadCount;
-                badge.style.display = 'flex';
+        function updateNotificationBadge(count) {
+            const badge = notificationIcon ? notificationIcon.querySelector('.notification-badge') : null;
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+
+        // Get time ago
+        function getTimeAgo(timestamp) {
+            const now = Math.floor(Date.now() / 1000);
+            const time = Math.floor(new Date(timestamp).getTime() / 1000);
+            const diff = now - time;
+            
+            if (diff < 60) {
+                return 'Just now';
+            } else if (diff < 3600) {
+                const minutes = Math.floor(diff / 60);
+                return minutes + ' min ago';
+            } else if (diff < 86400) {
+                const hours = Math.floor(diff / 3600);
+                return hours + ' hour' + (hours > 1 ? 's' : '') + ' ago';
             } else {
-                badge.style.display = 'none';
+                const days = Math.floor(diff / 86400);
+                return days + ' day' + (days > 1 ? 's' : '') + ' ago';
+            }
+        }
+
+        // Play notification sound
+        function playNotificationSound() {
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTQ8OUKfk8LZjHAY4kdfyzHksBSR3x/DdkEAKFF606euoVRQKRp/g8r5sIQUrgc7y2Yk2CBtpvfDknE0PDlCn5PC2YxwGOJHX8sx5LAUkd8fw3ZBAC');
+                audio.volume = 0.3;
+                audio.play().catch(e => console.log('Sound play failed:', e));
+            } catch (e) {
+                console.log('Sound not available');
             }
         }
 
@@ -1974,15 +2052,53 @@ require_once 'db_config.php';
             return confirm('Are you sure you want to logout?');
         }
 
+        // Initialize WebSocket for real-time order notifications
+        let orderWS = null;
+        
         // Load notifications on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadNotifications();
-            updateNotificationBadge();
             
             // Initialize dashboard
             initDashboard();
             
-            // Real-time updates are handled in initDashboard()
+            // Initialize WebSocket for real-time updates
+            try {
+                const script = document.createElement('script');
+                script.src = 'js/websocket-client.js';
+                script.onload = function() {
+                    orderWS = initWebSocket('orders');
+                    if (orderWS) {
+                        orderWS.on('new_order', function(data) {
+                            // Update notification badge
+                            updateNotificationBadge(data.count);
+                            
+                            // Reload notifications
+                            loadNotifications();
+                            
+                            // Show toast notification
+                            showToast(`New order received! (${data.count} new)`, 'info');
+                            
+                            // Play sound alert
+                            playNotificationSound();
+                            
+                            // Auto-update order list
+                            loadOrders();
+                            updateStats();
+                        });
+                    }
+                };
+                document.head.appendChild(script);
+            } catch (e) {
+                console.error('WebSocket initialization error:', e);
+            }
+            
+            // Poll for updates every 30 seconds (fallback if WebSocket fails)
+            setInterval(() => {
+                loadNotifications();
+                loadOrders();
+                updateStats();
+            }, 30000);
         });
 
         // Chart instances
@@ -2502,6 +2618,10 @@ require_once 'db_config.php';
                                 paymentText = 'Flutterwave';
                                 break;
                         }
+                        
+                        // Check if proof of payment exists for bank transfers
+                        const hasProof = order.payment_method === 'bank' && order.payment_proof && order.payment_proof.trim() !== '';
+                        const proofImageData = hasProof ? order.payment_proof : null;
                         
                         const detailsHTML = `
                             <div class="order-details-grid">

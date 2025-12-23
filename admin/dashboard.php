@@ -296,32 +296,8 @@
         updateClock();
         setInterval(updateClock, 1000);
 
-        // Sample admin data
-        const admins = [{
-                id: 1,
-                name: 'Admin Joseph',
-                role: 'Super Admin',
-                avatar: 'AJ'
-            },
-            {
-                id: 2,
-                name: 'Manager David',
-                role: 'Manager',
-                avatar: 'MD'
-            },
-            {
-                id: 3,
-                name: 'Content Sarah',
-                role: 'Content Manager',
-                avatar: 'CS'
-            },
-            {
-                id: 4,
-                name: 'Support Mike',
-                role: 'Support',
-                avatar: 'SM'
-            }
-        ];
+        // Admin data (loaded from database)
+        let admins = [];
 
         // Sample notification data
         const notifications = [
@@ -417,16 +393,43 @@
         });
 
         closeModal.addEventListener('click', function() {
+            // Restore modal title and button text if in edit mode
+            if (adminForm.dataset.editMode === 'true') {
+                const modalHeader = document.querySelector('#addAdminModal .modal-header h3');
+                const submitBtn = document.querySelector('#adminForm button[type="submit"]');
+                if (modalHeader) modalHeader.textContent = 'Add New Admin';
+                if (submitBtn) submitBtn.textContent = 'Add Admin';
+                delete adminForm.dataset.editMode;
+                delete adminForm.dataset.editId;
+            }
             addAdminModal.style.display = 'none';
         });
 
         cancelBtn.addEventListener('click', function() {
+            // Restore modal title and button text if in edit mode
+            if (adminForm.dataset.editMode === 'true') {
+                const modalHeader = document.querySelector('#addAdminModal .modal-header h3');
+                const submitBtn = document.querySelector('#adminForm button[type="submit"]');
+                if (modalHeader) modalHeader.textContent = 'Add New Admin';
+                if (submitBtn) submitBtn.textContent = 'Add Admin';
+                delete adminForm.dataset.editMode;
+                delete adminForm.dataset.editId;
+            }
             addAdminModal.style.display = 'none';
         });
 
         // Close modal when clicking outside
         window.addEventListener('click', function(event) {
             if (event.target === addAdminModal) {
+                // Restore modal title and button text if in edit mode
+                if (adminForm.dataset.editMode === 'true') {
+                    const modalHeader = document.querySelector('#addAdminModal .modal-header h3');
+                    const submitBtn = document.querySelector('#adminForm button[type="submit"]');
+                    if (modalHeader) modalHeader.textContent = 'Add New Admin';
+                    if (submitBtn) submitBtn.textContent = 'Add Admin';
+                    delete adminForm.dataset.editMode;
+                    delete adminForm.dataset.editId;
+                }
                 addAdminModal.style.display = 'none';
             }
         });
@@ -436,32 +439,212 @@
             e.preventDefault();
 
             const name = document.getElementById('adminName').value;
+            const email = document.getElementById('adminEmail').value;
             const role = document.getElementById('adminRole').value;
+            const permissions = document.getElementById('adminPermissions').value;
 
-            // Generate avatar initials
-            const avatar = name.split(' ').map(n => n[0]).join('').toUpperCase();
+            // Check if in edit mode
+            const isEditMode = this.dataset.editMode === 'true';
+            const editId = this.dataset.editId ? parseInt(this.dataset.editId) : null;
 
-            // Create new admin object
-            const newAdmin = {
-                id: admins.length + 1,
-                name: name,
-                role: role,
-                avatar: avatar
-            };
-
-            // Add to admins array
-            admins.push(newAdmin);
-
-            // Update UI
-            renderAdmins();
-
-            // Close modal and reset form
-            addAdminModal.style.display = 'none';
-            adminForm.reset();
-
-            // Show success message
-            alert(`Admin ${name} added successfully!`);
+            if (isEditMode && editId) {
+                // Edit mode - confirm with SweetAlert
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'question',
+                        title: 'Save Changes?',
+                        html: `Confirm saving changes to <strong>${name}</strong>?`,
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, Save',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#8b4513',
+                        cancelButtonColor: '#6c757d'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Update admin via API
+                            const formData = new FormData();
+                            formData.append('action', 'update');
+                            formData.append('id', editId);
+                            formData.append('name', name);
+                            formData.append('email', email);
+                            formData.append('role', role);
+                            
+                            fetch('api/manage-admin.php', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Close modal and reset form
+                                    addAdminModal.style.display = 'none';
+                                    adminForm.reset();
+                                    delete adminForm.dataset.editMode;
+                                    delete adminForm.dataset.editId;
+                                    
+                                    // Restore modal title and submit button text
+                                    const modalHeader = document.querySelector('#addAdminModal .modal-header h3');
+                                    const submitBtn = document.querySelector('#adminForm button[type="submit"]');
+                                    if (modalHeader) modalHeader.textContent = 'Add New Admin';
+                                    if (submitBtn) submitBtn.textContent = 'Add Admin';
+                                    
+                                    // Reload admins from database
+                                    loadAdmins();
+                                    
+                                    // Show success message
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Updated!',
+                                        text: `Admin ${name} updated successfully!`,
+                                        confirmButtonColor: '#8b4513',
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                } else {
+                                    // Show error message
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: data.message || 'Failed to update admin',
+                                        confirmButtonColor: '#8b4513'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error updating admin:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Failed to update admin. Please try again.',
+                                    confirmButtonColor: '#8b4513'
+                                });
+                            });
+                        }
+                    });
+                } else {
+                    // Fallback to browser confirm
+                    if (confirm('Save changes to ' + name + '?')) {
+                        const formData = new FormData();
+                        formData.append('action', 'update');
+                        formData.append('id', editId);
+                        formData.append('name', name);
+                        formData.append('email', email);
+                        formData.append('role', role);
+                        
+                        fetch('api/manage-admin.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                addAdminModal.style.display = 'none';
+                                adminForm.reset();
+                                delete adminForm.dataset.editMode;
+                                delete adminForm.dataset.editId;
+                                const modalHeader = document.querySelector('#addAdminModal .modal-header h3');
+                                const submitBtn = document.querySelector('#adminForm button[type="submit"]');
+                                if (modalHeader) modalHeader.textContent = 'Add New Admin';
+                                if (submitBtn) submitBtn.textContent = 'Add Admin';
+                                loadAdmins();
+                                alert(`Admin ${name} updated successfully!`);
+                            } else {
+                                alert(data.message || 'Failed to update admin');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error updating admin:', error);
+                            alert('Failed to update admin. Please try again.');
+                        });
+                    }
+                }
+            } else {
+                // Add mode - create new admin via API
+                const formData = new FormData();
+                formData.append('action', 'create');
+                formData.append('name', name);
+                formData.append('email', email);
+                formData.append('role', role);
+                // Password will be auto-generated by API if not provided
+                
+                fetch('api/manage-admin.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Close modal and reset form
+                        addAdminModal.style.display = 'none';
+                        adminForm.reset();
+                        
+                        // Reload admins from database
+                        loadAdmins();
+                        
+                        // Show success message
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: `Admin ${name} added successfully!`,
+                                confirmButtonColor: '#8b4513'
+                            });
+                        } else {
+                            alert(`Admin ${name} added successfully!`);
+                        }
+                    } else {
+                        // Show error message
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Failed to create admin',
+                                confirmButtonColor: '#8b4513'
+                            });
+                        } else {
+                            alert(data.message || 'Failed to create admin');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error creating admin:', error);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to create admin. Please try again.',
+                            confirmButtonColor: '#8b4513'
+                        });
+                    } else {
+                        alert('Failed to create admin. Please try again.');
+                    }
+                });
+            }
         });
+
+        // Load admins from database
+        function loadAdmins() {
+            fetch('api/manage-admin.php?action=list')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.admins) {
+                        admins = data.admins;
+                        renderAdmins();
+                    } else {
+                        console.error('Error loading admins:', data.message);
+                        // Render empty state
+                        if (adminsGrid) {
+                            adminsGrid.innerHTML = '<p>No admins found or error loading admins.</p>';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading admins:', error);
+                    if (adminsGrid) {
+                        adminsGrid.innerHTML = '<p>Error loading admins. Please refresh the page.</p>';
+                    }
+                });
+        }
 
         // Render admins in the grid
         function renderAdmins() {
@@ -475,14 +658,46 @@
                     <div class="admin-card-name">${admin.name}</div>
                     <div class="admin-card-role">${admin.role}</div>
                     <div class="admin-card-actions">
-                        <button class="admin-card-btn edit" title="Edit Admin">
+                        <button class="admin-card-btn edit" title="Edit Admin" data-admin-id="${admin.id}">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="admin-card-btn delete" title="Delete Admin">
+                        <button class="admin-card-btn delete" title="Delete Admin" data-admin-id="${admin.id}">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 `;
+
+                // Add event listeners for edit and delete buttons
+                const editBtn = adminCard.querySelector('.edit');
+                const deleteBtn = adminCard.querySelector('.delete');
+                
+                if (editBtn) {
+                    editBtn.addEventListener('click', function() {
+                        const adminId = parseInt(this.getAttribute('data-admin-id'));
+                        const adminData = admins.find(a => a.id === adminId);
+                        if (adminData && typeof confirmAdminEdit === 'function') {
+                            confirmAdminEdit(adminId, adminData);
+                        } else if (adminData) {
+                            // Fallback to basic edit if SweetAlert not loaded
+                            editAdmin(adminId, adminData);
+                        }
+                    });
+                }
+                
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', function() {
+                        const adminId = parseInt(this.getAttribute('data-admin-id'));
+                        const adminData = admins.find(a => a.id === adminId);
+                        if (adminData && typeof confirmAdminDelete === 'function') {
+                            confirmAdminDelete(adminId, adminData);
+                        } else if (adminData) {
+                            // Fallback to basic delete if SweetAlert not loaded
+                            if (confirm('Are you sure you want to delete this admin?')) {
+                                deleteAdmin(adminId);
+                            }
+                        }
+                    });
+                }
 
                 adminsGrid.appendChild(adminCard);
             });
@@ -624,6 +839,34 @@
         
         // Initial notification load
         loadNotifications();
+
+        // Initialize WebSocket for real-time aggregated notifications
+        let mainDashboardWS = null;
+        try {
+            const script = document.createElement('script');
+            script.src = 'js/websocket-client.js';
+            script.onload = function() {
+                mainDashboardWS = initWebSocket('main_dashboard');
+                if (mainDashboardWS) {
+                    // Listen for all notification types
+                    mainDashboardWS.on('new_order', function(data) {
+                        loadNotifications();
+                    });
+                    mainDashboardWS.on('new_message', function(data) {
+                        loadNotifications();
+                    });
+                    mainDashboardWS.on('new_reservation', function(data) {
+                        loadNotifications();
+                    });
+                }
+            };
+            document.head.appendChild(script);
+        } catch (e) {
+            console.error('WebSocket initialization error:', e);
+        }
+
+        // Poll for notifications every 30 seconds (fallback if WebSocket fails)
+        setInterval(loadNotifications, 30000);
 
         // Scroll Reveal Functionality
         function revealOnScroll() {
@@ -965,6 +1208,130 @@
             };
             return backgrounds[type] || 'order';
         }
+
+        // Load SweetAlert2 if not already loaded
+        (function() {
+            if (typeof Swal === 'undefined') {
+                const swalScript = document.createElement('script');
+                swalScript.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+                swalScript.onload = function() {
+                    console.log('SweetAlert2 loaded successfully');
+                };
+                swalScript.onerror = function() {
+                    console.warn('Failed to load SweetAlert2, falling back to browser confirm');
+                };
+                document.head.appendChild(swalScript);
+            }
+        })();
+
+        // Admin delete function
+        function deleteAdmin(adminId) {
+            const formData = new FormData();
+            formData.append('action', 'delete');
+            formData.append('id', adminId);
+            
+            fetch('api/manage-admin.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload admins from database
+                    loadAdmins();
+                } else {
+                    // Show error message
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Failed to delete admin',
+                            confirmButtonColor: '#8b4513'
+                        });
+                    } else {
+                        alert(data.message || 'Failed to delete admin');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting admin:', error);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to delete admin. Please try again.',
+                        confirmButtonColor: '#8b4513'
+                    });
+                } else {
+                    alert('Failed to delete admin. Please try again.');
+                }
+            });
+        }
+
+        // Admin edit function - opens modal in edit mode
+        function editAdmin(adminId, adminData) {
+            // Populate form with admin data
+            document.getElementById('adminName').value = adminData.name || '';
+            document.getElementById('adminEmail').value = adminData.email || '';
+            document.getElementById('adminRole').value = adminData.role || '';
+            document.getElementById('adminPermissions').value = adminData.permissions || '';
+            
+            // Change modal title and submit button text
+            const modalHeader = document.querySelector('#addAdminModal .modal-header h3');
+            const submitBtn = document.querySelector('#adminForm button[type="submit"]');
+            
+            if (modalHeader) modalHeader.textContent = 'Edit Admin';
+            if (submitBtn) submitBtn.textContent = 'Update Admin';
+            
+            // Store edit mode info
+            adminForm.dataset.editMode = 'true';
+            adminForm.dataset.editId = adminId;
+            
+            // Show modal
+            addAdminModal.style.display = 'flex';
+        }
+
+        // SweetAlert confirmation for admin delete
+        function confirmAdminDelete(adminId, adminData) {
+            if (typeof Swal === 'undefined') {
+                // Fallback to browser confirm
+                if (confirm('Are you sure you want to delete this admin? This action cannot be undone.')) {
+                    deleteAdmin(adminId);
+                }
+                return;
+            }
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Delete Admin?',
+                html: `Are you sure you want to delete <strong>${adminData.name}</strong>?<br><br>This action is permanent and cannot be undone.`,
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Delete',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#F44336',
+                cancelButtonColor: '#6c757d',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteAdmin(adminId);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: 'Admin has been deleted successfully.',
+                        confirmButtonColor: '#8b4513',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+
+        // SweetAlert confirmation for admin edit
+        function confirmAdminEdit(adminId, adminData) {
+            // Open edit modal directly - confirmation happens on save
+            editAdmin(adminId, adminData);
+        }
+
     </script>
 </body>
 </html>

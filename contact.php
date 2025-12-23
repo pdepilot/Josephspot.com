@@ -1,6 +1,9 @@
 <?php
-// Load appearance settings from database
+// Load appearance settings from database (provides $pdo connection)
 require_once __DIR__ . '/includes/appearance_settings.php';
+
+// Load restaurant information from database
+require_once __DIR__ . '/includes/restaurant_info.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,7 +11,7 @@ require_once __DIR__ . '/includes/appearance_settings.php';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact Us | Joseph's Pot</title>
+  <title>Contact Us | <?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?></title>
   <link rel="icon" href="<?php echo $appearance['favicon_path']; ?>?v=<?php echo time(); ?>">
 
   <!-- Font Awesome -->
@@ -858,10 +861,13 @@ require_once __DIR__ . '/includes/appearance_settings.php';
           <div class="info-text">
             <h3>Our Restaurant</h3>
             <p>
-              120, Ikenegbu Layout<br>
-              By Cherobim Junction<br>
-              Owerri, Imo State<br>
-              Nigeria
+              <?php 
+              if (!empty($restaurant_info['restaurant_address'])) {
+                  echo nl2br(htmlspecialchars($restaurant_info['restaurant_address']));
+              } else {
+                  echo "120, Ikenegbu Layout<br>By Cherobim Junction<br>Owerri, Imo State<br>Nigeria";
+              }
+              ?>
             </p>
             <div class="map-container" id="mapRedirect">
               <div id="map"></div>
@@ -878,8 +884,12 @@ require_once __DIR__ . '/includes/appearance_settings.php';
           <i class="fas fa-phone-alt"></i>
           <div class="info-text">
             <h3>Call Us</h3>
-            <p>+234 810 434 4994</p>
-            <p>Mon-Sun: 8:30am - 9pm</p>
+            <p><?php echo !empty($restaurant_info['restaurant_phone']) ? htmlspecialchars($restaurant_info['restaurant_phone']) : '+234 810 434 4994'; ?></p>
+            <?php if (!empty($restaurant_info['opening_hours'])): ?>
+              <p><?php echo nl2br(htmlspecialchars($restaurant_info['opening_hours'])); ?></p>
+            <?php else: ?>
+              <p>Mon-Sun: 8:30am - 9pm</p>
+            <?php endif; ?>
           </div>
         </div>
 
@@ -887,7 +897,11 @@ require_once __DIR__ . '/includes/appearance_settings.php';
           <i class="fas fa-envelope"></i>
           <div class="info-text">
             <h3>Email Us</h3>
-            <p>info@josephspot.com</p>
+            <?php if (!empty($restaurant_info['restaurant_email'])): ?>
+              <p><?php echo htmlspecialchars($restaurant_info['restaurant_email']); ?></p>
+            <?php else: ?>
+              <p>info@josephspot.com</p>
+            <?php endif; ?>
             <p>orders@josephspot.com</p>
           </div>
         </div>
@@ -1014,19 +1028,27 @@ require_once __DIR__ . '/includes/appearance_settings.php';
           <div class="footer-column">
             <h4><i class="fas fa-clock"></i> Opening Hours</h4>
             <p>
-              Monday – Friday: 08:30 AM – 9:00 PM<br>
-              Saturday: 08:00 AM – 09:00 PM<br>
-              Sunday: 12:00 PM – 09:00 PM
+              <?php if (!empty($restaurant_info['opening_hours'])): ?>
+                  <?php echo nl2br(htmlspecialchars($restaurant_info['opening_hours'])); ?>
+              <?php else: ?>
+                  Monday – Friday: 08:30 AM – 9:00 PM<br>
+                  Saturday: 08:00 AM – 09:00 PM<br>
+                  Sunday: 12:00 PM – 09:00 PM
+              <?php endif; ?>
             </p>
           </div>
 
           <div class="footer-column">
             <h4><i class="fas fa-map-marker-alt"></i> Visit Us</h4>
             <p>
-              Plot 120, Ikenegbu Layout<br>
-              By Maris Junction, Owerri<br>
-              Imo State, Nigeria<br>
-              <a href="https://maps.google.com?q=Joseph's+Pot+Owerri+Nigeria" target="_blank">
+              <?php if (!empty($restaurant_info['restaurant_address'])): ?>
+                  <?php echo nl2br(htmlspecialchars($restaurant_info['restaurant_address'])); ?><br>
+              <?php else: ?>
+                  Plot 120, Ikenegbu Layout<br>
+                  By Maris Junction, Owerri<br>
+                  Imo State, Nigeria<br>
+              <?php endif; ?>
+              <a href="https://maps.google.com?q=<?php echo urlencode(!empty($restaurant_info['restaurant_name']) ? $restaurant_info['restaurant_name'] . ' Owerri Nigeria' : "Joseph's Pot Owerri Nigeria"); ?>" target="_blank">
                 <span>📍 Get Directions</span>
               </a>
             </p>
@@ -1035,7 +1057,7 @@ require_once __DIR__ . '/includes/appearance_settings.php';
 
         <div class="footer-bottom">
           <p>
-            &copy; <span id="year"></span> Joseph's Pot. All rights reserved |
+            &copy; <span id="year"></span> <?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?>. All rights reserved |
             Developed by ERIBS Tech
           </p>
         </div>

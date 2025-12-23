@@ -187,6 +187,697 @@ $settings = [
     ]
 ];
 
+// ============================================================================
+// BACKEND HANDLERS - Admin Settings Form Processing
+// ============================================================================
+
+// Handle POST requests for admin settings
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || !validateCSRFToken($_POST['csrf_token'])) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']);
+        exit;
+    }
+
+    // Ensure user is logged in
+    if (!isLoggedIn()) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    $action = $_POST['action'];
+    $response = ['success' => false, 'message' => 'Unknown action'];
+
+    try {
+        switch ($action) {
+            case 'update_restaurant_info':
+                $response = admin_update_restaurant_info($pdo);
+                break;
+            case 'update_notifications':
+                $response = admin_update_notifications($pdo, $_SESSION['admin_id']);
+                break;
+            case 'update_security':
+                $response = admin_update_security($pdo, $_SESSION['admin_id']);
+                break;
+            case 'change_password':
+                $response = admin_change_password($pdo, $_SESSION['admin_id']);
+                break;
+            case 'add_user':
+                $response = admin_add_user($pdo, $_SESSION['admin_id']);
+                break;
+            case 'toggle_user_status':
+                $response = admin_toggle_user_status($pdo, $_SESSION['admin_id']);
+                break;
+            case 'reset_user_password':
+                $response = admin_reset_user_password($pdo, $_SESSION['admin_id']);
+                break;
+            case 'delete_user':
+                $response = admin_delete_user($pdo, $_SESSION['admin_id']);
+                break;
+            case 'create_backup':
+                $response = admin_create_backup($pdo);
+                break;
+            case 'restore_backup':
+                $response = admin_restore_backup($pdo);
+                break;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
+    } catch (Exception $e) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        exit;
+    }
+}
+
+// ============================================================================
+// ADMIN SETTINGS FUNCTIONS
+// ============================================================================
+
+/**
+ * Update restaurant information
+ */
+function admin_update_restaurant_info($pdo) {
+    try {
+        $restaurant_name = isset($_POST['restaurant_name']) ? trim($_POST['restaurant_name']) : '';
+        $restaurant_tagline = isset($_POST['restaurant_tagline']) ? trim($_POST['restaurant_tagline']) : '';
+        $restaurant_address = isset($_POST['restaurant_address']) ? trim($_POST['restaurant_address']) : '';
+        $restaurant_phone = isset($_POST['restaurant_phone']) ? trim($_POST['restaurant_phone']) : '';
+        $restaurant_email = isset($_POST['restaurant_email']) ? trim($_POST['restaurant_email']) : '';
+        $opening_hours = isset($_POST['opening_hours']) ? trim($_POST['opening_hours']) : '';
+        $logo_path = isset($_POST['logo_path']) ? trim($_POST['logo_path']) : '';
+
+        if (empty($restaurant_name)) {
+            return ['success' => false, 'message' => 'Restaurant name is required'];
+        }
+
+        if (!empty($restaurant_email) && !filter_var($restaurant_email, FILTER_VALIDATE_EMAIL)) {
+            return ['success' => false, 'message' => 'Invalid email address'];
+        }
+
+        $pdo->beginTransaction();
+
+        set_setting($pdo, 'restaurant', 'restaurant_name', $restaurant_name);
+        set_setting($pdo, 'restaurant', 'restaurant_tagline', $restaurant_tagline);
+        set_setting($pdo, 'restaurant', 'restaurant_address', $restaurant_address);
+        set_setting($pdo, 'restaurant', 'restaurant_phone', $restaurant_phone);
+        set_setting($pdo, 'restaurant', 'restaurant_email', $restaurant_email);
+        set_setting($pdo, 'restaurant', 'opening_hours', $opening_hours);
+        
+        if (!empty($logo_path)) {
+            set_setting($pdo, 'restaurant', 'logo_path', $logo_path);
+        }
+
+        $pdo->commit();
+
+        return ['success' => true, 'message' => 'Restaurant information updated successfully'];
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Update notification settings
+ */
+function admin_update_notifications($pdo, $admin_id) {
+    try {
+        $email_orders = isset($_POST['email_orders']) && ($_POST['email_orders'] === '1' || $_POST['email_orders'] === 'true' || $_POST['email_orders'] === true) ? '1' : '0';
+        $email_reservations = isset($_POST['email_reservations']) && ($_POST['email_reservations'] === '1' || $_POST['email_reservations'] === 'true' || $_POST['email_reservations'] === true) ? '1' : '0';
+        $email_reviews = isset($_POST['email_reviews']) && ($_POST['email_reviews'] === '1' || $_POST['email_reviews'] === 'true' || $_POST['email_reviews'] === true) ? '1' : '0';
+        $email_promotions = isset($_POST['email_promotions']) && ($_POST['email_promotions'] === '1' || $_POST['email_promotions'] === 'true' || $_POST['email_promotions'] === true) ? '1' : '0';
+        $push_orders = isset($_POST['push_orders']) && ($_POST['push_orders'] === '1' || $_POST['push_orders'] === 'true' || $_POST['push_orders'] === true) ? '1' : '0';
+        $push_reservations = isset($_POST['push_reservations']) && ($_POST['push_reservations'] === '1' || $_POST['push_reservations'] === 'true' || $_POST['push_reservations'] === true) ? '1' : '0';
+        $push_low_stock = isset($_POST['push_low_stock']) && ($_POST['push_low_stock'] === '1' || $_POST['push_low_stock'] === 'true' || $_POST['push_low_stock'] === true) ? '1' : '0';
+        $notification_sound = isset($_POST['notification_sound']) ? trim($_POST['notification_sound']) : 'default';
+
+        $pdo->beginTransaction();
+
+        set_notification_setting($pdo, 'email_orders', $email_orders, $admin_id);
+        set_notification_setting($pdo, 'email_reservations', $email_reservations, $admin_id);
+        set_notification_setting($pdo, 'email_reviews', $email_reviews, $admin_id);
+        set_notification_setting($pdo, 'email_promotions', $email_promotions, $admin_id);
+        set_notification_setting($pdo, 'push_orders', $push_orders, $admin_id);
+        set_notification_setting($pdo, 'push_reservations', $push_reservations, $admin_id);
+        set_notification_setting($pdo, 'push_low_stock', $push_low_stock, $admin_id);
+        set_notification_setting($pdo, 'notification_sound', $notification_sound, $admin_id);
+
+        $pdo->commit();
+
+        return ['success' => true, 'message' => 'Notification settings updated successfully'];
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Update security settings
+ */
+function admin_update_security($pdo, $admin_id) {
+    try {
+        $password_min_length = isset($_POST['password_min_length']) ? intval($_POST['password_min_length']) : 8;
+        $password_require_uppercase = isset($_POST['password_require_uppercase']) && ($_POST['password_require_uppercase'] === '1' || $_POST['password_require_uppercase'] === 'true') ? '1' : '0';
+        $password_require_lowercase = isset($_POST['password_require_lowercase']) && ($_POST['password_require_lowercase'] === '1' || $_POST['password_require_lowercase'] === 'true') ? '1' : '0';
+        $password_require_numbers = isset($_POST['password_require_numbers']) && ($_POST['password_require_numbers'] === '1' || $_POST['password_require_numbers'] === 'true') ? '1' : '0';
+        $password_require_special = isset($_POST['password_require_special']) && ($_POST['password_require_special'] === '1' || $_POST['password_require_special'] === 'true') ? '1' : '0';
+        $session_timeout = isset($_POST['session_timeout']) ? intval($_POST['session_timeout']) : 30;
+        $two_factor_auth = isset($_POST['two_factor_auth']) && ($_POST['two_factor_auth'] === '1' || $_POST['two_factor_auth'] === 'true') ? '1' : '0';
+
+        if ($password_min_length < 6 || $password_min_length > 20) {
+            return ['success' => false, 'message' => 'Password minimum length must be between 6 and 20'];
+        }
+
+        if ($session_timeout < 5 || $session_timeout > 240) {
+            return ['success' => false, 'message' => 'Session timeout must be between 5 and 240 minutes'];
+        }
+
+        $pdo->beginTransaction();
+
+        set_setting($pdo, 'security', 'password_min_length', strval($password_min_length));
+        set_setting($pdo, 'security', 'password_require_uppercase', $password_require_uppercase);
+        set_setting($pdo, 'security', 'password_require_lowercase', $password_require_lowercase);
+        set_setting($pdo, 'security', 'password_require_numbers', $password_require_numbers);
+        set_setting($pdo, 'security', 'password_require_special', $password_require_special);
+        set_setting($pdo, 'security', 'session_timeout', strval($session_timeout));
+        set_setting($pdo, 'security', 'two_factor_auth', $two_factor_auth);
+
+        // Log security settings update
+        admin_log_security_action($pdo, $admin_id, 'security_settings_updated', 'Security settings updated');
+
+        $pdo->commit();
+
+        return ['success' => true, 'message' => 'Security settings updated successfully'];
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Change admin password
+ */
+function admin_change_password($pdo, $admin_id) {
+    try {
+        $current_password = isset($_POST['current_password']) ? $_POST['current_password'] : '';
+        $new_password = isset($_POST['new_password']) ? $_POST['new_password'] : '';
+        $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
+
+        if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
+            return ['success' => false, 'message' => 'All password fields are required'];
+        }
+
+        if ($new_password !== $confirm_password) {
+            return ['success' => false, 'message' => 'New passwords do not match'];
+        }
+
+        // Get current admin data
+        $stmt = $pdo->prepare("SELECT password FROM admins WHERE id = ?");
+        $stmt->execute([$admin_id]);
+        $admin = $stmt->fetch();
+
+        if (!$admin) {
+            return ['success' => false, 'message' => 'Admin not found'];
+        }
+
+        // Verify current password
+        if (!password_verify($current_password, $admin['password'])) {
+            return ['success' => false, 'message' => 'Current password is incorrect'];
+        }
+
+        // Validate new password
+        $min_length = get_setting($pdo, 'security', 'password_min_length', '8');
+        if (strlen($new_password) < intval($min_length)) {
+            return ['success' => false, 'message' => 'Password must be at least ' . $min_length . ' characters long'];
+        }
+
+        // Validate password requirements
+        $require_uppercase = get_setting($pdo, 'security', 'password_require_uppercase', '1') === '1';
+        $require_lowercase = get_setting($pdo, 'security', 'password_require_lowercase', '1') === '1';
+        $require_numbers = get_setting($pdo, 'security', 'password_require_numbers', '1') === '1';
+        $require_special = get_setting($pdo, 'security', 'password_require_special', '0') === '1';
+
+        if ($require_uppercase && !preg_match('/[A-Z]/', $new_password)) {
+            return ['success' => false, 'message' => 'Password must contain at least one uppercase letter'];
+        }
+        if ($require_lowercase && !preg_match('/[a-z]/', $new_password)) {
+            return ['success' => false, 'message' => 'Password must contain at least one lowercase letter'];
+        }
+        if ($require_numbers && !preg_match('/[0-9]/', $new_password)) {
+            return ['success' => false, 'message' => 'Password must contain at least one number'];
+        }
+        if ($require_special && !preg_match('/[^A-Za-z0-9]/', $new_password)) {
+            return ['success' => false, 'message' => 'Password must contain at least one special character'];
+        }
+
+        // Hash new password
+        $new_password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+
+        $pdo->beginTransaction();
+
+        // Update password
+        $stmt = $pdo->prepare("UPDATE admins SET password = ? WHERE id = ?");
+        $stmt->execute([$new_password_hash, $admin_id]);
+
+        // Log password change
+        admin_log_security_action($pdo, $admin_id, 'password_changed', 'Admin password changed');
+
+        $pdo->commit();
+
+        return ['success' => true, 'message' => 'Password changed successfully'];
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Add new admin user
+ */
+function admin_add_user($pdo, $current_admin_id) {
+    try {
+        // Check if current user is super_admin
+        $stmt = $pdo->prepare("SELECT role FROM admins WHERE id = ?");
+        $stmt->execute([$current_admin_id]);
+        $current_admin = $stmt->fetch();
+
+        if (!$current_admin || $current_admin['role'] !== 'super_admin') {
+            return ['success' => false, 'message' => 'Only super admins can add users'];
+        }
+
+        $username = isset($_POST['username']) ? trim($_POST['username']) : '';
+        $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+        $password = isset($_POST['password']) ? $_POST['password'] : '';
+        $role = isset($_POST['role']) ? trim($_POST['role']) : 'manager';
+
+        if (empty($username) || empty($email) || empty($password)) {
+            return ['success' => false, 'message' => 'Username, email, and password are required'];
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return ['success' => false, 'message' => 'Invalid email address'];
+        }
+
+        $allowed_roles = ['super_admin', 'manager', 'content_manager', 'support'];
+        if (!in_array($role, $allowed_roles)) {
+            return ['success' => false, 'message' => 'Invalid role'];
+        }
+
+        // Validate password
+        $min_length = get_setting($pdo, 'security', 'password_min_length', '8');
+        if (strlen($password) < intval($min_length)) {
+            return ['success' => false, 'message' => 'Password must be at least ' . $min_length . ' characters long'];
+        }
+
+        // Check if username or email already exists
+        $stmt = $pdo->prepare("SELECT id FROM admins WHERE username = ? OR email = ?");
+        $stmt->execute([$username, $email]);
+        if ($stmt->fetch()) {
+            return ['success' => false, 'message' => 'Username or email already exists'];
+        }
+
+        // Hash password
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+        $pdo->beginTransaction();
+
+        // Insert new admin
+        $stmt = $pdo->prepare("INSERT INTO admins (username, email, password, role, is_active) VALUES (?, ?, ?, ?, 1)");
+        $stmt->execute([$username, $email, $password_hash, $role]);
+
+        // Log user creation
+        admin_log_security_action($pdo, $current_admin_id, 'user_created', 'New admin user created: ' . $username);
+
+        $pdo->commit();
+
+        return ['success' => true, 'message' => 'User added successfully'];
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Toggle user active/inactive status
+ */
+function admin_toggle_user_status($pdo, $current_admin_id) {
+    try {
+        $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+        $is_active = isset($_POST['is_active']) && ($_POST['is_active'] === '1' || $_POST['is_active'] === 'true' || $_POST['is_active'] === true) ? 1 : 0;
+
+        if ($user_id <= 0) {
+            return ['success' => false, 'message' => 'Invalid user ID'];
+        }
+
+        // Prevent self-deactivation
+        if ($user_id == $current_admin_id && $is_active == 0) {
+            return ['success' => false, 'message' => 'You cannot deactivate your own account'];
+        }
+
+        // Get user info for logging
+        $stmt = $pdo->prepare("SELECT username FROM admins WHERE id = ?");
+        $stmt->execute([$user_id]);
+        $user = $stmt->fetch();
+
+        if (!$user) {
+            return ['success' => false, 'message' => 'User not found'];
+        }
+
+        $pdo->beginTransaction();
+
+        // Update status
+        $stmt = $pdo->prepare("UPDATE admins SET is_active = ? WHERE id = ?");
+        $stmt->execute([$is_active, $user_id]);
+
+        // Log action
+        $action = $is_active ? 'user_activated' : 'user_deactivated';
+        $message = 'User ' . ($is_active ? 'activated' : 'deactivated') . ': ' . $user['username'];
+        admin_log_security_action($pdo, $current_admin_id, $action, $message);
+
+        $pdo->commit();
+
+        return ['success' => true, 'message' => 'User status updated successfully'];
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Reset user password
+ */
+function admin_reset_user_password($pdo, $current_admin_id) {
+    try {
+        // Check if current user is super_admin
+        $stmt = $pdo->prepare("SELECT role FROM admins WHERE id = ?");
+        $stmt->execute([$current_admin_id]);
+        $current_admin = $stmt->fetch();
+
+        if (!$current_admin || $current_admin['role'] !== 'super_admin') {
+            return ['success' => false, 'message' => 'Only super admins can reset passwords'];
+        }
+
+        $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+        $new_password = isset($_POST['new_password']) ? $_POST['new_password'] : '';
+
+        if ($user_id <= 0 || empty($new_password)) {
+            return ['success' => false, 'message' => 'User ID and new password are required'];
+        }
+
+        // Validate password
+        $min_length = get_setting($pdo, 'security', 'password_min_length', '8');
+        if (strlen($new_password) < intval($min_length)) {
+            return ['success' => false, 'message' => 'Password must be at least ' . $min_length . ' characters long'];
+        }
+
+        // Get user info
+        $stmt = $pdo->prepare("SELECT username FROM admins WHERE id = ?");
+        $stmt->execute([$user_id]);
+        $user = $stmt->fetch();
+
+        if (!$user) {
+            return ['success' => false, 'message' => 'User not found'];
+        }
+
+        // Hash new password
+        $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+
+        $pdo->beginTransaction();
+
+        // Update password
+        $stmt = $pdo->prepare("UPDATE admins SET password = ? WHERE id = ?");
+        $stmt->execute([$password_hash, $user_id]);
+
+        // Log password reset
+        admin_log_security_action($pdo, $current_admin_id, 'password_reset', 'Password reset for user: ' . $user['username']);
+
+        $pdo->commit();
+
+        return ['success' => true, 'message' => 'Password reset successfully'];
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Delete user (prevent self-deletion)
+ */
+function admin_delete_user($pdo, $current_admin_id) {
+    try {
+        // Check if current user is super_admin
+        $stmt = $pdo->prepare("SELECT role FROM admins WHERE id = ?");
+        $stmt->execute([$current_admin_id]);
+        $current_admin = $stmt->fetch();
+
+        if (!$current_admin || $current_admin['role'] !== 'super_admin') {
+            return ['success' => false, 'message' => 'Only super admins can delete users'];
+        }
+
+        $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+
+        if ($user_id <= 0) {
+            return ['success' => false, 'message' => 'Invalid user ID'];
+        }
+
+        // Prevent self-deletion
+        if ($user_id == $current_admin_id) {
+            return ['success' => false, 'message' => 'You cannot delete your own account'];
+        }
+
+        // Get user info for logging
+        $stmt = $pdo->prepare("SELECT username FROM admins WHERE id = ?");
+        $stmt->execute([$user_id]);
+        $user = $stmt->fetch();
+
+        if (!$user) {
+            return ['success' => false, 'message' => 'User not found'];
+        }
+
+        $pdo->beginTransaction();
+
+        // Delete user
+        $stmt = $pdo->prepare("DELETE FROM admins WHERE id = ?");
+        $stmt->execute([$user_id]);
+
+        // Log deletion
+        admin_log_security_action($pdo, $current_admin_id, 'user_deleted', 'User deleted: ' . $user['username']);
+
+        $pdo->commit();
+
+        return ['success' => true, 'message' => 'User deleted successfully'];
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Create database backup
+ */
+function admin_create_backup($pdo) {
+    try {
+        // Check if backup directory exists or create it
+        $backup_dir = __DIR__ . '/../backups';
+        if (!is_dir($backup_dir)) {
+            if (!mkdir($backup_dir, 0755, true)) {
+                return ['success' => false, 'message' => 'Cannot create backup directory'];
+            }
+        }
+
+        // Check if directory is writable
+        if (!is_writable($backup_dir)) {
+            return ['success' => false, 'message' => 'Backup directory is not writable'];
+        }
+
+        // Generate backup filename
+        $timestamp = date('Y-m-d_H-i-s');
+        $backup_file = $backup_dir . '/backup_' . $timestamp . '.sql';
+
+        // Get all tables
+        $tables = [];
+        $stmt = $pdo->query("SHOW TABLES");
+        while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+            $tables[] = $row[0];
+        }
+
+        if (empty($tables)) {
+            return ['success' => false, 'message' => 'No tables found to backup'];
+        }
+
+        // Start backup file
+        $output = "-- Database Backup\n";
+        $output .= "-- Generated: " . date('Y-m-d H:i:s') . "\n";
+        $output .= "-- Database: " . DB_NAME . "\n\n";
+        $output .= "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n";
+        $output .= "SET time_zone = \"+00:00\";\n\n";
+
+        // Backup each table
+        foreach ($tables as $table) {
+            // Get table structure
+            $stmt = $pdo->query("SHOW CREATE TABLE `{$table}`");
+            $create_table = $stmt->fetch(PDO::FETCH_ASSOC);
+            $output .= "\n-- Table structure for table `{$table}`\n";
+            $output .= "DROP TABLE IF EXISTS `{$table}`;\n";
+            $output .= $create_table['Create Table'] . ";\n\n";
+
+            // Get table data
+            $stmt = $pdo->query("SELECT * FROM `{$table}`");
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (!empty($rows)) {
+                $output .= "-- Dumping data for table `{$table}`\n";
+                foreach ($rows as $row) {
+                    $values = [];
+                    foreach ($row as $value) {
+                        if ($value === null) {
+                            $values[] = 'NULL';
+                        } else {
+                            $values[] = $pdo->quote($value);
+                        }
+                    }
+                    $output .= "INSERT INTO `{$table}` VALUES (" . implode(', ', $values) . ");\n";
+                }
+                $output .= "\n";
+            }
+        }
+
+        // Write backup file
+        if (file_put_contents($backup_file, $output) === false) {
+            return ['success' => false, 'message' => 'Failed to write backup file'];
+        }
+
+        // Store backup metadata in database (if table exists)
+        // TODO: Adjust table name based on actual backup metadata table structure
+        try {
+            $stmt = $pdo->prepare("INSERT INTO admin_settings_meta (meta_key, meta_value, meta_type, created_at) VALUES (?, ?, 'backup', NOW())");
+            $meta_value = json_encode([
+                'filename' => basename($backup_file),
+                'size' => filesize($backup_file),
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+            $stmt->execute([basename($backup_file), $meta_value]);
+        } catch (PDOException $e) {
+            // If table doesn't exist, just continue - backup file was created successfully
+            error_log("Backup metadata table not found: " . $e->getMessage());
+        }
+
+        return ['success' => true, 'message' => 'Backup created successfully', 'filename' => basename($backup_file)];
+    } catch (Exception $e) {
+        return ['success' => false, 'message' => 'Backup error: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Restore database backup
+ */
+function admin_restore_backup($pdo) {
+    try {
+        // Check if file was uploaded
+        if (!isset($_FILES['backup_file']) || $_FILES['backup_file']['error'] !== UPLOAD_ERR_OK) {
+            return ['success' => false, 'message' => 'No backup file uploaded or upload error'];
+        }
+
+        $uploaded_file = $_FILES['backup_file']['tmp_name'];
+        $filename = $_FILES['backup_file']['name'];
+
+        // Validate file type
+        $file_ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        if ($file_ext !== 'sql') {
+            return ['success' => false, 'message' => 'Invalid file type. Only .sql files are allowed'];
+        }
+
+        // Validate file size (max 50MB)
+        if ($_FILES['backup_file']['size'] > 50 * 1024 * 1024) {
+            return ['success' => false, 'message' => 'File size exceeds 50MB limit'];
+        }
+
+        // Read backup file
+        $sql_content = file_get_contents($uploaded_file);
+        if ($sql_content === false) {
+            return ['success' => false, 'message' => 'Failed to read backup file'];
+        }
+
+        // Security check: Prevent execution of dangerous operations
+        $dangerous_patterns = [
+            '/DROP\s+DATABASE/i',
+            '/CREATE\s+DATABASE/i',
+            '/USE\s+\w+/i',
+        ];
+        foreach ($dangerous_patterns as $pattern) {
+            if (preg_match($pattern, $sql_content)) {
+                return ['success' => false, 'message' => 'Backup file contains unsafe SQL operations'];
+            }
+        }
+
+        // Split SQL statements
+        $statements = array_filter(array_map('trim', explode(';', $sql_content)));
+
+        $pdo->beginTransaction();
+
+        try {
+            // Execute each SQL statement
+            foreach ($statements as $statement) {
+                if (!empty($statement) && !preg_match('/^--/', $statement)) {
+                    $pdo->exec($statement);
+                }
+            }
+
+            $pdo->commit();
+
+            // Log restore action
+            admin_log_security_action($pdo, $_SESSION['admin_id'], 'backup_restored', 'Backup restored: ' . $filename);
+
+            return ['success' => true, 'message' => 'Backup restored successfully'];
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            return ['success' => false, 'message' => 'Restore error: ' . $e->getMessage()];
+        }
+    } catch (Exception $e) {
+        return ['success' => false, 'message' => 'Restore error: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Log security-related actions
+ * TODO: Adjust table name and structure based on actual security logs table
+ */
+function admin_log_security_action($pdo, $admin_id, $action_type, $description) {
+    try {
+        // Try to log to security_logs table if it exists
+        $stmt = $pdo->prepare("
+            INSERT INTO security_logs (admin_id, action_type, description, ip_address, user_agent, created_at) 
+            VALUES (?, ?, ?, ?, ?, NOW())
+        ");
+        $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+        $stmt->execute([$admin_id, $action_type, $description, $ip_address, $user_agent]);
+    } catch (PDOException $e) {
+        // If table doesn't exist, just log to error log
+        error_log("Security log entry failed (table may not exist): " . $e->getMessage() . " - Action: {$action_type}, Admin ID: {$admin_id}, Description: {$description}");
+    }
+}
+
 // Get all admins for user management
 $all_admins = get_all_admins($pdo);
 ?>
@@ -199,6 +890,8 @@ $all_admins = get_all_admins($pdo);
     <link rel="icon" href="../images/logo3.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary: #8b4513;
@@ -1210,6 +1903,85 @@ $all_admins = get_all_admins($pdo);
                 font-size: 1.3rem;
             }
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 0;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gray);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
     </style>
 </head>
 
@@ -1639,6 +2411,53 @@ $all_admins = get_all_admins($pdo);
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </ul>
+                        </div>
+
+                        <!-- Add Admin Inline Form (Hidden by default) -->
+                        <div id="addAdminFormContainer" style="display: none; margin-top: 20px; padding: 20px; background: var(--gray); border-radius: 8px; border: 1px solid var(--gray-dark);">
+                            <h4 style="margin-top: 0; margin-bottom: 20px; color: var(--primary);">
+                                <i class="fas fa-user-plus"></i> Add New Administrator
+                            </h4>
+                            <form id="addAdminForm" method="POST">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                                <input type="hidden" name="action" value="add_user">
+                                
+                                <div class="form-group">
+                                    <label for="addAdminName">Admin Name *</label>
+                                    <input type="text" id="addAdminName" name="username" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="addAdminEmail">Admin Email *</label>
+                                    <input type="email" id="addAdminEmail" name="email" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="addAdminPassword">Password *</label>
+                                    <input type="password" id="addAdminPassword" name="password" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="addAdminRole">Role *</label>
+                                    <select id="addAdminRole" name="role" required>
+                                        <option value="manager" selected>Admin</option>
+                                        <?php if ($is_super_admin): ?>
+                                        <option value="super_admin">Super Admin</option>
+                                        <?php endif; ?>
+                                        <option value="content_manager">Content Manager</option>
+                                        <option value="support">Support</option>
+                                    </select>
+                                </div>
+
+                                <div class="settings-actions" style="margin-top: 20px;">
+                                    <button type="button" class="btn btn-secondary" id="cancelAddAdminForm">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Create Admin
+                                    </button>
+                                </div>
+                            </form>
                         </div>
 
                         <div class="form-group">
@@ -2183,14 +3002,38 @@ $all_admins = get_all_admins($pdo);
                     };
                 } else if (section.id === 'security-settings') {
                     sectionName = 'security';
+                    
+                    // Get values for validation
+                    const passwordMinLength = parseInt(document.getElementById('passwordMinLength').value) || 8;
+                    const sessionTimeout = parseInt(document.getElementById('sessionTimeout').value) || 30;
+                    const loginAttempts = parseInt(document.getElementById('loginAttempts').value) || 5;
+                    
+                    // Validate password minimum length
+                    if (isNaN(passwordMinLength) || passwordMinLength < 6 || passwordMinLength > 20) {
+                        showNotification('Password minimum length must be between 6 and 20', 'error');
+                        return;
+                    }
+                    
+                    // Validate session timeout
+                    if (isNaN(sessionTimeout) || sessionTimeout < 5 || sessionTimeout > 240) {
+                        showNotification('Session timeout must be between 5 and 240 minutes', 'error');
+                        return;
+                    }
+                    
+                    // Validate login attempts
+                    if (isNaN(loginAttempts) || loginAttempts < 3 || loginAttempts > 10) {
+                        showNotification('Max login attempts must be between 3 and 10', 'error');
+                        return;
+                    }
+                    
                     data = {
-                        password_min_length: document.getElementById('passwordMinLength').value,
+                        password_min_length: passwordMinLength.toString(),
                         password_require_uppercase: document.getElementById('passwordRequireUppercase').checked ? '1' : '0',
                         password_require_lowercase: document.getElementById('passwordRequireLowercase').checked ? '1' : '0',
                         password_require_numbers: document.getElementById('passwordRequireNumbers').checked ? '1' : '0',
                         password_require_special: document.getElementById('passwordRequireSpecial').checked ? '1' : '0',
-                        session_timeout: document.getElementById('sessionTimeout').value,
-                        login_attempts: document.getElementById('loginAttempts').value,
+                        session_timeout: sessionTimeout.toString(),
+                        login_attempts: loginAttempts.toString(),
                         two_factor_auth: document.getElementById('twoFactorAuth').checked ? '1' : '0'
                     };
                 } else if (section.id === 'appearance-settings') {
@@ -2208,10 +3051,18 @@ $all_admins = get_all_admins($pdo);
                     };
                 } else if (section.id === 'backup-settings') {
                     sectionName = 'general'; // Backup settings go to general
+                    
+                    // Validate backup retention
+                    const backupRetention = parseInt(document.getElementById('backupRetention').value) || 30;
+                    if (isNaN(backupRetention) || backupRetention < 7 || backupRetention > 365) {
+                        showNotification('Backup retention must be between 7 and 365 days', 'error');
+                        return;
+                    }
+                    
                     data = {
                         auto_backup: document.getElementById('autoBackup').checked ? '1' : '0',
                         backup_frequency: document.getElementById('backupFrequency').value,
-                        backup_retention: document.getElementById('backupRetention').value
+                        backup_retention: backupRetention.toString()
                     };
                 }
                 
@@ -2237,7 +3088,39 @@ $all_admins = get_all_admins($pdo);
                     
                     if (result.success) {
                         // Show success message
-                        showNotification('Settings saved successfully!', 'success');
+                        // Use SweetAlert2 for notifications, security, and backup sections
+                        if (sectionName === 'notifications' || sectionName === 'security' || sectionName === 'general') {
+                            // Check if this is backup settings (general section with backup fields)
+                            const isBackupSettings = section.id === 'backup-settings';
+                            
+                            // Check if SweetAlert2 is loaded
+                            if (typeof Swal !== 'undefined') {
+                                let messageText = 'Settings saved successfully!';
+                                if (sectionName === 'security') {
+                                    messageText = 'Security settings have been saved.';
+                                } else if (sectionName === 'notifications') {
+                                    messageText = 'Notification settings have been saved.';
+                                } else if (isBackupSettings) {
+                                    messageText = 'Backup settings have been saved.';
+                                }
+                                
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Saved successfully',
+                                    text: messageText,
+                                    timer: 1500,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                    toast: true,
+                                    position: 'top-end'
+                                });
+                            } else {
+                                // Fallback to default notification
+                                showNotification('Settings saved successfully!', 'success');
+                            }
+                        } else {
+                            showNotification('Settings saved successfully!', 'success');
+                        }
                         
                         // If appearance settings, reload page after short delay to show changes
                         if (sectionName === 'appearance') {
@@ -2378,7 +3261,23 @@ $all_admins = get_all_admins($pdo);
         // Create Backup
         if (createBackupBtn) {
             createBackupBtn.addEventListener('click', async function() {
-                if (!confirm('Create a backup of all settings? This may take a few moments.')) {
+                // Use SweetAlert for confirmation if available
+                let shouldProceed = false;
+                if (typeof Swal !== 'undefined') {
+                    const result = await Swal.fire({
+                        title: 'Create Backup?',
+                        text: 'This will create a backup of all settings. This may take a few moments.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Create Backup',
+                        cancelButtonText: 'Cancel'
+                    });
+                    shouldProceed = result.isConfirmed;
+                } else {
+                    shouldProceed = confirm('Create a backup of all settings? This may take a few moments.');
+                }
+                
+                if (!shouldProceed) {
                     return;
                 }
                 
@@ -2399,14 +3298,45 @@ $all_admins = get_all_admins($pdo);
                     const result = await response.json();
                     
                     if (result.success) {
-                        showNotification('Backup created successfully!', 'success');
-                        // Reload page to show new backup
-                        setTimeout(() => location.reload(), 1500);
+                        // Use SweetAlert for success if available
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Backup Created',
+                                text: 'Backup created successfully!',
+                                timer: 1500,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                toast: true,
+                                position: 'top-end'
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            showNotification('Backup created successfully!', 'success');
+                            setTimeout(() => location.reload(), 1500);
+                        }
                     } else {
-                        showNotification(result.message || 'Error creating backup', 'error');
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: result.message || 'Error creating backup'
+                            });
+                        } else {
+                            showNotification(result.message || 'Error creating backup', 'error');
+                        }
                     }
                 } catch (error) {
-                    showNotification('Error creating backup. Please try again.', 'error');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error creating backup. Please try again.'
+                        });
+                    } else {
+                        showNotification('Error creating backup. Please try again.', 'error');
+                    }
                 } finally {
                     this.disabled = false;
                     this.innerHTML = originalText;
@@ -2414,20 +3344,88 @@ $all_admins = get_all_admins($pdo);
             });
         }
 
-        // Add Admin (only for super admin)
+        // Add Admin Modal (only for super admin)
+        const addAdminModal = document.getElementById('addAdminModal');
+        const closeAddAdminModal = document.getElementById('closeAddAdminModal');
+        const cancelAddAdmin = document.getElementById('cancelAddAdmin');
+        const addAdminForm = document.getElementById('addAdminForm');
+        
         if (addAdminBtn) {
             <?php if ($is_super_admin): ?>
             addAdminBtn.addEventListener('click', function() {
-                // This would open a modal to add a new admin
-                // For now, redirect to a separate admin creation page or show alert
-                if (confirm('This will open the admin creation form. Continue?')) {
-                    // You can implement a modal here or redirect
-                    alert('Admin creation form would open here. Implement as needed.');
+                if (addAdminModal) {
+                    addAdminModal.classList.add('active');
+                    // Reset form
+                    if (addAdminForm) {
+                        addAdminForm.reset();
+                    }
                 }
             });
             <?php else: ?>
             addAdminBtn.style.display = 'none';
             <?php endif; ?>
+        }
+
+        // Close modal handlers
+        function closeAddAdminModalFunc() {
+            if (addAdminModal) {
+                addAdminModal.classList.remove('active');
+            }
+        }
+
+        if (closeAddAdminModal) {
+            closeAddAdminModal.addEventListener('click', closeAddAdminModalFunc);
+        }
+
+        if (cancelAddAdmin) {
+            cancelAddAdmin.addEventListener('click', closeAddAdminModalFunc);
+        }
+
+        // Close modal when clicking outside
+        if (addAdminModal) {
+            addAdminModal.addEventListener('click', function(e) {
+                if (e.target === addAdminModal) {
+                    closeAddAdminModalFunc();
+                }
+            });
+        }
+
+        // Handle form submission
+        if (addAdminForm) {
+            addAdminForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(addAdminForm);
+                const submitBtn = addAdminForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                
+                try {
+                    const response = await fetch('admin-settings.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification(result.message || 'Admin created successfully!', 'success');
+                        closeAddAdminModalFunc();
+                        // Reload page to show new admin
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showNotification(result.message || 'Error creating admin', 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                } catch (error) {
+                    showNotification('Error creating admin. Please try again.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            });
         }
         
         // Restore Defaults button
@@ -2478,7 +3476,27 @@ $all_admins = get_all_admins($pdo);
             
             if (e.target.closest('.delete-backup')) {
                 const filename = e.target.closest('.delete-backup').dataset.file;
-                if (!confirm('Are you sure you want to delete this backup?')) {
+                const backupItem = e.target.closest('.admin-item');
+                
+                // Use SweetAlert for confirmation if available
+                let shouldDelete = false;
+                if (typeof Swal !== 'undefined') {
+                    const result = await Swal.fire({
+                        title: 'Delete Backup?',
+                        text: 'Are you sure you want to delete this backup? This action cannot be undone.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it',
+                        cancelButtonText: 'Cancel'
+                    });
+                    shouldDelete = result.isConfirmed;
+                } else {
+                    shouldDelete = confirm('Are you sure you want to delete this backup?');
+                }
+                
+                if (!shouldDelete) {
                     return;
                 }
                 
@@ -2496,13 +3514,49 @@ $all_admins = get_all_admins($pdo);
                     const result = await response.json();
                     
                     if (result.success) {
-                        showNotification('Backup deleted successfully!', 'success');
-                        e.target.closest('.admin-item').remove();
+                        // Use SweetAlert for success if available
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted',
+                                text: 'Backup deleted successfully!',
+                                timer: 1500,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                toast: true,
+                                position: 'top-end'
+                            });
+                        } else {
+                            showNotification('Backup deleted successfully!', 'success');
+                        }
+                        backupItem.remove();
+                        
+                        // If no backups left, show message
+                        const backupList = document.getElementById('backupList');
+                        if (backupList && backupList.querySelectorAll('.admin-item').length === 0) {
+                            backupList.innerHTML = '<li class="admin-item"><div class="admin-details-sm"><p>No backups found. Create your first backup.</p></div></li>';
+                        }
                     } else {
-                        showNotification(result.message || 'Error deleting backup', 'error');
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: result.message || 'Error deleting backup'
+                            });
+                        } else {
+                            showNotification(result.message || 'Error deleting backup', 'error');
+                        }
                     }
                 } catch (error) {
-                    showNotification('Error deleting backup. Please try again.', 'error');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error deleting backup. Please try again.'
+                        });
+                    } else {
+                        showNotification('Error deleting backup. Please try again.', 'error');
+                    }
                 }
             }
         });
@@ -2533,6 +3587,604 @@ $all_admins = get_all_admins($pdo);
             // Trigger once on load to check initial position
             revealOnScroll();
         });
+
+        // Inline Add Admin Form Toggle Functionality
+        function toggleAddAdminForm() {
+            const formContainer = document.getElementById('addAdminFormContainer');
+            if (formContainer) {
+                const isHidden = formContainer.style.display === 'none';
+                formContainer.style.display = isHidden ? 'block' : 'none';
+                
+                // Reset form when hiding
+                if (!isHidden) {
+                    const inlineForm = document.querySelector('#addAdminFormContainer form');
+                    if (inlineForm) {
+                        inlineForm.reset();
+                    }
+                }
+            }
+        }
+
+        // Wire up Add Admin button to toggle inline form
+        const addAdminBtnInline = document.getElementById('addAdminBtn');
+        if (addAdminBtnInline) {
+            addAdminBtnInline.addEventListener('click', function(e) {
+                // Toggle the inline form
+                toggleAddAdminForm();
+            });
+        }
+
+        // Handle cancel button for inline form
+        const cancelAddAdminFormBtn = document.getElementById('cancelAddAdminForm');
+        if (cancelAddAdminFormBtn) {
+            cancelAddAdminFormBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleAddAdminForm();
+            });
+        }
+
+        // Handle inline form submission
+        const inlineAddAdminForm = document.querySelector('#addAdminFormContainer form');
+        if (inlineAddAdminForm) {
+            inlineAddAdminForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn ? submitBtn.innerHTML : '';
+                
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                }
+                
+                try {
+                    const response = await fetch('admin-settings.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        if (typeof showNotification === 'function') {
+                            showNotification(result.message || 'Admin created successfully!', 'success');
+                        } else {
+                            alert(result.message || 'Admin created successfully!');
+                        }
+                        toggleAddAdminForm();
+                        // Reload page to show new admin
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        if (typeof showNotification === 'function') {
+                            showNotification(result.message || 'Error creating admin', 'error');
+                        } else {
+                            alert(result.message || 'Error creating admin');
+                        }
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalText;
+                        }
+                    }
+                } catch (error) {
+                    if (typeof showNotification === 'function') {
+                        showNotification('Error creating admin. Please try again.', 'error');
+                    } else {
+                        alert('Error creating admin. Please try again.');
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                }
+            });
+        }
     </script>
+
+    <!-- Add Admin Modal -->
+    <div class="modal" id="addAdminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Add New Administrator</h3>
+                <button class="close-modal" id="closeAddAdminModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addAdminForm">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="action" value="add_user">
+                    
+                    <div class="form-group">
+                        <label for="newAdminUsername">Username *</label>
+                        <input type="text" id="newAdminUsername" name="username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newAdminEmail">Email Address *</label>
+                        <input type="email" id="newAdminEmail" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newAdminPassword">Password *</label>
+                        <input type="password" id="newAdminPassword" name="password" required>
+                        <small style="display: block; margin-top: 5px; color: var(--text-light);">
+                            Minimum <?php echo htmlspecialchars(get_setting($pdo, 'security', 'password_min_length', '8')); ?> characters
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newAdminRole">Role *</label>
+                        <select id="newAdminRole" name="role" required>
+                            <option value="manager">Manager</option>
+                            <option value="content_manager">Content Manager</option>
+                            <option value="support">Support</option>
+                            <?php if ($is_super_admin): ?>
+                            <option value="super_admin">Super Admin</option>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="cancelAddAdmin">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Create Admin
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<?php
+// ============================================================================
+// RESTAURANT INFO HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Save restaurant information to database
+ * Admin-only function for saving restaurant info from form submission
+ * 
+ * @param PDO $pdo Database connection
+ * @param array $data Associative array of restaurant data (optional, uses $_POST if not provided)
+ * @return array Result array with 'success' boolean and 'message' string
+ */
+function admin_save_restaurant_info($pdo, $data = null) {
+    try {
+        // Use provided data or $_POST
+        if ($data === null) {
+            $data = $_POST;
+        }
+        
+        // Sanitize and validate inputs
+        $restaurant_name = isset($data['restaurant_name']) ? trim($data['restaurant_name']) : '';
+        $restaurant_phone = isset($data['restaurant_phone']) ? trim($data['restaurant_phone']) : '';
+        $restaurant_email = isset($data['restaurant_email']) ? trim($data['restaurant_email']) : '';
+        $restaurant_address = isset($data['restaurant_address']) ? trim($data['restaurant_address']) : '';
+        $opening_hours = isset($data['opening_hours']) ? trim($data['opening_hours']) : '';
+        $closing_hours = isset($data['closing_hours']) ? trim($data['closing_hours']) : '';
+        $description = isset($data['restaurant_description']) ? trim($data['restaurant_description']) : (isset($data['description']) ? trim($data['description']) : '');
+        
+        // Validate required fields
+        if (empty($restaurant_name)) {
+            return ['success' => false, 'message' => 'Restaurant name is required'];
+        }
+        
+        // Validate email format if provided
+        if (!empty($restaurant_email) && !filter_var($restaurant_email, FILTER_VALIDATE_EMAIL)) {
+            return ['success' => false, 'message' => 'Invalid email address'];
+        }
+        
+        // Begin transaction
+        $pdo->beginTransaction();
+        
+        // Save all fields using set_setting (handles INSERT/UPDATE automatically)
+        set_setting($pdo, 'restaurant', 'restaurant_name', $restaurant_name);
+        set_setting($pdo, 'restaurant', 'restaurant_phone', $restaurant_phone);
+        set_setting($pdo, 'restaurant', 'restaurant_email', $restaurant_email);
+        set_setting($pdo, 'restaurant', 'restaurant_address', $restaurant_address);
+        set_setting($pdo, 'restaurant', 'opening_hours', $opening_hours);
+        
+        // Save optional fields only if they exist in the data
+        if ($closing_hours !== '') {
+            set_setting($pdo, 'restaurant', 'closing_hours', $closing_hours);
+        }
+        if ($description !== '') {
+            set_setting($pdo, 'restaurant', 'restaurant_description', $description);
+        }
+        
+        // Commit transaction
+        $pdo->commit();
+        
+        return ['success' => true, 'message' => 'Restaurant information saved successfully'];
+        
+    } catch (PDOException $e) {
+        // Rollback on error
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        // Log error without exposing to user
+        error_log('Error saving restaurant info: ' . $e->getMessage());
+        return ['success' => false, 'message' => 'Failed to save restaurant information'];
+    } catch (Exception $e) {
+        // Rollback on error
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        // Log error without exposing to user
+        error_log('Error saving restaurant info: ' . $e->getMessage());
+        return ['success' => false, 'message' => 'Failed to save restaurant information'];
+    }
+}
+
+/**
+ * Get restaurant information from database
+ * Frontend-safe function that can be included/required by frontend files
+ * Returns associative array of restaurant info with safe defaults
+ * 
+ * @param PDO|null $pdo Optional PDO connection. If not provided, creates its own
+ * @return array Associative array with restaurant information
+ */
+function get_restaurant_info($pdo = null) {
+    // Default return values
+    $default_info = [
+        'restaurant_name' => "Joseph's Pot",
+        'restaurant_phone' => '',
+        'restaurant_email' => '',
+        'restaurant_address' => '',
+        'opening_hours' => '',
+        'closing_hours' => '',
+        'description' => ''
+    ];
+    
+    // Create PDO connection if not provided (frontend-safe)
+    $own_connection = false;
+    if ($pdo === null) {
+        // Check if database constants are defined
+        if (!defined('DB_HOST') || !defined('DB_NAME') || !defined('DB_USER') || !defined('DB_PASS')) {
+            // Constants not defined - return defaults
+            error_log('Database constants not defined in get_restaurant_info');
+            return $default_info;
+        }
+        
+        try {
+            $pdo = new PDO(
+                "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
+                DB_USER,
+                DB_PASS,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                ]
+            );
+            $own_connection = true;
+        } catch (PDOException $e) {
+            // Fail safely - return defaults
+            error_log('Error connecting to database in get_restaurant_info: ' . $e->getMessage());
+            return $default_info;
+        }
+    }
+    
+    // Fetch restaurant info using get_setting if available, otherwise query directly
+    $restaurant_info = [];
+    
+    try {
+        // Try using get_setting function if it exists
+        if (function_exists('get_setting')) {
+            $restaurant_info = [
+                'restaurant_name' => get_setting($pdo, 'restaurant', 'restaurant_name', "Joseph's Pot"),
+                'restaurant_phone' => get_setting($pdo, 'restaurant', 'restaurant_phone', ''),
+                'restaurant_email' => get_setting($pdo, 'restaurant', 'restaurant_email', ''),
+                'restaurant_address' => get_setting($pdo, 'restaurant', 'restaurant_address', ''),
+                'opening_hours' => get_setting($pdo, 'restaurant', 'opening_hours', ''),
+                'closing_hours' => get_setting($pdo, 'restaurant', 'closing_hours', ''),
+                'description' => get_setting($pdo, 'restaurant', 'restaurant_description', '')
+            ];
+        } else {
+            // Fallback: query database directly
+            $settings = [];
+            $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM restaurant_settings");
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+            
+            foreach ($results as $row) {
+                $settings[$row['setting_key']] = $row['setting_value'];
+            }
+            
+            $restaurant_info = [
+                'restaurant_name' => isset($settings['restaurant_name']) ? $settings['restaurant_name'] : "Joseph's Pot",
+                'restaurant_phone' => isset($settings['restaurant_phone']) ? $settings['restaurant_phone'] : '',
+                'restaurant_email' => isset($settings['restaurant_email']) ? $settings['restaurant_email'] : '',
+                'restaurant_address' => isset($settings['restaurant_address']) ? $settings['restaurant_address'] : '',
+                'opening_hours' => isset($settings['opening_hours']) ? $settings['opening_hours'] : '',
+                'closing_hours' => isset($settings['closing_hours']) ? $settings['closing_hours'] : '',
+                'description' => isset($settings['restaurant_description']) ? $settings['restaurant_description'] : ''
+            ];
+        }
+    } catch (PDOException $e) {
+        // Fail safely - return defaults
+        error_log('Error fetching restaurant info: ' . $e->getMessage());
+        $restaurant_info = $default_info;
+    } catch (Exception $e) {
+        // Fail safely - return defaults
+        error_log('Error fetching restaurant info: ' . $e->getMessage());
+        $restaurant_info = $default_info;
+    }
+    
+    // Close connection if we created it
+    if ($own_connection) {
+        $pdo = null;
+    }
+    
+    return $restaurant_info;
+}
+
+/**
+ * Save notification settings
+ * Helper function for saving notification preferences
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $admin_id Admin user ID
+ * @param array $data Optional data array (defaults to $_POST)
+ * @return array Success/error response
+ */
+function admin_save_notification_settings($pdo, $admin_id, $data = null) {
+    try {
+        if ($data === null) {
+            $data = $_POST;
+        }
+        
+        // Convert checkbox values to 1 or 0
+        $email_orders = isset($data['email_orders']) && ($data['email_orders'] === '1' || $data['email_orders'] === 'true' || $data['email_orders'] === true) ? '1' : '0';
+        $email_reservations = isset($data['email_reservations']) && ($data['email_reservations'] === '1' || $data['email_reservations'] === 'true' || $data['email_reservations'] === true) ? '1' : '0';
+        $email_reviews = isset($data['email_reviews']) && ($data['email_reviews'] === '1' || $data['email_reviews'] === 'true' || $data['email_reviews'] === true) ? '1' : '0';
+        $email_promotions = isset($data['email_promotions']) && ($data['email_promotions'] === '1' || $data['email_promotions'] === 'true' || $data['email_promotions'] === true) ? '1' : '0';
+        $push_orders = isset($data['push_orders']) && ($data['push_orders'] === '1' || $data['push_orders'] === 'true' || $data['push_orders'] === true) ? '1' : '0';
+        $push_reservations = isset($data['push_reservations']) && ($data['push_reservations'] === '1' || $data['push_reservations'] === 'true' || $data['push_reservations'] === true) ? '1' : '0';
+        $push_low_stock = isset($data['push_low_stock']) && ($data['push_low_stock'] === '1' || $data['push_low_stock'] === 'true' || $data['push_low_stock'] === true) ? '1' : '0';
+        
+        // Sanitize notification sound
+        $notification_sound = isset($data['notification_sound']) ? trim($data['notification_sound']) : 'default';
+        $allowed_sounds = ['default', 'chime', 'bell', 'ding', 'none'];
+        if (!in_array($notification_sound, $allowed_sounds)) {
+            $notification_sound = 'default';
+        }
+        
+        $pdo->beginTransaction();
+        
+        set_notification_setting($pdo, 'email_orders', $email_orders, $admin_id);
+        set_notification_setting($pdo, 'email_reservations', $email_reservations, $admin_id);
+        set_notification_setting($pdo, 'email_reviews', $email_reviews, $admin_id);
+        set_notification_setting($pdo, 'email_promotions', $email_promotions, $admin_id);
+        set_notification_setting($pdo, 'push_orders', $push_orders, $admin_id);
+        set_notification_setting($pdo, 'push_reservations', $push_reservations, $admin_id);
+        set_notification_setting($pdo, 'push_low_stock', $push_low_stock, $admin_id);
+        set_notification_setting($pdo, 'notification_sound', $notification_sound, $admin_id);
+        
+        $pdo->commit();
+        
+        return ['success' => true, 'message' => 'Notification settings saved successfully'];
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log('Error saving notification settings: ' . $e->getMessage());
+        return ['success' => false, 'message' => 'Failed to save notification settings'];
+    }
+}
+
+/**
+ * Get notification settings
+ * Helper function for fetching notification preferences
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $admin_id Admin user ID (optional, uses session if not provided)
+ * @return array Associative array of notification settings
+ */
+function admin_get_notification_settings($pdo, $admin_id = null) {
+    try {
+        if ($admin_id === null && isset($_SESSION['admin_id'])) {
+            $admin_id = $_SESSION['admin_id'];
+        }
+        
+        $settings = [
+            'email_orders' => get_notification_setting($pdo, 'email_orders', $admin_id, '1'),
+            'email_reservations' => get_notification_setting($pdo, 'email_reservations', $admin_id, '1'),
+            'email_reviews' => get_notification_setting($pdo, 'email_reviews', $admin_id, '0'),
+            'email_promotions' => get_notification_setting($pdo, 'email_promotions', $admin_id, '1'),
+            'push_orders' => get_notification_setting($pdo, 'push_orders', $admin_id, '1'),
+            'push_reservations' => get_notification_setting($pdo, 'push_reservations', $admin_id, '0'),
+            'push_low_stock' => get_notification_setting($pdo, 'push_low_stock', $admin_id, '1'),
+            'notification_sound' => get_notification_setting($pdo, 'notification_sound', $admin_id, 'default')
+        ];
+        
+        return $settings;
+    } catch (PDOException $e) {
+        error_log('Error fetching notification settings: ' . $e->getMessage());
+        // Return safe defaults
+        return [
+            'email_orders' => '1',
+            'email_reservations' => '1',
+            'email_reviews' => '0',
+            'email_promotions' => '1',
+            'push_orders' => '1',
+            'push_reservations' => '0',
+            'push_low_stock' => '1',
+            'notification_sound' => 'default'
+        ];
+    }
+}
+
+/**
+ * Check if a notification type is enabled
+ * Helper function for triggers to check if notifications should be sent
+ * 
+ * USAGE IN TRIGGERS:
+ * 
+ * 1. When a new order is created (submit-order.php, order creation logic):
+ *    - Check email: if (notifications_enabled('email_orders')) { send email }
+ *    - Check push: if (notifications_enabled('push_orders')) { createNotification(...) }
+ * 
+ * 2. When a new reservation is created (submit-reservation.php, admin-reservation.php):
+ *    - Check email: if (notifications_enabled('email_reservations')) { send email }
+ *    - Check push: if (notifications_enabled('push_reservations')) { createNotification(...) }
+ * 
+ * 3. When a review is submitted:
+ *    - Check email: if (notifications_enabled('email_reviews')) { send email }
+ * 
+ * 4. When stock is low (inventory management):
+ *    - Check push: if (notifications_enabled('push_low_stock')) { createNotification(...) }
+ * 
+ * @param string $notification_type Type of notification (e.g., 'email_orders', 'push_orders', etc.)
+ * @param PDO $pdo Database connection (optional, will create if needed)
+ * @param int $admin_id Admin user ID (optional, checks global settings if null)
+ * @return bool True if enabled, false otherwise
+ */
+function notifications_enabled($notification_type, $pdo = null, $admin_id = null) {
+    try {
+        $own_connection = false;
+        
+        // Create connection if not provided
+        if ($pdo === null) {
+            if (defined('DB_HOST') && defined('DB_NAME') && defined('DB_USER') && defined('DB_PASS')) {
+                $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $own_connection = true;
+            } else {
+                error_log('notifications_enabled: Database constants not defined');
+                return false;
+            }
+        }
+        
+        $value = get_notification_setting($pdo, $notification_type, $admin_id, '0');
+        
+        // Close connection if we created it
+        if ($own_connection) {
+            $pdo = null;
+        }
+        
+        return $value === '1';
+    } catch (Exception $e) {
+        error_log('Error checking notification setting: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Update security settings with validation
+ * Helper function for saving security preferences with proper validation
+ * 
+ * @param PDO $pdo Database connection
+ * @param array $data Optional data array (defaults to $_POST)
+ * @return array Success/error response
+ */
+function admin_update_security_settings($pdo, $data = null) {
+    try {
+        if ($data === null) {
+            $data = $_POST;
+        }
+        
+        // Get and validate password minimum length
+        $password_min_length = isset($data['password_min_length']) ? intval($data['password_min_length']) : 8;
+        if ($password_min_length < 6 || $password_min_length > 20) {
+            return ['success' => false, 'message' => 'Password minimum length must be between 6 and 20'];
+        }
+        
+        // Get and validate password requirements (checkboxes)
+        $password_require_uppercase = isset($data['password_require_uppercase']) && ($data['password_require_uppercase'] === '1' || $data['password_require_uppercase'] === 'true' || $data['password_require_uppercase'] === true) ? '1' : '0';
+        $password_require_lowercase = isset($data['password_require_lowercase']) && ($data['password_require_lowercase'] === '1' || $data['password_require_lowercase'] === 'true' || $data['password_require_lowercase'] === true) ? '1' : '0';
+        $password_require_numbers = isset($data['password_require_numbers']) && ($data['password_require_numbers'] === '1' || $data['password_require_numbers'] === 'true' || $data['password_require_numbers'] === true) ? '1' : '0';
+        $password_require_special = isset($data['password_require_special']) && ($data['password_require_special'] === '1' || $data['password_require_special'] === 'true' || $data['password_require_special'] === true) ? '1' : '0';
+        
+        // Get and validate session timeout
+        $session_timeout = isset($data['session_timeout']) ? intval($data['session_timeout']) : 30;
+        if ($session_timeout < 5 || $session_timeout > 240) {
+            return ['success' => false, 'message' => 'Session timeout must be between 5 and 240 minutes'];
+        }
+        
+        // Get and validate login attempts
+        $login_attempts = isset($data['login_attempts']) ? intval($data['login_attempts']) : 5;
+        if ($login_attempts < 3 || $login_attempts > 10) {
+            return ['success' => false, 'message' => 'Max login attempts must be between 3 and 10'];
+        }
+        
+        // Get two-factor authentication toggle
+        $two_factor_auth = isset($data['two_factor_auth']) && ($data['two_factor_auth'] === '1' || $data['two_factor_auth'] === 'true' || $data['two_factor_auth'] === true) ? '1' : '0';
+        
+        $pdo->beginTransaction();
+        
+        set_setting($pdo, 'security', 'password_min_length', strval($password_min_length));
+        set_setting($pdo, 'security', 'password_require_uppercase', $password_require_uppercase);
+        set_setting($pdo, 'security', 'password_require_lowercase', $password_require_lowercase);
+        set_setting($pdo, 'security', 'password_require_numbers', $password_require_numbers);
+        set_setting($pdo, 'security', 'password_require_special', $password_require_special);
+        set_setting($pdo, 'security', 'session_timeout', strval($session_timeout));
+        set_setting($pdo, 'security', 'login_attempts', strval($login_attempts));
+        set_setting($pdo, 'security', 'two_factor_auth', $two_factor_auth);
+        
+        $pdo->commit();
+        
+        return ['success' => true, 'message' => 'Security settings saved successfully'];
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log('Error saving security settings: ' . $e->getMessage());
+        return ['success' => false, 'message' => 'Failed to save security settings'];
+    }
+}
+
+/**
+ * Delete backup file and metadata
+ * Helper function for deleting backups
+ * 
+ * @param PDO $pdo Database connection
+ * @param string $filename Backup filename to delete
+ * @return array Success/error response
+ */
+function admin_delete_backup($pdo, $filename) {
+    try {
+        if (empty($filename)) {
+            return ['success' => false, 'message' => 'Invalid filename'];
+        }
+        
+        // Sanitize filename to prevent directory traversal
+        $filename = basename($filename);
+        
+        // Get backup metadata
+        $stmt = $pdo->prepare("SELECT meta_value FROM admin_settings_meta WHERE meta_key = ? AND meta_type = 'backup'");
+        $stmt->execute([$filename]);
+        $backup = $stmt->fetch();
+        
+        if (!$backup) {
+            return ['success' => false, 'message' => 'Backup not found'];
+        }
+        
+        $meta = json_decode($backup['meta_value'], true);
+        $file_path = isset($meta['file_path']) ? $meta['file_path'] : __DIR__ . '/../backups/' . $filename;
+        
+        // Ensure file path is within backup directory (security check)
+        $backup_dir = realpath(__DIR__ . '/../backups');
+        $real_file_path = realpath($file_path);
+        
+        if ($real_file_path && strpos($real_file_path, $backup_dir) === 0) {
+            // Delete file if exists
+            if (file_exists($real_file_path)) {
+                if (!unlink($real_file_path)) {
+                    error_log('Failed to delete backup file: ' . $real_file_path);
+                }
+            }
+        }
+        
+        // Delete from database
+        $stmt = $pdo->prepare("DELETE FROM admin_settings_meta WHERE meta_key = ? AND meta_type = 'backup'");
+        $stmt->execute([$filename]);
+        
+        return ['success' => true, 'message' => 'Backup deleted successfully'];
+    } catch (PDOException $e) {
+        error_log('Error deleting backup: ' . $e->getMessage());
+        return ['success' => false, 'message' => 'Failed to delete backup'];
+    }
+}
+?>
+
 </body>
 </html>
