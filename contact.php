@@ -1197,6 +1197,11 @@ require_once __DIR__ . '/includes/restaurant_info.php';
         }
         
         // Validate reCAPTCHA
+        if (typeof grecaptcha === "undefined") {
+          showStatus("reCAPTCHA could not load. Please refresh and try again.", "error");
+          return;
+        }
+
         const recaptchaResponse = grecaptcha.getResponse();
         if (!recaptchaResponse) {
           showStatus("Please complete the reCAPTCHA verification.", "error");
@@ -1253,7 +1258,9 @@ require_once __DIR__ . '/includes/restaurant_info.php';
           
           // Reset form on success
           contactForm.reset();
-          grecaptcha.reset();
+          if (typeof grecaptcha !== "undefined") {
+            grecaptcha.reset();
+          }
           
         } catch (error) {
           console.error("Submission error:", error);
