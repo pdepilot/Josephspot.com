@@ -1090,7 +1090,7 @@ $user_initials = 'AJ';
                     <button class="filter-btn" data-filter="out-of-stock">Out of Stock</button>
                     <button class="filter-btn" data-filter="soups">Soups</button>
                     <button class="filter-btn" data-filter="starters">Starters</button>
-                    <button class="filter-btn" data-filter="main">Main Courses</button>
+                    <button class="filter-btn" data-filter="main courses">Main Courses</button>
                     <button class="filter-btn" data-filter="noodles">Noodles</button>
                     <button class="filter-btn" data-filter="drinks">Drinks</button>
                 </div>
@@ -1522,6 +1522,8 @@ $user_initials = 'AJ';
                 if (currentFilter === 'all') return matchesSearch;
                 if (currentFilter === 'available') return matchesSearch && item.available;
                 if (currentFilter === 'out-of-stock') return matchesSearch && !item.available;
+                // Fix: Filter value must match database category exactly. Main Courses uses "main courses" (with space) 
+                // to match the form option value, ensuring items are found when filter button is clicked.
                 return matchesSearch && item.category === currentFilter;
             });
             

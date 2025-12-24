@@ -22,7 +22,7 @@ try {
     switch ($method) {
         case 'GET':
             // Get all menu items
-            $sql = "SELECT * FROM menu_items ORDER BY category, name";
+            $sql = "SELECT * FROM online_menu_manager ORDER BY category, name";
             $stmt = $pdo->query($sql);
             $items = $stmt->fetchAll();
             
@@ -49,7 +49,7 @@ try {
                 exit;
             }
             
-            $sql = "INSERT INTO menu_items (name, description, price, category, image_url, is_available) 
+            $sql = "INSERT INTO online_menu_manager (name, description, price, category, image_url, is_available) 
                     VALUES (:name, :description, :price, :category, :image_url, :is_available)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -86,7 +86,7 @@ try {
             $image_url = trim($input['image_url'] ?? '');
             $is_available = isset($input['is_available']) ? (int)$input['is_available'] : 1;
             
-            $sql = "UPDATE menu_items 
+            $sql = "UPDATE online_menu_manager 
                     SET name = :name, description = :description, price = :price, 
                         category = :category, image_url = :image_url, is_available = :is_available
                     WHERE id = :id";
@@ -117,7 +117,7 @@ try {
                 exit;
             }
             
-            $sql = "DELETE FROM menu_items WHERE id = :id";
+            $sql = "DELETE FROM online_menu_manager WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':id' => $id]);
             

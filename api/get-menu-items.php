@@ -24,7 +24,7 @@ try {
                 category,
                 image_url,
                 is_available
-            FROM menu_items
+            FROM online_menu_manager
             WHERE is_available = 1
             ORDER BY category, name";
     
@@ -33,7 +33,7 @@ try {
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Debug: Log total items in database (for debugging)
-    $countSql = "SELECT COUNT(*) as total FROM menu_items";
+    $countSql = "SELECT COUNT(*) as total FROM online_menu_manager";
     $countStmt = $pdo->query($countSql);
     $totalCount = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
     

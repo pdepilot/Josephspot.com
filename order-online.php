@@ -11,10 +11,13 @@ require_once __DIR__ . '/includes/restaurant_info.php';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Order Online | <?php echo !empty($restaurant_info['restaurant_name']) ? htmlspecialchars($restaurant_info['restaurant_name']) : "Joseph's Pot"; ?></title>
+    
+    <!-- FIXED: Correct FontAwesome path -->
     <link
       rel="stylesheet"
-      href="./fontawesome-free-6.7.2-web/fontawesome-free-6.7.2-web/css/all.min.css"
+      href="./fontawesome-free-6.7.2-web/css/all.min.css"
     />
+    
     <!-- <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin> -->
      <link rel="icon" href="<?php echo $appearance['favicon_path']; ?>?v=<?php echo time(); ?>">
     <link
@@ -58,10 +61,10 @@ require_once __DIR__ . '/includes/restaurant_info.php';
           <a href="gallery.php">Gallery</a>
           <a href="index.php#eventContainer">Events</a>
           <a href="contact.php">Contact</a>
-          <a href="order online.php" class="active">Order Online</a>
+          <a href="order-online.php" class="active">Order Online</a>
         </nav>
 
-        <div class="cart-icon-container">
+        <div class="cart-icon-container" id="cartIconContainer">
           <i class="fas fa-shopping-cart" id="cartIcon"></i>
           <span class="cart-count">0</span>
         </div>
@@ -109,7 +112,8 @@ require_once __DIR__ . '/includes/restaurant_info.php';
             Experience the perfect blend of tradition and innovation in every
             bite
           </p>
-          <a href="#menu" class="btn">Explore Menu</a>
+          <!-- FIXED: Added onclick handler for CTA button -->
+          <a href="#menu" class="btn" id="exploreMenuBtn">Explore Menu</a>
         </div>
       </section>
 

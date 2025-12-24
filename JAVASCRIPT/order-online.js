@@ -38,57 +38,76 @@ document.querySelectorAll(".nav-links a").forEach((link) => {
   });
 });
 
+// FIXED: CTA Button functionality
 document.addEventListener("DOMContentLoaded", function () {
+  // Add event listener for CTA button
+  const exploreMenuBtn = document.getElementById("exploreMenuBtn");
+  if (exploreMenuBtn) {
+    exploreMenuBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      const menuSection = document.getElementById("menu");
+      if (menuSection) {
+        menuSection.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  }
+
   // 1. Menu Data - Will be loaded from database
   let menuItems = [];
-  
+
   // Load menu items from database
   async function loadMenuItems() {
     try {
-      console.log('Loading menu items from API...');
-      const response = await fetch('api/get-menu-items.php');
-      
+      console.log("Loading menu items from API...");
+      const response = await fetch("api/get-menu-items.php");
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      console.log('API Response:', data);
-      
+      console.log("API Response:", data);
+
       if (data.success && data.items) {
         console.log(`Loaded ${data.items.length} menu items from database`);
         if (data.debug) {
-          console.log('Debug info:', data.debug);
+          console.log("Debug info:", data.debug);
           if (data.debug.total_items_in_db > 0 && data.items.length === 0) {
-            console.warn('⚠️ Items exist in database but none are marked as "Available". Check admin panel and set items to "Available" status.');
+            console.warn(
+              '⚠️ Items exist in database but none are marked as "Available". Check admin panel and set items to "Available" status.'
+            );
           }
         }
         menuItems = data.items;
         // Render with current category filter
         renderMenuItems(currentCategory);
       } else {
-        console.error('Failed to load menu items:', data.message || 'Unknown error');
+        console.error(
+          "Failed to load menu items:",
+          data.message || "Unknown error"
+        );
         // Fallback to empty array - menu will be empty until items are added via admin panel
         menuItems = [];
         renderMenuItems(currentCategory);
       }
     } catch (error) {
-      console.error('Error loading menu items:', error);
-      console.error('Error details:', {
+      console.error("Error loading menu items:", error);
+      console.error("Error details:", {
         message: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
       menuItems = [];
       renderMenuItems(currentCategory);
     }
   }
-  
+
   // Initialize with hardcoded items as fallback (will be replaced by database)
   const fallbackMenuItems = [
     {
       id: 1,
       title: "Ofe Owerri",
-      description: "Filled With Snails, Stockfishes, Dryfishes, Lots of Protein comes with a complimentary swallow",
+      description:
+        "Filled With Snails, Stockfishes, Dryfishes, Lots of Protein comes with a complimentary swallow",
       price: 27000,
       category: "soups",
       image: "./images/instagram image1.jpg",
@@ -96,7 +115,8 @@ document.addEventListener("DOMContentLoaded", function () {
     {
       id: 2,
       title: "Ofe Nsala White Soup",
-      description: "Thickened With Pure White Yam, Filled With Snails, And Lots of Proteins",
+      description:
+        "Thickened With Pure White Yam, Filled With Snails, And Lots of Proteins",
       price: 23000,
       category: "soups",
       image: "./images/nsala.jpeg",
@@ -109,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
       category: "soups",
       image: "./images/egusi.jpg",
     },
-    
+
     {
       id: 4,
       title: "Semo",
@@ -163,8 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
       image: "./images/plantain.jpg",
     },
 
-
-     {
+    {
       id: 7,
       title: "Nkwobi",
       description: "Goat Meat Sauced with Igbo Traditional Spiced and ugba",
@@ -176,7 +195,8 @@ document.addEventListener("DOMContentLoaded", function () {
     {
       id: 8,
       title: "Abacha",
-      description: "African Salad made from fermented African Oil Bean Seed, garnished with kpomo, Ugba, fish and spices",
+      description:
+        "African Salad made from fermented African Oil Bean Seed, garnished with kpomo, Ugba, fish and spices",
       price: 7000,
       category: "starters",
       image: "./images/Abacha1.jpg",
@@ -185,7 +205,8 @@ document.addEventListener("DOMContentLoaded", function () {
     {
       id: 10,
       title: "Isi Ewu Ukwu (Large Size)",
-      description: "Large goat head dish cooked with Joseph's pot special sauce with chips (Beware of bones)",
+      description:
+        "Large goat head dish cooked with Joseph's pot special sauce with chips (Beware of bones)",
       price: 20000,
       category: "starters",
       image: "./images/isi ewu.jpg",
@@ -194,7 +215,8 @@ document.addEventListener("DOMContentLoaded", function () {
     {
       id: 5,
       title: "Isi Ewu (Medium Size)",
-      description: "Medium goat head dish cooked with Joseph's pot special sauce with chips (Beware of bones)",
+      description:
+        "Medium goat head dish cooked with Joseph's pot special sauce with chips (Beware of bones)",
       price: 17000,
       category: "starters",
       image: "./images/isi ewu small.jpg",
@@ -216,7 +238,6 @@ document.addEventListener("DOMContentLoaded", function () {
       category: "starters",
       image: "./images/Peppered-Snail-jumbo.jpg",
     },
-
 
     {
       id: 5,
@@ -277,7 +298,8 @@ document.addEventListener("DOMContentLoaded", function () {
     {
       id: 11,
       title: "Joe's Secret ",
-      description: "Quick noodles with vegetables and eggs mixed with fried plantain",
+      description:
+        "Quick noodles with vegetables and eggs mixed with fried plantain",
       price: 25000,
       category: "noodles",
       image: "./images/2021-09-06.webp",
@@ -352,7 +374,8 @@ document.addEventListener("DOMContentLoaded", function () {
       description: "Iced or Cold Heineken, G.Stout, Despirado Beer drink",
       price: 3500,
       category: "drinks",
-      image: "https://res.cloudinary.com/dl4hjr1p2/image/upload/v1762852049/heineken_lbukim.jpg",
+      image:
+        "https://res.cloudinary.com/dl4hjr1p2/image/upload/v1762852049/heineken_lbukim.jpg",
     },
 
     {
@@ -364,13 +387,14 @@ document.addEventListener("DOMContentLoaded", function () {
       image: "./images/IM33.png",
     },
   ];
-  
+
   // 2. DOM Elements
   const menuItemsContainer = document.getElementById("menuItems");
   const cartIcon = document.getElementById("cartIcon");
+  const cartIconContainer = document.getElementById("cartIconContainer");
   const cartCount = document.querySelector(".cart-count");
   const categoryButtons = document.querySelectorAll(".category-btn");
-  
+
   // Track current filter category
   let currentCategory = "all";
   const checkoutModal = document.getElementById("checkoutModal");
@@ -381,10 +405,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const clearCartBtn = document.getElementById("clearCart");
   const proceedToCheckoutBtn = document.getElementById("proceedToCheckout");
   const customerDetailsModal = document.getElementById("customerDetailsModal");
-  const closeCustomerDetails = document.querySelector(".close-customer-details");
+  const closeCustomerDetails = document.querySelector(
+    ".close-customer-details"
+  );
   const customerDetailsForm = document.getElementById("customerDetailsForm");
   const backToCartBtn = document.getElementById("backToCart");
-  const paymentOptions = document.querySelectorAll('input[name="paymentMethod"]');
+  const paymentOptions = document.querySelectorAll(
+    'input[name="paymentMethod"]'
+  );
   const bankDetailsSection = document.getElementById("bankDetails");
   const copyAccountNumberBtn = document.getElementById("copyAccountNumber");
   const receiptModal = document.getElementById("receiptModal");
@@ -395,9 +423,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const receiptCustomerEmail = document.getElementById("receiptCustomerEmail");
   const receiptCustomerPhone = document.getElementById("receiptCustomerPhone");
   const receiptCustomerState = document.getElementById("receiptCustomerState");
-  const receiptCustomerAddress = document.getElementById("receiptCustomerAddress");
+  const receiptCustomerAddress = document.getElementById(
+    "receiptCustomerAddress"
+  );
   const receiptPaymentMethod = document.getElementById("receiptPaymentMethod");
-  const receiptPaymentDetails = document.getElementById("receiptPaymentDetails");
+  const receiptPaymentDetails = document.getElementById(
+    "receiptPaymentDetails"
+  );
   const receiptOrderId = document.getElementById("receiptOrderId");
   const receiptDate = document.getElementById("receiptDate");
   const receiptQrCode = document.getElementById("receiptQrCode");
@@ -422,16 +454,17 @@ document.addEventListener("DOMContentLoaded", function () {
   // 4. Initialize App
   async function init() {
     console.log("Initializing app");
-    
+
     // Setup event listeners first
     setupEventListeners();
-    
-    // Load menu items from database (this will call renderMenuItems when done)
-    await loadMenuItems();
-    
+
+    // Use fallback menu items for now
+    menuItems = fallbackMenuItems;
+    renderMenuItems(currentCategory);
+
     // Update cart count
     updateCartCount();
-    
+
     // Setup other event listeners
     closeEmptyCartBtn.addEventListener("click", closeEmptyCartPrompt);
     browseMenuBtn.addEventListener("click", function () {
@@ -440,31 +473,34 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Removed - orders are now saved to database via submit-order.php
-  // Sample orders initialization code has been removed
-
   // 5. Render Menu Items
   function renderMenuItems(category = "all") {
     // Update current category
     currentCategory = category;
-    
-    menuItemsContainer.innerHTML = "";
-    
-    // Filter items by category (case-insensitive comparison)
-    const filteredItems = category === "all" 
-      ? menuItems 
-      : menuItems.filter((item) => {
-          // Normalize category for comparison (trim and lowercase)
-          const itemCategory = (item.category || '').toLowerCase().trim();
-          const filterCategory = category.toLowerCase().trim();
-          return itemCategory === filterCategory;
-        });
 
-    console.log(`Rendering ${filteredItems.length} items for category: ${category}`);
-    console.log('Available categories in data:', [...new Set(menuItems.map(item => item.category))]);
+    menuItemsContainer.innerHTML = "";
+
+    // Filter items by category (case-insensitive comparison)
+    const filteredItems =
+      category === "all"
+        ? menuItems
+        : menuItems.filter((item) => {
+            // Normalize category for comparison (trim and lowercase)
+            const itemCategory = (item.category || "").toLowerCase().trim();
+            const filterCategory = category.toLowerCase().trim();
+            return itemCategory === filterCategory;
+          });
+
+    console.log(
+      `Rendering ${filteredItems.length} items for category: ${category}`
+    );
+    console.log("Available categories in data:", [
+      ...new Set(menuItems.map((item) => item.category)),
+    ]);
 
     if (filteredItems.length === 0) {
-      menuItemsContainer.innerHTML = '<p class="no-items">No items in this category</p>';
+      menuItemsContainer.innerHTML =
+        '<p class="no-items">No items in this category</p>';
       return;
     }
 
@@ -472,13 +508,19 @@ document.addEventListener("DOMContentLoaded", function () {
       const menuItemElement = document.createElement("div");
       menuItemElement.className = "menu-item";
       menuItemElement.innerHTML = `
-        <img src="${item.image || './images/default-food.jpg'}" alt="${item.title}" class="menu-item-img" onerror="this.src='./images/default-food.jpg'">
+        <img src="${item.image || "./images/default-food.jpg"}" alt="${
+        item.title
+      }" class="menu-item-img" onerror="this.src='./images/default-food.jpg'">
         <div class="menu-item-content">
-          <h3 class="menu-item-title">${item.title || 'Untitled Item'}</h3>
-          <p class="menu-item-desc">${item.description || ''}</p>
+          <h3 class="menu-item-title">${item.title || "Untitled Item"}</h3>
+          <p class="menu-item-desc">${item.description || ""}</p>
           <div class="menu-item-footer">
-            <span class="menu-item-price">₦${(item.price || 0).toLocaleString()}</span>
-            <button class="add-to-cart" data-id="${item.id}">Add to Cart</button>
+            <span class="menu-item-price">₦${(
+              item.price || 0
+            ).toLocaleString()}</span>
+            <button class="add-to-cart" data-id="${
+              item.id
+            }">Add to Cart</button>
           </div>
         </div>
       `;
@@ -493,7 +535,7 @@ document.addEventListener("DOMContentLoaded", function () {
         categoryButtons.forEach((btn) => btn.classList.remove("active"));
         this.classList.add("active");
         const selectedCategory = this.dataset.category || "all";
-        console.log('Category button clicked:', selectedCategory);
+        console.log("Category button clicked:", selectedCategory);
         renderMenuItems(selectedCategory);
       });
     });
@@ -505,13 +547,31 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    cartIcon.addEventListener("click", function () {
-      if (cart.length === 0) {
-        showEmptyCartPrompt();
-      } else {
-        openCheckoutModal();
-      }
-    });
+    // FIXED: Enhanced cart icon click handling
+    if (cartIconContainer) {
+      cartIconContainer.addEventListener("click", function (e) {
+        e.stopPropagation();
+        console.log("Cart icon clicked");
+        if (cart.length === 0) {
+          showEmptyCartPrompt();
+        } else {
+          openCheckoutModal();
+        }
+      });
+    }
+
+    // Also allow clicking directly on the cart icon
+    if (cartIcon) {
+      cartIcon.addEventListener("click", function (e) {
+        e.stopPropagation();
+        console.log("Cart icon clicked directly");
+        if (cart.length === 0) {
+          showEmptyCartPrompt();
+        } else {
+          openCheckoutModal();
+        }
+      });
+    }
 
     closeCheckout.addEventListener("click", closeCheckoutModal);
     clearCartBtn.addEventListener("click", clearCart);
@@ -532,7 +592,6 @@ document.addEventListener("DOMContentLoaded", function () {
     shareEmailBtn.addEventListener("click", shareViaEmail);
     closeReceiptBtn.addEventListener("click", closeReceiptModal);
   }
-
 
   function formatPaymentMethod(method) {
     switch (method) {
@@ -591,7 +650,8 @@ document.addEventListener("DOMContentLoaded", function () {
     cartItemsContainer.innerHTML = "";
 
     if (cart.length === 0) {
-      cartItemsContainer.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
+      cartItemsContainer.innerHTML =
+        '<p class="empty-cart">Your cart is empty</p>';
       return;
     }
 
@@ -602,7 +662,9 @@ document.addEventListener("DOMContentLoaded", function () {
         <img src="${item.image}" alt="${item.title}" class="cart-item-img">
         <div class="cart-item-details">
           <h4 class="cart-item-title">${item.title}</h4>
-          <p class="cart-item-price">₦${(item.price * item.quantity).toLocaleString()}</p>
+          <p class="cart-item-price">₦${(
+            item.price * item.quantity
+          ).toLocaleString()}</p>
         </div>
         <div class="quantity-control">
           <button class="quantity-btn minus" data-id="${item.id}">-</button>
@@ -617,11 +679,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.querySelectorAll(".quantity-btn.minus").forEach((btn) => {
-      btn.addEventListener("click", () => updateQuantity(parseInt(btn.dataset.id), -1));
+      btn.addEventListener("click", () =>
+        updateQuantity(parseInt(btn.dataset.id), -1)
+      );
     });
 
     document.querySelectorAll(".quantity-btn.plus").forEach((btn) => {
-      btn.addEventListener("click", () => updateQuantity(parseInt(btn.dataset.id), 1));
+      btn.addEventListener("click", () =>
+        updateQuantity(parseInt(btn.dataset.id), 1)
+      );
     });
 
     document.querySelectorAll(".remove-item").forEach((btn) => {
@@ -652,7 +718,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function calculateTotals() {
-    const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    const subtotal = cart.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
     const deliveryFee = 1500;
     const total = subtotal + deliveryFee;
 
@@ -694,7 +763,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.style.overflow = "auto";
   }
 
-
   function openProofViewModal(imageSrc) {
     if (proofViewModal && proofImage) {
       console.log("Setting proof image src:", imageSrc);
@@ -717,10 +785,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-
   // 9. Payment Handling
   function handlePaymentMethodChange(e) {
-    bankDetailsSection.style.display = e.target.value === "bank" ? "block" : "none";
+    bankDetailsSection.style.display =
+      e.target.value === "bank" ? "block" : "none";
     const proofUploadInput = document.getElementById("proofUpload");
     if (e.target.value === "bank") {
       proofUploadInput.required = true;
@@ -749,39 +817,57 @@ document.addEventListener("DOMContentLoaded", function () {
       state: document.getElementById("state").value,
       address: document.getElementById("address").value,
       deliveryNotes: document.getElementById("deliveryNotes").value,
-      paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
-      proofUpload: document.getElementById("proofUpload").files[0] ? "Uploaded" : "Not provided",
+      paymentMethod: document.querySelector(
+        'input[name="paymentMethod"]:checked'
+      ).value,
+      proofUpload: document.getElementById("proofUpload").files[0]
+        ? "Uploaded"
+        : "Not provided",
     };
 
-    const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    const subtotal = cart.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
     const totalAmount = subtotal + 1500;
 
-    if (formData.paymentMethod === "bank" && !document.getElementById("proofUpload").files[0]) {
+    if (
+      formData.paymentMethod === "bank" &&
+      !document.getElementById("proofUpload").files[0]
+    ) {
       showToast("Please upload proof of payment for bank transfer.", true);
       return;
     }
 
-    const submitButton = document.querySelector('.btn-submit');
+    const submitButton = document.querySelector(".btn-submit");
     const originalText = submitButton.textContent;
-    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    submitButton.innerHTML =
+      '<i class="fas fa-spinner fa-spin"></i> Processing...';
     submitButton.disabled = true;
 
-    const formInputs = customerDetailsForm.querySelectorAll('input, textarea, select, button');
-    formInputs.forEach(input => {
+    const formInputs = customerDetailsForm.querySelectorAll(
+      "input, textarea, select, button"
+    );
+    formInputs.forEach((input) => {
       input.disabled = true;
     });
 
     try {
-      if (formData.paymentMethod === 'paystack') {
+      if (formData.paymentMethod === "paystack") {
         await loadPaystackScript();
         processPaystackPayment(formData, subtotal, totalAmount * 100);
         return;
-      } else if (formData.paymentMethod === 'flutterwave') {
+      } else if (formData.paymentMethod === "flutterwave") {
         await loadFlutterwaveScript();
         processFlutterwavePayment(formData, subtotal, totalAmount * 100);
         return;
       } else {
-        const order = await saveOrder(formData, subtotal, totalAmount, "pending");
+        const order = await saveOrder(
+          formData,
+          subtotal,
+          totalAmount,
+          "pending"
+        );
         if (!order) {
           throw new Error("Order creation failed");
         }
@@ -791,12 +877,12 @@ document.addEventListener("DOMContentLoaded", function () {
         generateReceipt(formData, order.items, subtotal, totalAmount, order.id);
       }
     } catch (error) {
-      console.error('Payment processing error:', error);
-      showToast('Payment processing failed. Please try again.', true);
+      console.error("Payment processing error:", error);
+      showToast("Payment processing failed. Please try again.", true);
     } finally {
       submitButton.textContent = originalText;
       submitButton.disabled = false;
-      formInputs.forEach(input => {
+      formInputs.forEach((input) => {
         input.disabled = false;
       });
     }
@@ -805,7 +891,9 @@ document.addEventListener("DOMContentLoaded", function () {
   function readFileAsBase64(file) {
     return new Promise((resolve, reject) => {
       if (!file || !file.type.startsWith("image/")) {
-        reject(new Error("Invalid file type. Please upload an image (PNG, JPEG)."));
+        reject(
+          new Error("Invalid file type. Please upload an image (PNG, JPEG).")
+        );
         return;
       }
       if (file.size > 2 * 1024 * 1024) {
@@ -819,11 +907,19 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  async function saveOrder(formData, subtotal, totalAmount, status = "pending") {
+  async function saveOrder(
+    formData,
+    subtotal,
+    totalAmount,
+    status = "pending"
+  ) {
     const now = new Date();
     let proofOfPayment = null;
 
-    if (formData.paymentMethod === "bank" && document.getElementById("proofUpload").files[0]) {
+    if (
+      formData.paymentMethod === "bank" &&
+      document.getElementById("proofUpload").files[0]
+    ) {
       try {
         const file = document.getElementById("proofUpload").files[0];
         proofOfPayment = await readFileAsBase64(file);
@@ -842,33 +938,33 @@ document.addEventListener("DOMContentLoaded", function () {
       customerState: formData.state,
       deliveryAddress: formData.address,
       deliveryInstructions: formData.deliveryNotes || null,
-      items: cart.map(item => ({
+      items: cart.map((item) => ({
         name: item.title,
         price: item.price,
-        quantity: item.quantity
+        quantity: item.quantity,
       })),
       subtotal: subtotal,
       deliveryFee: 1500,
       totalAmount: totalAmount,
       paymentMethod: formData.paymentMethod,
       paymentProof: proofOfPayment,
-      paymentStatus: status === "pending" ? "pending" : "completed"
+      paymentStatus: status === "pending" ? "pending" : "completed",
     };
 
     try {
       // Send order to server
-      const response = await fetch('submit-order.php', {
-        method: 'POST',
+      const response = await fetch("submit-order.php", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(orderData)
+        body: JSON.stringify(orderData),
       });
 
       const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.message || 'Failed to save order');
+        throw new Error(result.message || "Failed to save order");
       }
 
       // Return order object with server-generated ID
@@ -896,217 +992,22 @@ document.addEventListener("DOMContentLoaded", function () {
         status: result.order.status,
       };
     } catch (error) {
-      console.error('Error saving order:', error);
-      showToast(error.message || 'Failed to save order. Please try again.', true);
+      console.error("Error saving order:", error);
+      showToast(
+        error.message || "Failed to save order. Please try again.",
+        true
+      );
       return null;
     }
   }
 
-  function handleAdminLogin(e) {
-    e.preventDefault();
-
-    const username = document.getElementById("adminUsername").value;
-    const password = document.getElementById("adminPassword").value;
-
-    if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-      closeAdminLoginModal();
-      openAdminDashboard();
-      showToast("Admin login successful!");
-    } else {
-      showToast("Invalid admin credentials", true);
-    }
-  }
-
-  function handlePasswordSubmit() {
-    console.log("Handling password submit");
-    const password = adminActionPassword.value;
-
-    if (password === ADMIN_CREDENTIALS.actionPassword) {
-      if (currentAction === "delete" && currentOrderId) {
-        deleteOrder(currentOrderId);
-        showToast(`Order ${currentOrderId} has been deleted.`);
-      }
-      closeAdminPasswordModal();
-    } else {
-      showToast("Incorrect action password. Action not authorized.", true);
-      adminActionPassword.value = "";
-    }
-  }
-
-  function handleOrderAction(action, orderId) {
-    console.log(`Handling action: ${action} for order: ${orderId}`);
-    let orders = JSON.parse(localStorage.getItem("orders")) || [];
-    const orderIndex = orders.findIndex((order) => order.id === orderId);
-
-    if (orderIndex !== -1) {
-      if (action === "complete") {
-        orders[orderIndex].status = "completed";
-        localStorage.setItem("orders", JSON.stringify(orders));
-        showToast(`Order ${orderId} marked as completed.`);
-        loadAdminData();
-      } else if (action === "delete") {
-        openAdminPasswordModal("delete", orderId);
-      } else if (action === "view") {
-        viewOrder(orderId);
-      }
-    } else {
-      showToast(`Order ${orderId} not found.`, true);
-    }
-  }
-
-  function deleteOrder(orderId) {
-    console.log(`Deleting order: ${orderId}`);
-    let orders = JSON.parse(localStorage.getItem("orders")) || [];
-    orders = orders.filter((order) => order.id !== orderId);
-    localStorage.setItem("orders", JSON.stringify(orders));
-    showToast(`Order ${orderId} has been deleted.`);
-    loadAdminData();
-  }
-
-  function viewOrder(orderId) {
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    const order = orders.find((order) => order.id === orderId);
-
-    if (order) {
-      let orderDetails = `Order Details:\n\n`;
-      orderDetails += `Order ID: ${order.id}\n`;
-      orderDetails += `Customer: ${order.customerName}\n`;
-      orderDetails += `Phone: ${order.customerPhone}\n`;
-      orderDetails += `Email: ${order.customerEmail}\n`;
-      orderDetails += `Address: ${order.customerAddress}\n\n`;
-      orderDetails += `Items:\n`;
-      order.items.forEach(item => {
-        orderDetails += `- ${item.title} x${item.quantity} - ₦${(item.price * item.quantity).toLocaleString()}\n`;
-      });
-      orderDetails += `\nSubtotal: ₦${order.subtotal.toLocaleString()}\n`;
-      orderDetails += `Delivery Fee: ₦${order.deliveryFee.toLocaleString()}\n`;
-      orderDetails += `Total: ₦${order.total.toLocaleString()}\n\n`;
-      orderDetails += `Payment Method: ${order.paymentMethod}\n`;
-      orderDetails += `Proof of Payment: ${order.proofOfPayment ? "Uploaded" : "Not provided"}\n`;
-      orderDetails += `Status: ${order.status}\n`;
-      orderDetails += `Date: ${order.dateFormatted || new Date(order.date).toLocaleString()}`;
-
-      alert(orderDetails);
-    }
-  }
-
-  function loadAdminData() {
-    console.log("Loading admin data for tab:", currentTab);
-    let orders = JSON.parse(localStorage.getItem("orders"));
-    if (!Array.isArray(orders)) {
-      console.warn("Orders in localStorage is not an array, resetting to empty array");
-      orders = [];
-      localStorage.setItem("orders", JSON.stringify(orders));
-    }
-    console.log("All orders:", orders);
-
-    totalOrdersCount.textContent = orders.length;
-    const pendingOrders = orders.filter((order) => order.status === "pending");
-    pendingOrdersCount.textContent = pendingOrders.length;
-    const revenue = orders
-      .filter((order) => order.status === "completed")
-      .reduce((total, order) => total + (order.total || 0), 0);
-    totalRevenue.textContent = `₦${revenue.toLocaleString()}`;
-
-    if (ordersTableBody) {
-      ordersTableBody.innerHTML = "";
-    } else {
-      console.error("ordersTableBody not found in DOM");
-      showToast("Error: Orders table not found.", true);
-      return;
-    }
-
-    let filteredOrders = [];
-    switch (currentTab) {
-      case "pending":
-        filteredOrders = orders.filter((order) => order.status === "pending");
-        break;
-      case "completed":
-        filteredOrders = orders.filter((order) => order.status === "completed");
-        break;
-      case "all":
-        filteredOrders = orders;
-        break;
-      default:
-        filteredOrders = orders;
-    }
-    console.log("Filtered orders:", filteredOrders);
-
-    if (filteredOrders.length === 0) {
-      ordersTableBody.innerHTML = `
-        <tr>
-          <td colspan="9" style="text-align: center; padding: 20px;">No orders found</td>
-        </tr>
-      `;
-      return;
-    }
-
-    const sortedOrders = [...filteredOrders].sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    );
-
-    sortedOrders.forEach((order) => {
-      const row = document.createElement("tr");
-      const proofCell = order.paymentMethod === "bank" && order.proofOfPayment
-        ? `<img src="${order.proofOfPayment}" class="proof-thumbnail" data-id="${order.id}" alt="Proof of Payment" />`
-        : "N/A";
-      row.innerHTML = `
-        <td>${order.id}</td>
-        <td>${order.customerName}</td>
-        <td>${order.customerPhone}</td>
-        <td>₦${(order.total || 0).toLocaleString()}</td>
-        <td>${formatPaymentMethod(order.paymentMethod)}</td>
-        <td class="order-date">${order.dateFormatted || new Date(order.date).toLocaleString()}</td>
-        <td class="status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</td>
-        <td>${proofCell}</td>
-        <td>
-          ${
-            order.status === "pending"
-              ? `<button class="action-btn complete-order" data-id="${order.id}">Complete</button>
-                 <button class="action-btn delete-order" data-id="${order.id}" style="background-color: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Delete</button>`
-              : `<button class="action-btn view-order" data-id="${order.id}">View</button>
-                 <button class="action-btn delete-order" data-id="${order.id}" style="background-color: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Delete</button>`
-          }
-        </td>
-      `;
-      ordersTableBody.appendChild(row);
-    });
-
-    attachOrderActionListeners();
-  }
-
-  function attachOrderActionListeners() {
-    console.log("Attaching order action listeners");
-    const oldButtons = document.querySelectorAll(".complete-order, .delete-order, .view-order");
-    oldButtons.forEach(btn => btn.replaceWith(btn.cloneNode(true)));
-
-    const completeButtons = document.querySelectorAll(".complete-order");
-    const deleteButtons = document.querySelectorAll(".delete-order");
-    const viewButtons = document.querySelectorAll(".view-order");
-
-    completeButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        console.log(`Complete button clicked for order: ${btn.dataset.id}`);
-        handleOrderAction("complete", btn.dataset.id);
-      });
-    });
-
-    deleteButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        console.log(`Delete button clicked for order: ${btn.dataset.id}`);
-        handleOrderAction("delete", btn.dataset.id);
-      });
-    });
-
-    viewButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        console.log(`View button clicked for order: ${btn.dataset.id}`);
-        handleOrderAction("view", btn.dataset.id);
-      });
-    });
-  }
-
-  function generateReceipt(formData = {}, items = [], subtotal = 0, totalAmount = 0, orderId = null) {
+  function generateReceipt(
+    formData = {},
+    items = [],
+    subtotal = 0,
+    totalAmount = 0,
+    orderId = null
+  ) {
     // Use provided orderId or generate a temporary one for display
     if (!orderId) {
       orderId = "GD" + Math.floor(10000 + Math.random() * 90000);
@@ -1191,21 +1092,33 @@ document.addEventListener("DOMContentLoaded", function () {
             <p><strong>Bank Name:</strong> Zenith Bank</p>
             <p><strong>Account Name:</strong> Joseph's Pot Ltd</p>
             <p><strong>Account Number:</strong> 1012345678</p>
-            ${formData.proofUpload === "Uploaded" ? "<p><strong>Proof Uploaded:</strong> Yes</p>" : ""}
+            ${
+              formData.proofUpload === "Uploaded"
+                ? "<p><strong>Proof Uploaded:</strong> Yes</p>"
+                : ""
+            }
           `;
           break;
         case "paystack":
           receiptPaymentMethod.textContent = "Paystack";
           paymentDetails = `
             <p>Paid via Paystack payment gateway</p>
-            ${formData.paymentReference ? `<p><strong>Reference:</strong> ${formData.paymentReference}</p>` : ""}
+            ${
+              formData.paymentReference
+                ? `<p><strong>Reference:</strong> ${formData.paymentReference}</p>`
+                : ""
+            }
           `;
           break;
         case "flutterwave":
           receiptPaymentMethod.textContent = "Flutterwave";
           paymentDetails = `
             <p>Paid via Flutterwave payment gateway</p>
-            ${formData.paymentReference ? `<p><strong>Reference:</strong> ${formData.paymentReference}</p>` : ""}
+            ${
+              formData.paymentReference
+                ? `<p><strong>Reference:</strong> ${formData.paymentReference}</p>`
+                : ""
+            }
           `;
           break;
         default:
@@ -1243,7 +1156,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function downloadReceipt() {
-    const element = document.querySelector(".receipt-container").cloneNode(true);
+    const element = document
+      .querySelector(".receipt-container")
+      .cloneNode(true);
     const actions = element.querySelector(".receipt-actions");
     if (actions) actions.remove();
 
@@ -1280,7 +1195,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const orderId = receiptOrderId.textContent;
     const total = receiptTotal.textContent;
     window.open(
-      `mailto:?subject=${encodeURIComponent(`My Order #${orderId} from Joseph's Pot`)}&body=${encodeURIComponent(
+      `mailto:?subject=${encodeURIComponent(
+        `My Order #${orderId} from Joseph's Pot`
+      )}&body=${encodeURIComponent(
         `Hi,\n\nHere's my order details:\nOrder ID: ${orderId}\nTotal: ${total}\n\nThank you!`
       )}`,
       "_blank"
@@ -1369,47 +1286,54 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function showProcessingState(show) {
-    const paymentOptions = document.querySelectorAll('.payment-option');
-    const submitButton = document.querySelector('.btn-submit');
-    const formInputs = customerDetailsForm.querySelectorAll('input, textarea, select, button');
+    const paymentOptions = document.querySelectorAll(".payment-option");
+    const submitButton = document.querySelector(".btn-submit");
+    const formInputs = customerDetailsForm.querySelectorAll(
+      "input, textarea, select, button"
+    );
 
     if (show) {
-      submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      submitButton.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> Processing...';
       submitButton.disabled = true;
-      formInputs.forEach(input => {
+      formInputs.forEach((input) => {
         input.disabled = true;
-        input.style.opacity = '0.7';
+        input.style.opacity = "0.7";
       });
-      paymentOptions.forEach(option => {
-        option.style.opacity = '0.7';
-        option.style.pointerEvents = 'none';
+      paymentOptions.forEach((option) => {
+        option.style.opacity = "0.7";
+        option.style.pointerEvents = "none";
       });
     } else {
-      submitButton.innerHTML = 'Submit Order';
+      submitButton.innerHTML = "Submit Order";
       submitButton.disabled = false;
-      formInputs.forEach(input => {
+      formInputs.forEach((input) => {
         input.disabled = false;
-        input.style.opacity = '1';
+        input.style.opacity = "1";
       });
-      paymentOptions.forEach(option => {
-        option.style.opacity = '1';
-        option.style.pointerEvents = 'auto';
+      paymentOptions.forEach((option) => {
+        option.style.opacity = "1";
+        option.style.pointerEvents = "auto";
       });
     }
   }
 
   function animateCartIcon() {
-    cartIcon.style.transform = "scale(1.2)";
-    setTimeout(() => {
-      cartIcon.style.transform = "scale(1)";
-    }, 300);
+    if (cartIcon) {
+      cartIcon.style.transform = "scale(1.2)";
+      setTimeout(() => {
+        cartIcon.style.transform = "scale(1)";
+      }, 300);
+    }
   }
 
   function showToast(message, isError = false) {
     const toast = document.createElement("div");
     toast.className = isError ? "toast error" : "toast";
     toast.innerHTML = `
-      <i class="fas ${isError ? "fa-exclamation-circle" : "fa-check-circle"}"></i>
+      <i class="fas ${
+        isError ? "fa-exclamation-circle" : "fa-check-circle"
+      }"></i>
       <span>${message}</span>
     `;
     toastContainer.appendChild(toast);
@@ -1435,7 +1359,10 @@ document.addEventListener("DOMContentLoaded", function () {
 // Scroll To Top Button
 const scrollBtn = document.getElementById("scrollTopBtn");
 window.onscroll = function () {
-  if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+  if (
+    document.body.scrollTop > 300 ||
+    document.documentElement.scrollTop > 300
+  ) {
     scrollBtn.style.display = "block";
   } else {
     scrollBtn.style.display = "none";
@@ -1447,4 +1374,6 @@ scrollBtn.onclick = function () {
 
 // WhatsApp link
 const whatsappNumber = "2349064296917";
-const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hello, I would like to place an order")}`;
+const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+  "Hello, I would like to place an order"
+)}`;
