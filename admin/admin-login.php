@@ -403,6 +403,78 @@ function logLoginActivity($admin_id, $username, $status) {
     // Ensure login activity table exists
     initLoginActivityTable();
     
+    // FIX: Ensure admin_id exists in admins table for foreign key constraint
+    // We need to find the correct admin_id that exists in admins table
+    $actual_admin_id_for_fk = $admin_id; // Default to original admin_id
+    
+    // Check if admin exists in admins table by ID
+    $check_stmt = $conn->prepare("SELECT id FROM admins WHERE id = ?");
+    if ($check_stmt) {
+        $check_stmt->bind_param("i", $admin_id);
+        $check_stmt->execute();
+        $check_result = $check_stmt->get_result();
+        $check_stmt->close();
+        
+        // If admin doesn't exist in admins table by ID, try to find by email or sync
+        if ($check_result->num_rows === 0 && $admin_id > 0) {
+            // Get admin data from admin_users table
+            $user_stmt = $conn->prepare("SELECT username, email, password_hash FROM admin_users WHERE id = ?");
+            if ($user_stmt) {
+                $user_stmt->bind_param("i", $admin_id);
+                $user_stmt->execute();
+                $user_result = $user_stmt->get_result();
+                
+                if ($user_row = $user_result->fetch_assoc()) {
+                    // First, check if email already exists in admins table (different ID scenario)
+                    $email_check_stmt = $conn->prepare("SELECT id FROM admins WHERE email = ?");
+                    if ($email_check_stmt) {
+                        $email_check_stmt->bind_param("s", $user_row['email']);
+                        $email_check_stmt->execute();
+                        $email_result = $email_check_stmt->get_result();
+                        
+                        if ($email_row = $email_result->fetch_assoc()) {
+                            // Email exists with different ID - use that ID for foreign key
+                            $actual_admin_id_for_fk = $email_row['id'];
+                            if (DEBUG) {
+                                error_log("Admin email {$user_row['email']} exists in admins table with ID {$actual_admin_id_for_fk}. Using that ID for foreign key.");
+                            }
+                        } else {
+                            // Email doesn't exist - try to insert new admin
+                            // Use INSERT IGNORE to handle any race conditions
+                            $sync_stmt = $conn->prepare("INSERT IGNORE INTO admins (id, username, email, password, created_at) VALUES (?, ?, ?, ?, NOW())");
+                            if ($sync_stmt) {
+                                $sync_stmt->bind_param("isss", $admin_id, $user_row['username'], $user_row['email'], $user_row['password_hash']);
+                                $sync_stmt->execute();
+                                
+                                // Check if insert succeeded by checking affected rows or re-querying
+                                if ($sync_stmt->affected_rows > 0) {
+                                    // Successfully inserted, use the admin_id we tried to insert
+                                    $actual_admin_id_for_fk = $admin_id;
+                                } else {
+                                    // INSERT IGNORE skipped (duplicate) - check what ID exists now
+                                    $recheck_stmt = $conn->prepare("SELECT id FROM admins WHERE email = ?");
+                                    $recheck_stmt->bind_param("s", $user_row['email']);
+                                    $recheck_stmt->execute();
+                                    $recheck_result = $recheck_stmt->get_result();
+                                    if ($recheck_row = $recheck_result->fetch_assoc()) {
+                                        $actual_admin_id_for_fk = $recheck_row['id'];
+                                    }
+                                    $recheck_stmt->close();
+                                }
+                                $sync_stmt->close();
+                            }
+                        }
+                        $email_check_stmt->close();
+                    }
+                }
+                $user_stmt->close();
+            }
+        }
+    }
+    
+    // Use the actual admin_id for foreign key constraint
+    $admin_id = $actual_admin_id_for_fk;
+    
     $ip_address = getRealClientIP();
     $device_info = getDeviceInfo();
     $location_info = getLocationFromIP($ip_address);
@@ -438,8 +510,82 @@ function logLoginActivity($admin_id, $username, $status) {
             $stmt->close();
             return;
         } else {
+            // If full insert fails, check if it's a foreign key constraint error
+            $error_code = $conn->errno;
+            $error_msg = $stmt->error;
+            
+            // MySQL error 1452 = Cannot add or update a child row: a foreign key constraint fails
+            if ($error_code == 1452) {
+                // Try to sync admin again (in case it failed earlier)
+                $sync_stmt = $conn->prepare("SELECT username, email, password_hash FROM admin_users WHERE id = ?");
+                if ($sync_stmt) {
+                    $sync_stmt->bind_param("i", $admin_id);
+                    $sync_stmt->execute();
+                    $sync_result = $sync_stmt->get_result();
+                    if ($sync_row = $sync_result->fetch_assoc()) {
+                        // Check if admin already exists by ID or email before inserting
+                        $check_both = $conn->prepare("SELECT id FROM admins WHERE id = ? OR email = ?");
+                        $check_both->bind_param("is", $admin_id, $sync_row['email']);
+                        $check_both->execute();
+                        $check_both_result = $check_both->get_result();
+                        $check_both->close();
+                        
+                        // Only insert if doesn't exist
+                        if ($check_both_result->num_rows === 0) {
+                            $insert_sync = $conn->prepare("INSERT IGNORE INTO admins (id, username, email, password, created_at) VALUES (?, ?, ?, ?, NOW())");
+                            if ($insert_sync) {
+                                $insert_sync->bind_param("isss", $admin_id, $sync_row['username'], $sync_row['email'], $sync_row['password_hash']);
+                                $insert_sync->execute();
+                                $insert_sync->close();
+                            }
+                        }
+                        
+                        // Retry the insert (even if sync didn't insert, the admin might exist by email now)
+                        // Check if we can use existing ID from admins table
+                        $find_existing = $conn->prepare("SELECT id FROM admins WHERE email = ?");
+                        $find_existing->bind_param("s", $sync_row['email']);
+                        $find_existing->execute();
+                        $existing_result = $find_existing->get_result();
+                        if ($existing_row = $existing_result->fetch_assoc()) {
+                            // Use existing admin ID for foreign key
+                            $admin_id_for_fk = $existing_row['id'];
+                        } else {
+                            $admin_id_for_fk = $admin_id;
+                        }
+                        $find_existing->close();
+                        
+                        // Update the statement to use correct admin_id
+                        $stmt->close();
+                        $stmt = $conn->prepare("INSERT INTO login_activity (admin_id, username, ip_address, user_agent, device_type, browser, platform, country, city, region, latitude, longitude, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        if ($stmt) {
+                            $stmt->bind_param(
+                                "isssssssssdds", 
+                                $admin_id_for_fk, 
+                                $username, 
+                                $ip_address, 
+                                $device_info['user_agent'],
+                                $device_info['device_type'],
+                                $device_info['browser'],
+                                $device_info['platform'],
+                                $location_info['country'],
+                                $location_info['city'],
+                                $location_info['region'],
+                                $location_info['latitude'],
+                                $location_info['longitude'],
+                                $status
+                            );
+                            if ($stmt->execute()) {
+                                $stmt->close();
+                                return;
+                            }
+                        }
+                    }
+                    $sync_stmt->close();
+                }
+            }
+            
             // If full insert fails, try without location columns
-            error_log("Full login activity insert failed, trying fallback: " . $stmt->error);
+            error_log("Full login activity insert failed, trying fallback: " . $error_msg);
             $stmt->close();
         }
     }
@@ -461,7 +607,69 @@ function logLoginActivity($admin_id, $username, $status) {
         );
         
         if (!$stmt_fallback->execute()) {
-            error_log("Fallback login activity insert also failed: " . $stmt_fallback->error);
+            $error_code = $conn->errno;
+            // If foreign key constraint error, try to sync admin
+            if ($error_code == 1452) {
+                $sync_stmt = $conn->prepare("SELECT username, email, password_hash FROM admin_users WHERE id = ?");
+                if ($sync_stmt) {
+                    $sync_stmt->bind_param("i", $admin_id);
+                    $sync_stmt->execute();
+                    $sync_result = $sync_stmt->get_result();
+                    if ($sync_row = $sync_result->fetch_assoc()) {
+                        // Check if admin already exists by ID or email before inserting
+                        $check_both = $conn->prepare("SELECT id FROM admins WHERE id = ? OR email = ?");
+                        $check_both->bind_param("is", $admin_id, $sync_row['email']);
+                        $check_both->execute();
+                        $check_both_result = $check_both->get_result();
+                        $check_both->close();
+                        
+                        // Only insert if doesn't exist
+                        if ($check_both_result->num_rows === 0) {
+                            $insert_sync = $conn->prepare("INSERT IGNORE INTO admins (id, username, email, password, created_at) VALUES (?, ?, ?, ?, NOW())");
+                            if ($insert_sync) {
+                                $insert_sync->bind_param("isss", $admin_id, $sync_row['username'], $sync_row['email'], $sync_row['password_hash']);
+                                $insert_sync->execute();
+                                $insert_sync->close();
+                            }
+                        }
+                        
+                        // Find existing admin ID by email if sync didn't work
+                        $find_existing = $conn->prepare("SELECT id FROM admins WHERE email = ?");
+                        $find_existing->bind_param("s", $sync_row['email']);
+                        $find_existing->execute();
+                        $existing_result = $find_existing->get_result();
+                        if ($existing_row = $existing_result->fetch_assoc()) {
+                            // Use existing admin ID for foreign key
+                            $admin_id_for_fk = $existing_row['id'];
+                        } else {
+                            $admin_id_for_fk = $admin_id;
+                        }
+                        $find_existing->close();
+                        
+                        // Retry with correct admin_id
+                        $stmt_fallback->close();
+                        $stmt_fallback = $conn->prepare("INSERT INTO login_activity (admin_id, username, ip_address, user_agent, device_type, browser, platform, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                        if ($stmt_fallback) {
+                            $stmt_fallback->bind_param(
+                                "isssssss", 
+                                $admin_id_for_fk, 
+                                $username, 
+                                $ip_address, 
+                                $device_info['user_agent'],
+                                $device_info['device_type'],
+                                $device_info['browser'],
+                                $device_info['platform'],
+                                $status
+                            );
+                            $stmt_fallback->execute();
+                            $stmt_fallback->close();
+                        }
+                    }
+                    $sync_stmt->close();
+                }
+            } else {
+                error_log("Fallback login activity insert also failed: " . $stmt_fallback->error);
+            }
         }
         
         $stmt_fallback->close();
@@ -570,7 +778,8 @@ function checkRememberMe() {
 function handleLogin($username, $password, $remember = false) {
     $conn = getDBConnection();
     
-    $stmt = $conn->prepare("SELECT * FROM admins WHERE username = ?");
+    // Check admin_users table first (used by dashboard admin management)
+    $stmt = $conn->prepare("SELECT id, username, email, password_hash as password, role, full_name FROM admin_users WHERE username = ?");
     if (!$stmt) {
         return ['success' => false, 'message' => 'Database error: ' . $conn->error];
     }
@@ -578,18 +787,41 @@ function handleLogin($username, $password, $remember = false) {
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
+    $admin = null;
+    $table_used = 'admin_users';
     
     if ($result->num_rows === 1) {
         $admin = $result->fetch_assoc();
+    } else {
+        // Fallback to admins table (legacy)
+        $stmt->close();
+        $stmt = $conn->prepare("SELECT id, username, email, password, role FROM admins WHERE username = ?");
+        if ($stmt) {
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $table_used = 'admins';
+            
+            if ($result->num_rows === 1) {
+                $admin = $result->fetch_assoc();
+            }
+        }
+    }
+    
+    if ($admin) {
+        // Determine password column name based on table
+        $password_column = ($table_used === 'admin_users') ? 'password_hash' : 'password';
+        $stored_password = $admin['password'];
         
         if (DEBUG) {
             error_log("Login attempt for user: " . $username);
-            error_log("Stored hash: " . $admin['password']);
+            error_log("Table used: " . $table_used);
+            error_log("Stored hash: " . $stored_password);
             error_log("Input password: " . $password);
-            error_log("Password verify result: " . (password_verify($password, $admin['password']) ? 'true' : 'false'));
+            error_log("Password verify result: " . (password_verify($password, $stored_password) ? 'true' : 'false'));
         }
         
-        if (password_verify($password, $admin['password'])) {
+        if (password_verify($password, $stored_password)) {
             // Set ALL session variables for consistency across all admin pages
             $_SESSION['admin_id'] = $admin['id'];
             $_SESSION['admin_username'] = $admin['username'];
@@ -601,8 +833,8 @@ function handleLogin($username, $password, $remember = false) {
             // Log successful login
             logLoginActivity($admin['id'], $admin['username'], 'success');
             
-            // Handle Remember Me
-            if ($remember) {
+            // Handle Remember Me (only for admins table, admin_users doesn't have remember_token)
+            if ($remember && $table_used === 'admins') {
                 $token = bin2hex(random_bytes(16));
                 $hashed_token = password_hash($token, PASSWORD_DEFAULT);
                 
@@ -610,6 +842,7 @@ function handleLogin($username, $password, $remember = false) {
                 if ($stmt) {
                     $stmt->bind_param("si", $hashed_token, $admin['id']);
                     $stmt->execute();
+                    $stmt->close();
                     
                     setcookie("remember_admin", $admin['id'] . ':' . $token, 
                         time() + (30 * 24 * 60 * 60), "/", "", false, true);
@@ -626,8 +859,9 @@ function handleLogin($username, $password, $remember = false) {
             logLoginActivity(0, $username, 'failed');
         }
     } else {
+        // No user found in either table
         if (DEBUG) {
-            error_log("No user found with username: " . $username);
+            error_log("No user found with username: " . $username . " in admin_users or admins table");
         }
         
         // Log failed login attempt for non-existent user

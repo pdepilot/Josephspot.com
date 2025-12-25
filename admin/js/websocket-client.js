@@ -7,8 +7,11 @@ class NotificationWebSocket {
         this.channel = channel;
         this.ws = null;
         this.reconnectAttempts = 0;
-        this.maxReconnectAttempts = 10;
+        this.maxReconnectAttempts = 3; // Reduced from 10 to fail faster
         this.reconnectDelay = 3000;
+        this.isConnecting = false;
+        this.shouldReconnect = true;
+        this.fallbackToPolling = false;
         this.callbacks = {
             'new_order': [],
             'new_message': [],
@@ -18,7 +21,13 @@ class NotificationWebSocket {
     }
     
     connect() {
+        // Don't attempt to reconnect if we've already fallen back to polling
+        if (this.fallbackToPolling || this.isConnecting) {
+            return;
+        }
+        
         try {
+            this.isConnecting = true;
             // Use wss:// for secure connections, ws:// for local development
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const host = window.location.hostname;
@@ -28,8 +37,10 @@ class NotificationWebSocket {
             this.ws = new WebSocket(wsUrl);
             
             this.ws.onopen = () => {
-                console.log('WebSocket connected');
+                console.log('WebSocket connected successfully');
+                this.isConnecting = false;
                 this.reconnectAttempts = 0;
+                this.shouldReconnect = true;
                 this.subscribe(this.channel);
                 if (this.onConnect) this.onConnect();
             };
@@ -44,15 +55,28 @@ class NotificationWebSocket {
             };
             
             this.ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
+                this.isConnecting = false;
+                // Only log error on first attempt, reduce console spam
+                if (this.reconnectAttempts === 0) {
+                    console.warn('WebSocket server not available. Falling back to polling mode.');
+                }
             };
             
-            this.ws.onclose = () => {
-                console.log('WebSocket disconnected');
-                this.reconnect();
+            this.ws.onclose = (event) => {
+                this.isConnecting = false;
+                // Only log if it wasn't a clean close or if it's the first attempt
+                if (!event.wasClean && this.reconnectAttempts === 0) {
+                    // Already logged in onerror, no need to log again
+                }
+                if (this.shouldReconnect) {
+                    this.reconnect();
+                }
             };
         } catch (e) {
-            console.error('WebSocket connection error:', e);
+            this.isConnecting = false;
+            if (this.reconnectAttempts === 0) {
+                console.warn('WebSocket connection failed. Falling back to polling mode.');
+            }
             this.reconnect();
         }
     }
@@ -104,29 +128,57 @@ class NotificationWebSocket {
     }
     
     reconnect() {
+        if (!this.shouldReconnect || this.fallbackToPolling) {
+            return;
+        }
+        
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
             this.reconnectAttempts++;
-            console.log(`Reconnecting... Attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
+            // Only log first reconnection attempt, reduce console spam
+            if (this.reconnectAttempts === 1) {
+                console.log('Attempting to reconnect WebSocket...');
+            }
             setTimeout(() => {
-                this.connect();
+                if (this.shouldReconnect && !this.fallbackToPolling) {
+                    this.connect();
+                }
             }, this.reconnectDelay);
         } else {
-            console.error('Max reconnection attempts reached. Falling back to polling.');
-            // Fallback to polling
+            // Max attempts reached, fall back to polling
+            this.shouldReconnect = false;
+            this.fallbackToPolling = true;
+            console.info('WebSocket unavailable. Using polling mode for notifications.');
             this.startPolling();
         }
     }
     
     startPolling() {
         // Fallback to HTTP polling if WebSocket fails
-        setInterval(() => {
-            if (typeof updateNotifications === 'function') {
+        // Check if polling is already started to avoid multiple intervals
+        if (this.pollingInterval) {
+            return;
+        }
+        
+        this.pollingInterval = setInterval(() => {
+            // Try common notification update function names
+            if (typeof loadNotifications === 'function') {
+                loadNotifications();
+            } else if (typeof updateNotifications === 'function') {
                 updateNotifications();
             }
         }, 5000); // Poll every 5 seconds
     }
     
+    stopPolling() {
+        if (this.pollingInterval) {
+            clearInterval(this.pollingInterval);
+            this.pollingInterval = null;
+        }
+    }
+    
     disconnect() {
+        this.shouldReconnect = false;
+        this.stopPolling();
         if (this.ws) {
             this.ws.close();
             this.ws = null;
@@ -144,7 +196,8 @@ function initWebSocket(channel = 'main_dashboard') {
         notificationWS.connect();
         return notificationWS;
     } catch (e) {
-        console.error('Failed to initialize WebSocket:', e);
+        // Silently fail - polling will handle notifications
+        console.debug('WebSocket initialization skipped:', e);
         return null;
     }
 }
