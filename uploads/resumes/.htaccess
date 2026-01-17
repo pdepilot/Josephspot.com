@@ -1,0 +1,33 @@
+# Prevent directory listing
+Options -Indexes
+
+# Allow access to resume files (PDF, DOC, DOCX)
+<FilesMatch "\.(pdf|doc|docx)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Prevent execution of PHP files
+<FilesMatch "\.(php|php5|php7|phtml)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Prevent access to other file types
+<FilesMatch "\.(exe|bat|sh|cmd|com)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Set proper content types
+<IfModule mod_mime.c>
+    AddType application/pdf .pdf
+    AddType application/msword .doc
+    AddType application/vnd.openxmlformats-officedocument.wordprocessingml.document .docx
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Content-Disposition "attachment"
+</IfModule>

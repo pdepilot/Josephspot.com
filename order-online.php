@@ -63,6 +63,7 @@ require_once __DIR__ . '/includes/restaurant_info.php';
           <a href="index.php#eventContainer">Events</a>
           <a href="contact.php">Contact</a>
           <a href="order-online.php" class="active">Order Online</a>
+          <a href="./career.php">Career</a>
         </nav>
 
         <div class="cart-icon-container" id="cartIconContainer">
@@ -1479,7 +1480,203 @@ require_once __DIR__ . '/includes/restaurant_info.php';
         });
       }
 
-      // 10. Form Handling
+      // 10. Helper Functions for Order Submission
+      function readFileAsBase64(file) {
+        return new Promise((resolve, reject) => {
+          if (!file || !file.type.startsWith("image/")) {
+            reject(
+              new Error("Invalid file type. Please upload an image (PNG, JPEG).")
+            );
+            return;
+          }
+          if (file.size > 2 * 1024 * 1024) {
+            reject(new Error("Image size exceeds 2MB limit."));
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error("Failed to read file"));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function saveOrder(
+        formData,
+        subtotal,
+        totalAmount,
+        status = "pending"
+      ) {
+        const now = new Date();
+        let proofOfPayment = null;
+
+        if (
+          formData.paymentMethod === "bank" &&
+          document.getElementById("proofUpload").files[0]
+        ) {
+          try {
+            const file = document.getElementById("proofUpload").files[0];
+            proofOfPayment = await readFileAsBase64(file);
+          } catch (error) {
+            console.error("Error reading proof of payment:", error);
+            showToast(error.message, true);
+            return null;
+          }
+        }
+
+        // Prepare order data for API
+        const orderData = {
+          customerName: formData.fullName,
+          customerEmail: formData.email,
+          customerPhone: formData.phone,
+          customerState: formData.state,
+          deliveryAddress: formData.address,
+          deliveryInstructions: formData.deliveryNotes || null,
+          items: cart.map((item) => ({
+            name: item.title,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+          subtotal: subtotal,
+          deliveryFee: 1500,
+          totalAmount: totalAmount,
+          paymentMethod: formData.paymentMethod,
+          paymentProof: proofOfPayment,
+          paymentStatus: status === "pending" ? "pending" : "completed",
+        };
+
+        try {
+          // Send order to server
+          const response = await fetch("submit-order.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderData),
+          });
+
+          const result = await response.json();
+
+          if (!result.success) {
+            throw new Error(result.message || "Failed to save order");
+          }
+
+          // Return order object with server-generated ID
+          return {
+            id: result.order_id,
+            order_id: result.order_id,
+            customerName: result.order.customerName,
+            customerEmail: result.order.customerEmail,
+            customerPhone: result.order.customerPhone,
+            customerAddress: formData.address,
+            items: [...cart],
+            subtotal: subtotal,
+            deliveryFee: 1500,
+            total: totalAmount,
+            paymentMethod: formData.paymentMethod,
+            proofOfPayment: proofOfPayment,
+            date: now.toISOString(),
+            status: result.order.status,
+          };
+        } catch (error) {
+          console.error("Error saving order:", error);
+          showToast(
+            error.message || "Failed to save order. Please try again.",
+            true
+          );
+          return null;
+        }
+      }
+
+      function processPaystackPayment(formData, subtotal, amount) {
+        const submitButton = document.querySelector(".btn-submit");
+        const formInputs = customerDetailsForm.querySelectorAll(
+          "input, textarea, select, button"
+        );
+
+        const handler = PaystackPop.setup({
+          key: "pk_test_26f8c2230ec7838bcf82ad3e199674e777ccfac0",
+          email: formData.email,
+          amount: amount,
+          currency: "NGN",
+          ref: "GD-" + Date.now(),
+          callback: async function (response) {
+            formData.paymentReference = response.reference;
+            const order = await saveOrder(formData, subtotal, amount / 100, "completed");
+            if (order) {
+              cart = [];
+              updateCart();
+              openReceiptModal();
+              generateReceipt(formData, order.items, subtotal, amount / 100, order.id);
+              showToast("Order placed successfully!", false);
+            }
+            submitButton.textContent = "Submit Order";
+            submitButton.disabled = false;
+            formInputs.forEach((input) => {
+              input.disabled = false;
+            });
+          },
+          onClose: function () {
+            showToast("Payment window closed. Please try again.", true);
+            submitButton.textContent = "Submit Order";
+            submitButton.disabled = false;
+            formInputs.forEach((input) => {
+              input.disabled = false;
+            });
+          },
+        });
+        handler.openIframe();
+      }
+
+      function processFlutterwavePayment(formData, subtotal, amount) {
+        const submitButton = document.querySelector(".btn-submit");
+        const formInputs = customerDetailsForm.querySelectorAll(
+          "input, textarea, select, button"
+        );
+
+        FlutterwaveCheckout({
+          public_key: "FLWPUBK_TEST-598a8b4cadcb2c02ca9b177034b11e16-X",
+          tx_ref: "GD-" + Date.now(),
+          amount: amount / 100,
+          currency: "NGN",
+          payment_options: "card,mobilemoney,ussd",
+          customer: {
+            email: formData.email,
+            phone_number: formData.phone,
+            name: formData.fullName,
+          },
+          callback: async function (response) {
+            formData.paymentReference = response.tx_ref;
+            const order = await saveOrder(formData, subtotal, amount / 100, "completed");
+            if (order) {
+              cart = [];
+              updateCart();
+              openReceiptModal();
+              generateReceipt(formData, order.items, subtotal, amount / 100, order.id);
+              showToast("Order placed successfully!", false);
+            }
+            submitButton.textContent = "Submit Order";
+            submitButton.disabled = false;
+            formInputs.forEach((input) => {
+              input.disabled = false;
+            });
+          },
+          onclose: function () {
+            showToast("Payment window closed. Please try again.", true);
+            submitButton.textContent = "Submit Order";
+            submitButton.disabled = false;
+            formInputs.forEach((input) => {
+              input.disabled = false;
+            });
+          },
+          customizations: {
+            title: "Joseph's Pot",
+            description: "Payment for your delicious order",
+            logo: "https://via.placeholder.com/100x100?text=JP",
+          },
+        });
+      }
+
+      // 11. Form Handling
       async function handleFormSubmission(e) {
         e.preventDefault();
 
@@ -1535,19 +1732,21 @@ require_once __DIR__ . '/includes/restaurant_info.php';
             processFlutterwavePayment(formData, subtotal, totalAmount * 100);
             return;
           } else {
-            // For demo purposes, simulate successful order
-            const order = {
-              id: "GD" + Math.floor(10000 + Math.random() * 90000),
-              items: [...cart],
-              customerName: formData.fullName,
-              customerEmail: formData.email,
-              customerPhone: formData.phone
-            };
-            
+            // For COD and Bank Transfer, save order to backend
+            const order = await saveOrder(
+              formData,
+              subtotal,
+              totalAmount,
+              "pending"
+            );
+            if (!order) {
+              throw new Error("Order creation failed");
+            }
             cart = [];
             updateCart();
             openReceiptModal();
             generateReceipt(formData, order.items, subtotal, totalAmount, order.id);
+            showToast("Order placed successfully!", false);
           }
         } catch (error) {
           console.error("Payment processing error:", error);
@@ -1653,12 +1852,22 @@ require_once __DIR__ . '/includes/restaurant_info.php';
               receiptPaymentMethod.textContent = "Paystack";
               paymentDetails = `
                 <p>Paid via Paystack payment gateway</p>
+                ${
+                  formData.paymentReference
+                    ? `<p><strong>Reference:</strong> ${formData.paymentReference}</p>`
+                    : ""
+                }
               `;
               break;
             case "flutterwave":
               receiptPaymentMethod.textContent = "Flutterwave";
               paymentDetails = `
                 <p>Paid via Flutterwave payment gateway</p>
+                ${
+                  formData.paymentReference
+                    ? `<p><strong>Reference:</strong> ${formData.paymentReference}</p>`
+                    : ""
+                }
               `;
               break;
             default:

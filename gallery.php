@@ -52,6 +52,7 @@ require_once __DIR__ . '/includes/restaurant_info.php';
                 <a href="index.php#eventContainer">Events</a>
                 <a href="contact.php">Contact</a>
                 <a href="order-online.php">Order Online</a>
+                <a href="career.php">Career</a>
             </nav>
             <div class="social">
                 <a href="https://www.facebook.com/@cruisewithjoe"><i class="fa-brands fa-facebook"></i></a>

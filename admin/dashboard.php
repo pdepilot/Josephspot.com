@@ -1850,6 +1850,14 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                     </a>
                 </li>
                 <?php endif; ?>
+                <?php if (checkAdminPermission('careers', 'view')): ?>
+                <li class="menu-item">
+                    <a href="admin-career.php">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Careers</span>
+                    </a>
+                </li>
+                <?php endif; ?>
 
                 <li class="menu-label">Account</li>
                 <?php if (checkAdminPermission('admin_management', 'view')): ?>

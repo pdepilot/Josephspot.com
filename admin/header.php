@@ -1724,6 +1724,12 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                         <span>Gallery</span>
                     </a>
                 </li>
+                <li class="menu-item">
+                    <a href="admin-career.php">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Careers</span>
+                    </a>
+                </li>
 
                 <li class="menu-label">Settings</li>
                 <li class="menu-item">
