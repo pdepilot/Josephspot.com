@@ -2220,6 +2220,12 @@ $all_admins = get_all_admins($pdo);
                         <span>Gallery</span>
                     </a>
                 </li>
+                <li class="menu-item">
+                    <a href="admin-career.php">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Careers</span>
+                    </a>
+                </li>
 
                 <li class="menu-label">Settings</li>
                 <li class="menu-item">
