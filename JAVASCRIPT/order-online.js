@@ -1,4 +1,4 @@
-// Scroll effect for navbar
+// Scroll effect for navbar - FIXED: Added missing event listener
 window.addEventListener("scroll", function () {
   const navbar = document.getElementById("navbar");
   if (window.scrollY > 50) {
@@ -8,10 +8,12 @@ window.addEventListener("scroll", function () {
   }
 });
 
-// Mobile Menu Toggle Function
+// Mobile Menu Toggle Function - FIXED: Added proper event delegation and fixed function
 function toggleMenu() {
   const navLinks = document.querySelector(".nav-links");
   const menuToggle = document.querySelector(".menu-toggle");
+
+  if (!navLinks) return;
 
   // Toggle menu visibility
   navLinks.classList.toggle("active");
@@ -29,17 +31,65 @@ function toggleMenu() {
   }
 }
 
-// Close menu when clicking on a nav link
-document.querySelectorAll(".nav-links a").forEach((link) => {
-  link.addEventListener("click", () => {
-    if (window.innerWidth <= 768) {
+// Fix hamburger click event listener - Add this
+document.addEventListener('DOMContentLoaded', function() {
+  // Ensure menu toggle button works
+  const menuToggle = document.querySelector('.menu-toggle');
+  if (menuToggle) {
+    menuToggle.addEventListener('click', function(e) {
+      e.stopPropagation();
       toggleMenu();
+    });
+  }
+
+  // Close menu when clicking outside
+  document.addEventListener('click', function(e) {
+    const navLinks = document.querySelector('.nav-links');
+    const menuToggle = document.querySelector('.menu-toggle');
+    
+    if (navLinks && navLinks.classList.contains('active')) {
+      if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+        navLinks.classList.remove('active');
+        const icon = menuToggle.querySelector("i");
+        icon.classList.remove("fa-xmark");
+        icon.classList.add("fa-utensils");
+        icon.style.transform = "rotate(0deg)";
+      }
     }
   });
-});
 
-// FIXED: CTA Button functionality
-document.addEventListener("DOMContentLoaded", function () {
+  // Close menu when clicking on a nav link
+  document.querySelectorAll(".nav-links a").forEach((link) => {
+    link.addEventListener("click", () => {
+      const navLinks = document.querySelector('.nav-links');
+      if (window.innerWidth <= 768 && navLinks.classList.contains('active')) {
+        toggleMenu();
+      }
+    });
+  });
+
+  // FIXED: Scroll to Top Button functionality
+  const scrollBtn = document.getElementById("scrollTopBtn");
+  if (scrollBtn) {
+    // Show/hide button based on scroll position
+    window.addEventListener('scroll', function() {
+      if (window.pageYOffset > 300 || document.documentElement.scrollTop > 300) {
+        scrollBtn.style.display = "block";
+      } else {
+        scrollBtn.style.display = "none";
+      }
+    });
+
+    // Scroll to top when clicked
+    scrollBtn.addEventListener('click', function() {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
+  }
+
+  // Rest of your existing code...
   // Add event listener for CTA button
   const exploreMenuBtn = document.getElementById("exploreMenuBtn");
   if (exploreMenuBtn) {
@@ -59,7 +109,10 @@ document.addEventListener("DOMContentLoaded", function () {
   async function loadMenuItems() {
     try {
       console.log("Loading menu items from API...");
-      const response = await fetch("api/get-menu-items.php");
+      const apiUrl = "./api/get-menu-items.php";
+      console.log("API URL:", apiUrl);
+      
+      const response = await fetch(apiUrl);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -69,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("API Response:", data);
 
       if (data.success && data.items) {
-        console.log(`Loaded ${data.items.length} menu items from database`);
+        console.log(`✅ Loaded ${data.items.length} menu items from database`);
         if (data.debug) {
           console.log("Debug info:", data.debug);
           if (data.debug.total_items_in_db > 0 && data.items.length === 0) {
@@ -83,19 +136,21 @@ document.addEventListener("DOMContentLoaded", function () {
         renderMenuItems(currentCategory);
       } else {
         console.error(
-          "Failed to load menu items:",
+          "❌ Failed to load menu items:",
           data.message || "Unknown error"
         );
+        console.error("API returned:", data);
         // Fallback to empty array - menu will be empty until items are added via admin panel
         menuItems = [];
         renderMenuItems(currentCategory);
       }
     } catch (error) {
-      console.error("Error loading menu items:", error);
+      console.error("❌ Error loading menu items:", error);
       console.error("Error details:", {
         message: error.message,
         stack: error.stack,
       });
+      // DO NOT use fallbackMenuItems - show empty menu instead
       menuItems = [];
       renderMenuItems(currentCategory);
     }
@@ -453,24 +508,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 4. Initialize App
   async function init() {
-    console.log("Initializing app");
+    console.log("🚀 Initializing app");
 
     // Setup event listeners first
     setupEventListeners();
 
-    // Use fallback menu items for now
-    menuItems = fallbackMenuItems;
-    renderMenuItems(currentCategory);
+    // Load menu items from database (replaces fallback data)
+    console.log("📡 About to call loadMenuItems()...");
+    try {
+      await loadMenuItems();
+      console.log("✅ loadMenuItems() completed. menuItems length:", menuItems.length);
+    } catch (error) {
+      console.error("❌ Error in loadMenuItems():", error);
+      menuItems = []; // Ensure empty array, not fallback
+    }
+    // Note: loadMenuItems() will call renderMenuItems() internally after loading
 
     // Update cart count
     updateCartCount();
 
-    // Setup other event listeners
-    closeEmptyCartBtn.addEventListener("click", closeEmptyCartPrompt);
-    browseMenuBtn.addEventListener("click", function () {
-      closeEmptyCartPrompt();
-      document.getElementById("menu").scrollIntoView({ behavior: "smooth" });
-    });
+    // Setup other event listeners with null checks
+    if (closeEmptyCartBtn) {
+      closeEmptyCartBtn.addEventListener("click", closeEmptyCartPrompt);
+    }
+    if (browseMenuBtn) {
+      browseMenuBtn.addEventListener("click", function () {
+        closeEmptyCartPrompt();
+        const menuSection = document.getElementById("menu");
+        if (menuSection) {
+          menuSection.scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    }
   }
 
   // 5. Render Menu Items
@@ -478,6 +547,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Update current category
     currentCategory = category;
 
+    if (!menuItemsContainer) return;
     menuItemsContainer.innerHTML = "";
 
     // Filter items by category (case-insensitive comparison)
@@ -492,11 +562,17 @@ document.addEventListener("DOMContentLoaded", function () {
           });
 
     console.log(
-      `Rendering ${filteredItems.length} items for category: ${category}`
+      `📋 Rendering ${filteredItems.length} items for category: ${category}`
     );
-    console.log("Available categories in data:", [
+    console.log(`📦 Total menuItems array length: ${menuItems.length}`);
+    console.log("📁 Available categories in data:", [
       ...new Set(menuItems.map((item) => item.category)),
     ]);
+    
+    // DEBUG: Warn if menuItems is empty but we're trying to render
+    if (menuItems.length === 0) {
+      console.warn("⚠️ WARNING: menuItems array is empty! Items should be loaded from database.");
+    }
 
     if (filteredItems.length === 0) {
       menuItemsContainer.innerHTML =
@@ -507,10 +583,13 @@ document.addEventListener("DOMContentLoaded", function () {
     filteredItems.forEach((item) => {
       const menuItemElement = document.createElement("div");
       menuItemElement.className = "menu-item";
+      // Use a data URI placeholder if no image (prevents 404 errors and infinite loops)
+      const placeholderImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23ddd' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999' font-family='sans-serif' font-size='18'%3ENo Image%3C/text%3E%3C/svg%3E";
+      const imageSrc = item.image || placeholderImage;
       menuItemElement.innerHTML = `
-        <img src="${item.image || "./images/default-food.jpg"}" alt="${
+        <img src="${imageSrc}" alt="${
         item.title
-      }" class="menu-item-img" onerror="this.src='./images/default-food.jpg'">
+      }" class="menu-item-img" onerror="this.onerror=null; this.src='${placeholderImage}';">
         <div class="menu-item-content">
           <h3 class="menu-item-title">${item.title || "Untitled Item"}</h3>
           <p class="menu-item-desc">${item.description || ""}</p>
@@ -530,22 +609,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 6. Setup Event Listeners
   function setupEventListeners() {
-    categoryButtons.forEach((button) => {
-      button.addEventListener("click", function () {
-        categoryButtons.forEach((btn) => btn.classList.remove("active"));
-        this.classList.add("active");
-        const selectedCategory = this.dataset.category || "all";
-        console.log("Category button clicked:", selectedCategory);
-        renderMenuItems(selectedCategory);
+    // Add null checks to prevent errors if elements don't exist
+    if (categoryButtons && categoryButtons.length > 0) {
+      categoryButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          categoryButtons.forEach((btn) => btn.classList.remove("active"));
+          this.classList.add("active");
+          const selectedCategory = this.dataset.category || "all";
+          console.log("Category button clicked:", selectedCategory);
+          renderMenuItems(selectedCategory);
+        });
       });
-    });
+    }
 
-    menuItemsContainer.addEventListener("click", function (e) {
-      if (e.target.classList.contains("add-to-cart")) {
-        const itemId = parseInt(e.target.getAttribute("data-id"));
-        addToCart(itemId);
-      }
-    });
+    if (menuItemsContainer) {
+      menuItemsContainer.addEventListener("click", function (e) {
+        if (e.target.classList.contains("add-to-cart")) {
+          const itemId = parseInt(e.target.getAttribute("data-id"));
+          addToCart(itemId);
+        }
+      });
+    }
 
     // FIXED: Enhanced cart icon click handling
     if (cartIconContainer) {
@@ -573,24 +657,50 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    closeCheckout.addEventListener("click", closeCheckoutModal);
-    clearCartBtn.addEventListener("click", clearCart);
-    proceedToCheckoutBtn.addEventListener("click", openCustomerDetails);
-    closeCustomerDetails.addEventListener("click", closeCustomerDetailsModal);
-    backToCartBtn.addEventListener("click", function () {
-      closeCustomerDetailsModal();
-      openCheckoutModal();
-    });
-    paymentOptions.forEach((option) => {
-      option.addEventListener("change", handlePaymentMethodChange);
-    });
-    copyAccountNumberBtn.addEventListener("click", copyAccountNumber);
-    customerDetailsForm.addEventListener("submit", handleFormSubmission);
-    printReceiptBtn.addEventListener("click", printReceipt);
-    downloadReceiptBtn.addEventListener("click", downloadReceipt);
-    shareWhatsAppBtn.addEventListener("click", shareViaWhatsApp);
-    shareEmailBtn.addEventListener("click", shareViaEmail);
-    closeReceiptBtn.addEventListener("click", closeReceiptModal);
+    if (closeCheckout) {
+      closeCheckout.addEventListener("click", closeCheckoutModal);
+    }
+    if (clearCartBtn) {
+      clearCartBtn.addEventListener("click", clearCart);
+    }
+    if (proceedToCheckoutBtn) {
+      proceedToCheckoutBtn.addEventListener("click", openCustomerDetails);
+    }
+    if (closeCustomerDetails) {
+      closeCustomerDetails.addEventListener("click", closeCustomerDetailsModal);
+    }
+    if (backToCartBtn) {
+      backToCartBtn.addEventListener("click", function () {
+        closeCustomerDetailsModal();
+        openCheckoutModal();
+      });
+    }
+    if (paymentOptions && paymentOptions.length > 0) {
+      paymentOptions.forEach((option) => {
+        option.addEventListener("change", handlePaymentMethodChange);
+      });
+    }
+    if (copyAccountNumberBtn) {
+      copyAccountNumberBtn.addEventListener("click", copyAccountNumber);
+    }
+    if (customerDetailsForm) {
+      customerDetailsForm.addEventListener("submit", handleFormSubmission);
+    }
+    if (printReceiptBtn) {
+      printReceiptBtn.addEventListener("click", printReceipt);
+    }
+    if (downloadReceiptBtn) {
+      downloadReceiptBtn.addEventListener("click", downloadReceipt);
+    }
+    if (shareWhatsAppBtn) {
+      shareWhatsAppBtn.addEventListener("click", shareViaWhatsApp);
+    }
+    if (shareEmailBtn) {
+      shareEmailBtn.addEventListener("click", shareViaEmail);
+    }
+    if (closeReceiptBtn) {
+      closeReceiptBtn.addEventListener("click", closeReceiptModal);
+    }
   }
 
   function formatPaymentMethod(method) {
@@ -641,12 +751,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateCartCount() {
+    if (!cartCount) return;
     const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
     cartCount.textContent = totalItems;
     cartCount.style.display = totalItems > 0 ? "flex" : "none";
   }
 
   function renderCartItems() {
+    if (!cartItemsContainer) return;
     cartItemsContainer.innerHTML = "";
 
     if (cart.length === 0) {
@@ -725,12 +837,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const deliveryFee = 1500;
     const total = subtotal + deliveryFee;
 
-    subtotalElement.textContent = `₦${subtotal.toLocaleString()}`;
-    totalAmountElement.textContent = `₦${total.toLocaleString()}`;
+    if (subtotalElement) {
+      subtotalElement.textContent = `₦${subtotal.toLocaleString()}`;
+    }
+    if (totalAmountElement) {
+      totalAmountElement.textContent = `₦${total.toLocaleString()}`;
+    }
   }
 
   // 8. Modal Functions
   function openCheckoutModal() {
+    if (!checkoutModal) return;
     checkoutModal.style.display = "flex";
     document.body.style.overflow = "hidden";
     renderCartItems();
@@ -738,27 +855,30 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function closeCheckoutModal() {
+    if (!checkoutModal) return;
     checkoutModal.style.display = "none";
     document.body.style.overflow = "auto";
   }
 
   function openCustomerDetails() {
     if (cart.length === 0) return;
-    checkoutModal.style.display = "none";
-    customerDetailsModal.style.display = "flex";
+    if (checkoutModal) checkoutModal.style.display = "none";
+    if (customerDetailsModal) customerDetailsModal.style.display = "flex";
   }
 
   function closeCustomerDetailsModal() {
+    if (!customerDetailsModal) return;
     customerDetailsModal.style.display = "none";
     document.body.style.overflow = "auto";
   }
 
   function openReceiptModal() {
-    customerDetailsModal.style.display = "none";
-    receiptModal.style.display = "flex";
+    if (customerDetailsModal) customerDetailsModal.style.display = "none";
+    if (receiptModal) receiptModal.style.display = "flex";
   }
 
   function closeReceiptModal() {
+    if (!receiptModal) return;
     receiptModal.style.display = "none";
     document.body.style.overflow = "auto";
   }
@@ -787,18 +907,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 9. Payment Handling
   function handlePaymentMethodChange(e) {
-    bankDetailsSection.style.display =
-      e.target.value === "bank" ? "block" : "none";
+    if (bankDetailsSection) {
+      bankDetailsSection.style.display =
+        e.target.value === "bank" ? "block" : "none";
+    }
     const proofUploadInput = document.getElementById("proofUpload");
-    if (e.target.value === "bank") {
-      proofUploadInput.required = true;
-    } else {
-      proofUploadInput.required = false;
+    if (proofUploadInput) {
+      if (e.target.value === "bank") {
+        proofUploadInput.required = true;
+      } else {
+        proofUploadInput.required = false;
+      }
     }
   }
 
   function copyAccountNumber() {
-    const accountNumber = document.getElementById("accountNumber").textContent;
+    const accountNumberEl = document.getElementById("accountNumber");
+    if (!accountNumberEl || !copyAccountNumberBtn) return;
+    const accountNumber = accountNumberEl.textContent;
     navigator.clipboard.writeText(accountNumber).then(() => {
       const originalText = copyAccountNumberBtn.textContent;
       copyAccountNumberBtn.textContent = "Copied!";
@@ -1129,6 +1255,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     try {
+      if (typeof QRCode === 'undefined') {
+        console.warn("QRCode library not loaded, skipping QR code generation");
+        return;
+      }
       const qrCodeElement = document.createElement("canvas");
       receiptQrCode.appendChild(qrCodeElement);
       QRCode.toCanvas(
@@ -1156,6 +1286,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function downloadReceipt() {
+    if (typeof html2pdf === 'undefined') {
+      showToast("PDF download library not loaded. Please refresh the page and try again.", true);
+      console.error("html2pdf library not available");
+      return;
+    }
     const element = document
       .querySelector(".receipt-container")
       .cloneNode(true);
@@ -1170,7 +1305,12 @@ document.addEventListener("DOMContentLoaded", function () {
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
 
-    html2pdf().from(element).set(opt).save();
+    try {
+      html2pdf().from(element).set(opt).save();
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      showToast("Failed to generate PDF. Please try again.", true);
+    }
   }
 
   function shareViaWhatsApp() {
@@ -1355,22 +1495,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // 15. Initialize the App
   init();
 });
-
-// Scroll To Top Button
-const scrollBtn = document.getElementById("scrollTopBtn");
-window.onscroll = function () {
-  if (
-    document.body.scrollTop > 300 ||
-    document.documentElement.scrollTop > 300
-  ) {
-    scrollBtn.style.display = "block";
-  } else {
-    scrollBtn.style.display = "none";
-  }
-};
-scrollBtn.onclick = function () {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
 
 // WhatsApp link
 const whatsappNumber = "2349064296917";

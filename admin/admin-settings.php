@@ -1,12 +1,22 @@
 <?php
 // admin-settings.php
-session_start();
+// Central authentication and permission check
+require_once 'admin-auth.php';
+checkPageAccess(); // This checks authentication and permission for current page
 
-// Database Configuration
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'joseph_pot_admin');
+// Database Configuration (only define if not already defined by admin-auth.php)
+if (!defined('DB_HOST')) {
+    define('DB_HOST', 'localhost');
+}
+if (!defined('DB_USER')) {
+    define('DB_USER', 'root');
+}
+if (!defined('DB_PASS')) {
+    define('DB_PASS', '');
+}
+if (!defined('DB_NAME')) {
+    define('DB_NAME', 'joseph_pot_admin');
+}
 
 // PDO Database Connection
 try {
@@ -17,10 +27,10 @@ try {
     die("Database connection failed: " . $e->getMessage());
 }
 
-// Check if user is logged in
+// Check if user is logged in (legacy function - now uses admin-auth.php)
 function isLoggedIn()
 {
-    return isset($_SESSION['admin_id']) && !empty($_SESSION['admin_id']);
+    return isAdminLoggedIn();
 }
 
 // Get admin user data
@@ -113,9 +123,11 @@ function set_notification_setting($pdo, $key, $value, $admin_id = null) {
 // Get all admins
 function get_all_admins($pdo) {
     try {
-        $stmt = $pdo->query("SELECT id, username, email, role, created_at FROM admins ORDER BY created_at DESC");
+        // Use admin_users table (new system) instead of admins table
+        $stmt = $pdo->query("SELECT id, username, email, full_name, role, created_at FROM admin_users ORDER BY created_at DESC");
         return $stmt->fetchAll();
     } catch(PDOException $e) {
+        error_log('Error fetching admins: ' . $e->getMessage());
         return [];
     }
 }
@@ -464,35 +476,84 @@ function admin_change_password($pdo, $admin_id) {
 }
 
 /**
+ * Map role from form value to database value
+ */
+function mapRoleToDBValue($role) {
+    // If already in display format, return as is
+    $valid_roles = ['Super Admin', 'Manager', 'Content Manager', 'Support', 'Admin'];
+    if (in_array($role, $valid_roles)) {
+        return $role; // Store exact name
+    }
+    
+    // Map form values and legacy values to database format
+    $roleMap = [
+        // Form values (from dropdown)
+        'super_admin' => 'Super Admin',
+        'manager' => 'Manager',  // Form sends 'manager', not 'admin'
+        'content_manager' => 'Content Manager',  // Form sends 'content_manager', not 'content_editor'
+        'support' => 'Support',  // Form sends 'support', not 'moderator'
+        
+        // Legacy mapping for backward compatibility
+        'admin' => 'Manager',
+        'moderator' => 'Support',
+        'content_editor' => 'Content Manager'
+    ];
+    
+    // Normalize the role value (trim and lowercase for comparison)
+    $role_normalized = strtolower(trim($role));
+    
+    return isset($roleMap[$role_normalized]) ? $roleMap[$role_normalized] : 'Manager';
+}
+
+/**
  * Add new admin user
  */
 function admin_add_user($pdo, $current_admin_id) {
     try {
-        // Check if current user is super_admin
-        $stmt = $pdo->prepare("SELECT role FROM admins WHERE id = ?");
+        // Check if current user is super_admin (check admin_users table)
+        $stmt = $pdo->prepare("SELECT role FROM admin_users WHERE id = ?");
         $stmt->execute([$current_admin_id]);
         $current_admin = $stmt->fetch();
 
-        if (!$current_admin || $current_admin['role'] !== 'super_admin') {
+        if (!$current_admin || ($current_admin['role'] !== 'super_admin' && $current_admin['role'] !== 'Super Admin')) {
             return ['success' => false, 'message' => 'Only super admins can add users'];
         }
 
-        $username = isset($_POST['username']) ? trim($_POST['username']) : '';
+        // Get form data - handle both 'name' and 'username' fields
+        $name = isset($_POST['name']) ? trim($_POST['name']) : (isset($_POST['username']) ? trim($_POST['username']) : '');
         $email = isset($_POST['email']) ? trim($_POST['email']) : '';
         $password = isset($_POST['password']) ? $_POST['password'] : '';
         $role = isset($_POST['role']) ? trim($_POST['role']) : 'manager';
 
-        if (empty($username) || empty($email) || empty($password)) {
-            return ['success' => false, 'message' => 'Username, email, and password are required'];
+        // Debug: Log POST data
+        error_log("DEBUG admin_add_user POST data: " . print_r(['role' => $role, 'name' => $name, 'email' => $email], true));
+
+        if (empty($name) || empty($email) || empty($password)) {
+            return ['success' => false, 'message' => 'Name, email, and password are required'];
+        }
+        
+        if (empty($role)) {
+            return ['success' => false, 'message' => 'Role is required'];
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return ['success' => false, 'message' => 'Invalid email address'];
         }
 
-        $allowed_roles = ['super_admin', 'manager', 'content_manager', 'support'];
-        if (!in_array($role, $allowed_roles)) {
-            return ['success' => false, 'message' => 'Invalid role'];
+        // Generate username from name if not provided separately
+        $username = strtolower(str_replace(' ', '_', $name));
+        
+        // Map role to database format (Super Admin, Manager, Content Manager, Support)
+        $dbRole = mapRoleToDBValue($role);
+        
+        // Debug: Log role mapping
+        error_log("DEBUG admin_add_user: Form role='$role', Mapped role='$dbRole'");
+        
+        // Validate role is one of the allowed values
+        $allowed_roles = ['Super Admin', 'Manager', 'Content Manager', 'Support', 'Admin'];
+        if (!in_array($dbRole, $allowed_roles)) {
+            error_log("DEBUG admin_add_user: Invalid role '$dbRole' not in allowed list");
+            return ['success' => false, 'message' => 'Invalid role selected: ' . $dbRole];
         }
 
         // Validate password
@@ -501,11 +562,18 @@ function admin_add_user($pdo, $current_admin_id) {
             return ['success' => false, 'message' => 'Password must be at least ' . $min_length . ' characters long'];
         }
 
-        // Check if username or email already exists
-        $stmt = $pdo->prepare("SELECT id FROM admins WHERE username = ? OR email = ?");
-        $stmt->execute([$username, $email]);
+        // Check if username already exists in admin_users table
+        $stmt = $pdo->prepare("SELECT id FROM admin_users WHERE username = ?");
+        $stmt->execute([$username]);
         if ($stmt->fetch()) {
-            return ['success' => false, 'message' => 'Username or email already exists'];
+            return ['success' => false, 'message' => 'Username already exists'];
+        }
+
+        // Check if email already exists in admin_users table
+        $stmt = $pdo->prepare("SELECT id FROM admin_users WHERE email = ?");
+        $stmt->execute([$email]);
+        if ($stmt->fetch()) {
+            return ['success' => false, 'message' => 'Email already exists'];
         }
 
         // Hash password
@@ -513,20 +581,98 @@ function admin_add_user($pdo, $current_admin_id) {
 
         $pdo->beginTransaction();
 
-        // Insert new admin
-        $stmt = $pdo->prepare("INSERT INTO admins (username, email, password, role, is_active) VALUES (?, ?, ?, ?, 1)");
-        $stmt->execute([$username, $email, $password_hash, $role]);
+        // Insert new admin into admin_users table with mapped role
+        // Debug: Log the values being inserted
+        error_log("DEBUG admin_add_user: Inserting admin with role='$dbRole' (original role from form='$role')");
+        error_log("DEBUG admin_add_user: username='$username', email='$email', full_name='$name'");
+        
+        // Prepare INSERT statement - check which status column exists
+        // First check if 'status' column exists (preferred)
+        $testStmt = $pdo->query("SHOW COLUMNS FROM admin_users LIKE 'status'");
+        $hasStatus = $testStmt && $testStmt->rowCount() > 0;
+        
+        if ($hasStatus) {
+            $insertSql = "INSERT INTO admin_users (username, email, password_hash, full_name, role, status) VALUES (?, ?, ?, ?, ?, 'active')";
+        } else {
+            // Check if is_active exists
+            $testStmt2 = $pdo->query("SHOW COLUMNS FROM admin_users LIKE 'is_active'");
+            $hasIsActive = $testStmt2 && $testStmt2->rowCount() > 0;
+            
+            if ($hasIsActive) {
+                $insertSql = "INSERT INTO admin_users (username, email, password_hash, full_name, role, is_active) VALUES (?, ?, ?, ?, ?, 1)";
+            } else {
+                // No status column, just insert without it
+                $insertSql = "INSERT INTO admin_users (username, email, password_hash, full_name, role) VALUES (?, ?, ?, ?, ?)";
+            }
+        }
+        
+        error_log("DEBUG admin_add_user: Using SQL: $insertSql");
+        error_log("DEBUG admin_add_user: Parameters: username='$username', email='$email', name='$name', role='$dbRole'");
+        
+        $stmt = $pdo->prepare($insertSql);
+        
+        if (!$stmt) {
+            $pdo->rollBack();
+            $errorInfo = $pdo->errorInfo();
+            error_log("DEBUG admin_add_user: Prepare failed: " . print_r($errorInfo, true));
+            return ['success' => false, 'message' => 'Database prepare error: ' . ($errorInfo[2] ?? 'Unknown error')];
+        }
+        
+        // Execute with parameters - make sure dbRole is not empty
+        if (empty($dbRole)) {
+            $pdo->rollBack();
+            error_log("ERROR admin_add_user: dbRole is empty! Original role was: '$role'");
+            return ['success' => false, 'message' => 'Role cannot be empty. Please select a valid role.'];
+        }
+        
+        $result = $stmt->execute([$username, $email, $password_hash, $name, $dbRole]);
+        
+        if (!$result) {
+            $pdo->rollBack();
+            $errorInfo = $stmt->errorInfo();
+            error_log("DEBUG admin_add_user: SQL execution failed: " . print_r($errorInfo, true));
+            return ['success' => false, 'message' => 'Database error: ' . ($errorInfo[2] ?? 'Unknown error')];
+        }
+        
+        $adminId = $pdo->lastInsertId();
+        error_log("DEBUG admin_add_user: Successfully inserted admin with ID=$adminId, role='$dbRole'");
+        
+        // Verify the role was actually saved to the database
+        $verifyStmt = $pdo->prepare("SELECT role FROM admin_users WHERE id = ?");
+        $verifyStmt->execute([$adminId]);
+        $savedAdmin = $verifyStmt->fetch();
+        if ($savedAdmin) {
+            error_log("DEBUG admin_add_user: Verified saved role='{$savedAdmin['role']}' for admin ID=$adminId");
+            if ($savedAdmin['role'] !== $dbRole) {
+                error_log("ERROR admin_add_user: Role mismatch! Expected '$dbRole', but saved '{$savedAdmin['role']}'");
+                $pdo->rollBack();
+                return ['success' => false, 'message' => 'Role was not saved correctly. Expected: ' . $dbRole . ', Saved: ' . $savedAdmin['role']];
+            }
+        } else {
+            error_log("ERROR admin_add_user: Could not verify saved admin with ID=$adminId");
+            $pdo->rollBack();
+            return ['success' => false, 'message' => 'Failed to verify admin was saved'];
+        }
 
-        // Log user creation
-        admin_log_security_action($pdo, $current_admin_id, 'user_created', 'New admin user created: ' . $username);
+        // Log user creation (if security_logs table exists)
+        try {
+            admin_log_security_action($pdo, $current_admin_id, 'user_created', 'New admin user created: ' . $username);
+        } catch (Exception $e) {
+            // Ignore logging errors
+        }
 
         $pdo->commit();
 
-        return ['success' => true, 'message' => 'User added successfully'];
+        return ['success' => true, 'message' => 'Admin user added successfully', 'admin_id' => $adminId];
     } catch (PDOException $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
+        // Check for duplicate email error
+        if ($e->getCode() == 23000 || strpos($e->getMessage(), 'Duplicate') !== false) {
+            return ['success' => false, 'message' => 'Email already exists'];
+        }
+        error_log('Error adding admin user: ' . $e->getMessage());
         return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
@@ -2397,13 +2543,22 @@ $all_admins = get_all_admins($pdo);
                                     </li>
                                 <?php else: ?>
                                     <?php foreach ($all_admins as $admin): 
-                                        $admin_initials = strtoupper(substr($admin['username'], 0, 2));
-                                        $admin_role = ucfirst(str_replace('_', ' ', $admin['role'] ?? 'manager'));
+                                        // Use full_name if available, otherwise use username
+                                        $display_name = !empty($admin['full_name']) ? $admin['full_name'] : $admin['username'];
+                                        $admin_initials = strtoupper(substr($display_name, 0, 2));
+                                        
+                                        // Roles are now stored in display format (Super Admin, Manager, etc.)
+                                        // Just use them directly, with fallback formatting for legacy data
+                                        $admin_role = $admin['role'] ?? 'Manager';
+                                        if (strpos($admin_role, '_') !== false) {
+                                            // Legacy format (super_admin) - convert to display format
+                                            $admin_role = ucwords(str_replace('_', ' ', $admin_role));
+                                        }
                                     ?>
                                     <li class="admin-item">
                                         <div class="admin-avatar-sm"><?php echo htmlspecialchars($admin_initials); ?></div>
                                         <div class="admin-details-sm">
-                                            <h4><?php echo htmlspecialchars($admin['username']); ?></h4>
+                                            <h4><?php echo htmlspecialchars($display_name); ?></h4>
                                             <p><?php echo htmlspecialchars($admin['email']); ?></p>
                                         </div>
                                         <div class="admin-role"><?php echo htmlspecialchars($admin_role); ?></div>
@@ -2418,7 +2573,7 @@ $all_admins = get_all_admins($pdo);
                             <h4 style="margin-top: 0; margin-bottom: 20px; color: var(--primary);">
                                 <i class="fas fa-user-plus"></i> Add New Administrator
                             </h4>
-                            <form id="addAdminForm" method="POST">
+                            <form id="addAdminFormInline" method="POST">
                                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                                 <input type="hidden" name="action" value="add_user">
                                 
@@ -3597,7 +3752,7 @@ $all_admins = get_all_admins($pdo);
                 
                 // Reset form when hiding
                 if (!isHidden) {
-                    const inlineForm = document.querySelector('#addAdminFormContainer form');
+                    const inlineForm = document.getElementById('addAdminFormInline');
                     if (inlineForm) {
                         inlineForm.reset();
                     }
@@ -3624,7 +3779,7 @@ $all_admins = get_all_admins($pdo);
         }
 
         // Handle inline form submission
-        const inlineAddAdminForm = document.querySelector('#addAdminFormContainer form');
+        const inlineAddAdminForm = document.getElementById('addAdminFormInline');
         if (inlineAddAdminForm) {
             inlineAddAdminForm.addEventListener('submit', async function(e) {
                 e.preventDefault();

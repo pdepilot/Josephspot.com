@@ -1,11 +1,7 @@
 <?php
-session_start();
-
-// Check if user is logged in
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: admin-login.php");
-    exit;
-}
+// Central authentication and permission check
+require_once 'admin-auth.php';
+checkPageAccess(); // This checks authentication and permission for current page
 
 // Database connection
 require_once 'db_config.php';

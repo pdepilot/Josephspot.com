@@ -1,28 +1,7 @@
 <?php
-// Start session at the VERY TOP of the file
-session_start();
-
-// Check if admin is logged in using consistent session variables
-$is_logged_in = false;
-
-// Method 1: Check for admin_logged_in 
-if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
-    $is_logged_in = true;
-}
-
-// Method 2: Check for admin_id and admin_username (set by admin-login.php)
-if (isset($_SESSION['admin_id']) && isset($_SESSION['admin_username'])) {
-    $is_logged_in = true;
-}
-
-// If not logged in, redirect to login page
-if (!$is_logged_in) {
-    $current_page = basename($_SERVER['PHP_SELF']);
-    if ($current_page !== 'admin-login.php') {
-        header("Location: admin-login.php");
-        exit();
-    }
-}
+// Central authentication and permission check
+require_once 'admin-auth.php';
+checkPageAccess(); // This checks authentication and permission for current page
 
 // Database connection
 $host = 'localhost';

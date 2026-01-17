@@ -34,11 +34,11 @@ function isLoggedIn()
     return isset($_SESSION['admin_id']) && !empty($_SESSION['admin_id']);
 }
 
-// Get admin user data
+// Get admin user data from admin_users table
 function getAdminData($admin_id)
 {
     $conn = getDBConnection();
-    $stmt = $conn->prepare("SELECT id, username, email, created_at FROM admins WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, username, email, full_name, role, last_login, created_at FROM admin_users WHERE id = ?");
     if ($stmt) {
         $stmt->bind_param("i", $admin_id);
         $stmt->execute();
@@ -48,6 +48,94 @@ function getAdminData($admin_id)
         }
     }
     return null;
+}
+
+// Get current logged-in admin data
+// Uses admin-auth.php's getCurrentAdmin() if available, otherwise falls back to local getAdminData()
+function getCurrentAdminData()
+{
+    // Use admin-auth.php function if available (preferred - uses admin_users table)
+    if (function_exists('getCurrentAdmin')) {
+        return getCurrentAdmin();
+    }
+    
+    // Fallback to local implementation
+    if (!isset($_SESSION['admin_id'])) {
+        return null;
+    }
+    return getAdminData($_SESSION['admin_id']);
+}
+
+// Check if admin has permission for a module (using admin_permissions table)
+// This function uses admin-auth.php's hasAdminPermission if available
+function checkAdminPermission($module, $permission = 'view')
+{
+    // Use admin-auth.php function if available (preferred)
+    if (function_exists('hasAdminPermission')) {
+        return hasAdminPermission($module, $permission);
+    }
+    
+    // Fallback to local implementation if admin-auth.php not loaded
+    if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_role'])) {
+        return false;
+    }
+    
+    $role = $_SESSION['admin_role'];
+    
+    // Super Admin has all permissions
+    if ($role === 'super_admin' || $role === 'Super Admin') {
+        return true;
+    }
+    
+    $conn = getDBConnection();
+    
+    // Check if admin_permissions table exists
+    $table_check = $conn->query("SHOW TABLES LIKE 'admin_permissions'");
+    if ($table_check->num_rows === 0) {
+        // Table doesn't exist yet - allow access for now (fail open)
+        // This allows admins to access the system while they run the SQL fix
+        error_log("admin_permissions table not found. Please run admin/fix_database.sql");
+        return true; // Temporarily allow access
+    }
+    
+    // Normalize role for permission checking
+    $role_map = [
+        'Super Admin' => 'Super Admin',
+        'super_admin' => 'Super Admin',
+        'Manager' => 'Manager',
+        'manager' => 'Manager',
+        'Content Manager' => 'Content Manager',
+        'content_editor' => 'Content Manager',
+        'Support' => 'Support',
+        'support' => 'Support'
+    ];
+    $db_role = isset($role_map[$role]) ? $role_map[$role] : $role;
+    
+    // Check for 'all' permission first
+    $stmt = $conn->prepare("SELECT id FROM admin_permissions WHERE role = ? AND module = ? AND permission = 'all'");
+    if ($stmt) {
+        $stmt->bind_param("ss", $db_role, $module);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        
+        if ($result->num_rows > 0) {
+            return true;
+        }
+    }
+    
+    // Check for specific permission
+    $stmt = $conn->prepare("SELECT id FROM admin_permissions WHERE role = ? AND module = ? AND permission = ?");
+    if ($stmt) {
+        $stmt->bind_param("sss", $db_role, $module, $permission);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        
+        return $result->num_rows > 0;
+    }
+    
+    return false;
 }
 
 // Get login history for a user
@@ -218,27 +306,37 @@ function createTablesIfNotExist($conn) {
     }
 }
 
-// Redirect to login if not logged in
-if (!isLoggedIn()) {
-    header("Location: admin-login.php");
-    exit;
-}
-
-// Check RBAC permission for dashboard access
-requirePermission($_SESSION['admin_id'], 'dashboard', 'view');
+// Central authentication and permission check
+require_once 'admin-auth.php';
+checkPageAccess(); // This enforces authentication and permission for dashboard
 
 // Create tables if they don't exist
 $conn = getDBConnection();
 createTablesIfNotExist($conn);
 
-// Get admin data for display
-$admin_data = getAdminData($_SESSION['admin_id']);
+// Get current admin data for display
+$admin_data = getCurrentAdminData();
 $username = 'Admin';
 $user_initials = 'AJ';
+$admin_role = 'Admin';
+$admin_email = '';
+$admin_full_name = '';
+$last_login = '';
 
 if ($admin_data) {
-    $username = $admin_data['username'];
-    $user_initials = strtoupper(substr($admin_data['username'], 0, 2));
+    $username = isset($admin_data['username']) ? $admin_data['username'] : 'Admin';
+    $admin_full_name = isset($admin_data['full_name']) ? $admin_data['full_name'] : $username;
+    $admin_email = isset($admin_data['email']) ? $admin_data['email'] : '';
+    $admin_role = isset($admin_data['role']) ? ucwords(str_replace('_', ' ', $admin_data['role'])) : 'Admin';
+    $last_login = isset($admin_data['last_login']) && $admin_data['last_login'] ? date('M j, Y g:i A', strtotime($admin_data['last_login'])) : 'Never';
+    
+    // Generate initials from full_name or username
+    if (!empty($admin_data['full_name'])) {
+        $nameParts = explode(' ', $admin_data['full_name']);
+        $user_initials = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : substr($nameParts[0], 1, 1)));
+    } else {
+        $user_initials = strtoupper(substr($username, 0, 2));
+    }
 }
 
 // Get dashboard statistics
@@ -1668,83 +1766,108 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             <div class="admin-info">
                 <div class="admin-avatar"><?php echo $user_initials; ?></div>
                 <div class="admin-details">
-                    <h3><?php echo htmlspecialchars($username); ?></h3>
-                    <p>Super Admin</p>
+                    <h3><?php echo htmlspecialchars($admin_full_name ? $admin_full_name : $username); ?></h3>
+                    <p><?php echo htmlspecialchars($admin_role); ?></p>
+                    <?php if ($last_login && $last_login !== 'Never'): ?>
+                        <small style="font-size: 0.75rem; opacity: 0.8;">Last login: <?php echo $last_login; ?></small>
+                    <?php endif; ?>
                 </div>
             </div>
 
             <ul class="menu-items">
                 <li class="menu-label">Main</li>
+                <?php if (checkAdminPermission('dashboard', 'view')): ?>
                 <li class="menu-item">
                     <a href="dashboard.php" class="active">
                         <i class="fas fa-home"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (checkAdminPermission('contact_messages', 'view')): ?>
                 <li class="menu-item">
                     <a href="admin-contact-messages.php">
                         <i class="fas fa-envelope"></i>
                         <span>Contact Messages</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (checkAdminPermission('menu_management', 'view')): ?>
                 <li class="menu-item">
                     <a href="admin-menu-management.php">
                         <i class="fas fa-utensils"></i>
                         <span>Menu Management</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (checkAdminPermission('reservations', 'view')): ?>
                 <li class="menu-item">
                     <a href="admin-reservation.php">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Reservations</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (checkAdminPermission('orders', 'view')): ?>
                 <li class="menu-item">
                     <a href="admin-orders.php">
                         <i class="fas fa-shopping-cart"></i>
                         <span>Orders</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (checkAdminPermission('order_online_menu', 'view')): ?>
                 <li class="menu-item">
                     <a href="admin-order-online-menu.php">
                         <i class="fas fa-car"></i>
                         <span>Order-Online Menu</span>
                     </a>
                 </li>
+                <?php endif; ?>
 
                 <li class="menu-label">Content</li>
-                <!-- <li class="menu-item">
-                    <a href="admin-customers.php">
-                        <i class="fas fa-users"></i>
-                        <span>Customers</span>
-                    </a>
-                </li> -->
+                <?php if (checkAdminPermission('reviews', 'view')): ?>
                 <li class="menu-item">
                     <a href="admin-reviews.php">
                         <i class="fas fa-star"></i>
                         <span>Reviews</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (checkAdminPermission('events', 'view')): ?>
                 <li class="menu-item">
                     <a href="admin-events.php">
                         <i class="fa-solid fa-calendar"></i>
                         <span>Events</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (checkAdminPermission('gallery', 'view')): ?>
                 <li class="menu-item">
                     <a href="admin-gallery.php">
                         <i class="fas fa-image"></i>
                         <span>Gallery</span>
                     </a>
                 </li>
+                <?php endif; ?>
 
-                <li class="menu-label">Settings</li>
+                <li class="menu-label">Account</li>
+                <?php if (checkAdminPermission('admin_management', 'view')): ?>
+                <li class="menu-item">
+                    <a href="#" onclick="event.preventDefault(); document.getElementById('addAdminBtn').click();">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Admin Management</span>
+                    </a>
+                </li>
+                <?php endif; ?>
+                <?php if (checkAdminPermission('settings', 'view')): ?>
                 <li class="menu-item">
                     <a href="admin-settings.php">
                         <i class="fas fa-cog"></i>
                         <span>Settings</span>
                     </a>
                 </li>
+                <?php endif; ?>
                 <li class="menu-item">
                     <a href="./admin-logout.php" onclick="return confirmLogout()">
                         <i class="fas fa-sign-out-alt"></i>
@@ -1798,14 +1921,17 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                                 <div class="user-menu-header">
                                     <div class="user-menu-avatar"><?php echo $user_initials; ?></div>
                                     <div class="user-menu-info">
-                                        <h4><?php echo htmlspecialchars($username); ?></h4>
-                                        <p>Super Admin</p>
+                                        <h4><?php echo htmlspecialchars($admin_full_name ? $admin_full_name : $username); ?></h4>
+                                        <p><?php echo htmlspecialchars($admin_role); ?></p>
+                                        <?php if ($admin_email): ?>
+                                            <small style="font-size: 0.75rem; opacity: 0.7;"><?php echo htmlspecialchars($admin_email); ?></small>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <ul class="user-menu-items">
                                     <li class="user-menu-item" onclick="openEditProfileModal()">
                                         <i class="fas fa-user-edit"></i>
-                                        <span>Edit Profile</span>
+                                        <span>Edit My Profile</span>
                                     </li>
                                     <li class="user-menu-item" onclick="window.location.href='admin-settings.php'">
                                         <i class="fas fa-cog"></i>
@@ -1945,18 +2071,22 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             </div>
 
             <!-- Admin Management Section -->
+            <?php if (checkAdminPermission('admin_management', 'view')): ?>
             <div class="admin-management reveal">
                 <div class="admin-management-header">
                     <h3>Admin Management</h3>
+                    <?php if (checkAdminPermission('admin_management', 'create')): ?>
                     <button class="add-admin-btn" id="addAdminBtn">
                         <i class="fas fa-plus"></i>
                         Add New Admin
                     </button>
+                    <?php endif; ?>
                 </div>
                 <div class="admins-grid" id="adminsGrid">
                     <!-- Admin cards will be dynamically added here -->
                 </div>
             </div>
+            <?php endif; ?>
 
             <?php include "footer.php"; ?>
         </div>
@@ -2633,6 +2763,18 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
         const role = document.getElementById('adminRole').value;
         const permissions = document.getElementById('adminPermissions').value;
 
+        // URGENT DEBUG: Log form values before submission
+        console.log('===========================================');
+        console.log('DEBUG dashboard.php adminForm submit:');
+        console.log('  - name:', name);
+        console.log('  - email:', email);
+        console.log('  - role:', role, '(type: ' + typeof role + ')');
+        console.log('  - password:', password ? 'SET (hidden)' : 'EMPTY');
+        console.log('  - adminRole element:', document.getElementById('adminRole'));
+        console.log('  - adminRole selectedIndex:', document.getElementById('adminRole').selectedIndex);
+        console.log('  - adminRole selectedOption:', document.getElementById('adminRole').options[document.getElementById('adminRole').selectedIndex]);
+        console.log('===========================================');
+
         // Check if in edit mode
         const isEditMode = this.dataset.editMode === 'true';
         const editId = this.dataset.editId ? parseInt(this.dataset.editId) : null;
@@ -2781,6 +2923,13 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             formData.append('email', email);
             formData.append('role', role);
             formData.append('password', password);
+            
+            // URGENT DEBUG: Log FormData contents
+            console.log('DEBUG: FormData contents:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`  ${key}:`, value);
+            }
+            console.log('DEBUG: role value being sent:', role);
             
             fetch('api/manage-admin.php', {
                 method: 'POST',

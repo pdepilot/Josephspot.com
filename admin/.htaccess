@@ -1,20 +1,24 @@
-# admin/.htaccess
+# Admin Directory Security
 # Prevent direct access to sensitive files
-<Files "db-connection.php">
-    Order Deny,Allow
-    Deny from all
-</Files>
 
-<FilesMatch "\.(sql|ini|log)$">
-    Order Deny,Allow
+# Protect PHP files from direct access if needed
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sql)$">
+    Order Allow,Deny
     Deny from all
 </FilesMatch>
 
-# Allow PHP execution but protect directory
+# Prevent directory listing
 Options -Indexes
 
-# Password protect admin area (optional but recommended)
-# AuthType Basic
-# AuthName "Restricted Area"
-# AuthUserFile /path/to/.htpasswd
-# Require valid-user
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# PHP security settings
+<IfModule mod_php7.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+</IfModule>

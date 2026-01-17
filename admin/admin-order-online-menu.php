@@ -1,16 +1,18 @@
 <?php
-// Add PHP session and authentication check at the top
-session_start();
-
-// Check if user is logged in
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: admin-login.php");
-    exit;
-}
+// Central authentication and permission check
+require_once 'admin-auth.php';
+checkPageAccess(); // This checks authentication and permission for current page
 
 // Get admin user data
-$username = 'Admin Joseph';
+$admin_data = getCurrentAdmin();
+$username = isset($admin_data['full_name']) ? $admin_data['full_name'] : (isset($admin_data['username']) ? $admin_data['username'] : 'Admin');
 $user_initials = 'AJ';
+if (isset($admin_data['full_name']) && !empty($admin_data['full_name'])) {
+    $nameParts = explode(' ', $admin_data['full_name']);
+    $user_initials = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : substr($nameParts[0], 1, 1)));
+} elseif (isset($admin_data['username'])) {
+    $user_initials = strtoupper(substr($admin_data['username'], 0, 2));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

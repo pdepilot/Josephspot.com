@@ -7,18 +7,11 @@ error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
-session_start();
-header('Content-Type: application/json');
+// API Authentication and Permission Check
+require_once __DIR__ . '/../api-auth.php';
+requireAPIPermission('menu_management', 'create'); // Require create permission for menu management
 
-// Authentication check
-if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    ob_clean(); // Clear any output
-    echo json_encode([
-        'success' => false,
-        'message' => 'Unauthorized access'
-    ]);
-    exit;
-}
+header('Content-Type: application/json');
 
 // Database connection - create connection directly to avoid die() issues
 try {

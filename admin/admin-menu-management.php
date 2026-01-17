@@ -1,9 +1,7 @@
 <?php
-session_start();
-if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: admin_login.php');
-    exit;
-}
+// Central authentication and permission check
+require_once 'admin-auth.php';
+checkPageAccess(); // This checks authentication and permission for current page
 ?>
 
 

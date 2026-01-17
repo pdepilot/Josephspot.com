@@ -1,6 +1,8 @@
 <?php
 // admin-contact-messages.php - COMPLETE WORKING VERSION WITH CALL & EMAIL FUNCTIONALITY
-session_start();
+// Central authentication and permission check
+require_once 'admin-auth.php';
+checkPageAccess(); // This checks authentication and permission for current page
 
 // Database configuration - Use the same as your dashboard
 $host = 'localhost';
@@ -16,12 +18,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if admin is logged in using the same session variable as dashboard.php
-if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
-    // Redirect to admin login page
-    header("Location: admin-login.php");
-    exit();
-}
+// Authentication and permission checking now handled by admin-auth.php
 
 // Get current admin info
 $admin_id = $_SESSION['admin_id'];

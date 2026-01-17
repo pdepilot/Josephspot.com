@@ -183,7 +183,7 @@ require_once __DIR__ . '/includes/restaurant_info.php';
             </div>
             <div class="about-video reveal-on-scroll reveal-delay-1">
                 <video autoplay loop muted playsinline>
-                    <source src="https://res.cloudinary.com/dl4hjr1p2/video/upload/v1760705822/video12_gdwpuq.mp4">
+                    <source src="https://res.cloudinary.com/dl4hjr1p2/video/upload/v1768481862/new_video_tald0r.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
@@ -576,7 +576,7 @@ require_once __DIR__ . '/includes/restaurant_info.php';
 
         <div class="form-image reveal-on-scroll reveal-delay-2">
             <div class="image-overlay"></div>
-            <img src="./images/image8.jpg" loading="lazy" alt="Elegant restaurant interior" />
+            <img src="https://res.cloudinary.com/dl4hjr1p2/image/upload/v1768491081/611274538_866211769471498_3515934356623108686_n_qxjiwd.jpg" loading="lazy" alt="Elegant restaurant interior" />
             <div class="image-content">
                 <h3>Fine Dining Experience</h3>
                 <p>Book your table for an unforgettable culinary journey</p>

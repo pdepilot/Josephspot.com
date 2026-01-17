@@ -1,3 +1,8 @@
+<?php
+// Central authentication and permission check
+require_once 'admin-auth.php';
+checkPageAccess(); // This checks authentication and permission for current page
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

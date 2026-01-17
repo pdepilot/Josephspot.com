@@ -2,17 +2,11 @@
 // Start output buffering FIRST to catch any errors
 ob_start();
 
-session_start();
-header('Content-Type: application/json');
+// API Authentication and Permission Check
+require_once __DIR__ . '/../api-auth.php';
+requireAPIPermission('menu_management', 'delete'); // Require delete permission for menu management
 
-if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    ob_clean(); // Clear any output
-    echo json_encode([
-        'success' => false,
-        'message' => 'Unauthorized access'
-    ]);
-    exit;
-}
+header('Content-Type: application/json');
 
 // Database connection - create connection directly to avoid die() issues
 try {

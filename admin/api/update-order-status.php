@@ -4,15 +4,11 @@
  * Updates the status of an order (pending, confirmed/processing, completed, cancelled)
  */
 
-session_start();
-header('Content-Type: application/json');
+// API Authentication and Permission Check
+require_once __DIR__ . '/../api-auth.php';
+requireAPIPermission('orders', 'edit'); // Require edit permission for orders
 
-// Check authentication
-if (!isset($_SESSION['admin_id'])) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
-}
+header('Content-Type: application/json');
 
 require_once '../db_config.php';
 

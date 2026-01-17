@@ -282,14 +282,9 @@ class ReservationModel {
 // ADMIN RESERVATION PAGE LOGIC
 // ============================================
 
-// Start session and check admin authentication
-session_start();
-
-// Check if admin is logged in
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: admin-login.php');
-    exit();
-}
+// Central authentication and permission check
+require_once 'admin-auth.php';
+checkPageAccess(); // This checks authentication and permission for current page
 
 // Initialize reservation model
 try {

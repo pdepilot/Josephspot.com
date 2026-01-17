@@ -109,7 +109,7 @@ require_once __DIR__ . '/includes/restaurant_info.php';
       <div class="container">
         <div class="ceo-container reveal-scale">
           <img
-            src="./images/criuse.jpg" loading="lazy"
+            src="./images/joie bekee.jpeg" loading="lazy"
             alt="CEO of Joseph's Pot Owerri"
             class="ceo-image"
             id="ceoImage"

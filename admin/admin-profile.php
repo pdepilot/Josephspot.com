@@ -1,12 +1,14 @@
 <?php
 // admin-profile.php
-session_start();
+// Central authentication and permission check
+require_once 'admin-auth.php';
 
-// Check if admin is logged in
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: admin-login.php');
-    exit();
-}
+// Profile page should be accessible to all logged-in admins
+// But still verify authentication
+requireAuth(); // Ensures user is logged in and active
+
+// Note: Profile page doesn't need module permission check
+// as it's accessible to all authenticated admins
 ?>
 
 <!DOCTYPE html>
