@@ -1,10 +1,18 @@
+<?php
+session_start();
+// Check if admin is logged in
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header("Location: admin-login.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Careers Dashboard - Joseph's Pot Admin</title>
-    <link rel="icon" href="./images/logo3.png">
+    <link rel="icon" href="../images/logo3.png">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -679,8 +687,6 @@
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
-            max-height: 400px;
-            overflow: hidden;
         }
 
         .statistics-container {
@@ -689,8 +695,8 @@
             padding: 1.5rem;
             box-shadow: var(--shadow);
             position: relative;
-            overflow: hidden;
-            height: 100%;
+            overflow: visible;
+            min-height: 300px;
         }
 
         .statistics-container::before {
@@ -785,6 +791,8 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
+            max-height: none;
+            overflow: visible;
         }
 
         .status-bar {
@@ -1046,6 +1054,12 @@
             justify-content: center;
             align-items: center;
             padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-overlay.show {
+            opacity: 1;
         }
 
         .modal-content {
@@ -1152,6 +1166,32 @@
             to {
                 transform: translateX(0);
                 opacity: 1;
+            }
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--gray-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
             }
         }
 
@@ -1378,7 +1418,7 @@
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="logo-area">
-                <img src="./images/logo3.png" alt="Joseph's Pot Logo">
+                <img src="../images/logo3.png" alt="Joseph's Pot Logo">
                 <h1>Admin Panel</h1>
             </div>
             
@@ -1486,7 +1526,7 @@
                     <div class="notification-user-container">
                         <div class="notification-icon" id="notificationIcon">
                             <i class="fas fa-bell"></i>
-                            <span class="notification-badge">3</span>
+                            <span class="notification-badge" id="notificationBadgeCount" style="display: none;">0</span>
                             <div class="notification-dropdown" id="notificationDropdown">
                                 <div class="notification-dropdown-header">
                                     <h4>Notifications</h4>
@@ -1591,54 +1631,28 @@
                     </div>
                     <div class="compact-stats-grid">
                         <div class="compact-stat">
-                            <div class="compact-stat-number">45</div>
+                            <div class="compact-stat-number" id="statThisWeek">0</div>
                             <div class="compact-stat-label">This Week</div>
                         </div>
                         <div class="compact-stat">
-                            <div class="compact-stat-number">128</div>
+                            <div class="compact-stat-number" id="statThisMonth">0</div>
                             <div class="compact-stat-label">This Month</div>
                         </div>
                         <div class="compact-stat">
-                            <div class="compact-stat-number">890</div>
+                            <div class="compact-stat-number" id="statThisYear">0</div>
                             <div class="compact-stat-label">This Year</div>
                         </div>
                         <div class="compact-stat">
-                            <div class="compact-stat-number">32%</div>
+                            <div class="compact-stat-number" id="statGrowthRate">0%</div>
                             <div class="compact-stat-label">Growth Rate</div>
                         </div>
                     </div>
                     
                     <div class="status-breakdown">
                         <h4>Status Breakdown</h4>
-                        <div class="status-bars">
-                            <div class="status-bar">
-                                <div class="status-bar-label">
-                                    <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--warning);"></div>
-                                    <span>Pending</span>
-                                </div>
-                                <div class="status-bar-count">18</div>
-                            </div>
-                            <div class="status-bar">
-                                <div class="status-bar-label">
-                                    <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--info);"></div>
-                                    <span>Reviewed</span>
-                                </div>
-                                <div class="status-bar-count">45</div>
-                            </div>
-                            <div class="status-bar">
-                                <div class="status-bar-label">
-                                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #8B5CF6;"></div>
-                                    <span>Shortlisted</span>
-                                </div>
-                                <div class="status-bar-count">12</div>
-                            </div>
-                            <div class="status-bar">
-                                <div class="status-bar-label">
-                                    <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--success);"></div>
-                                    <span>Hired</span>
-                                </div>
-                                <div class="status-bar-count">9</div>
-                            </div>
+                        <div class="status-bars" id="statusBarsContainer">
+                            <!-- Status bars will be populated by JavaScript -->
+                            <div style="text-align: center; padding: 1rem; color: var(--gray);">Loading...</div>
                         </div>
                     </div>
                 </div>
@@ -1717,9 +1731,100 @@
             </div>
             <div class="modal-body">
                 <form id="jobForm" onsubmit="saveJob(event)">
-                    <input type="hidden" id="jobId">
-                    <!-- Form content same as before -->
-                    <div class="form-actions">
+                    <input type="hidden" id="jobId" name="id">
+                    
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label for="title" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Job Title *</label>
+                                <input type="text" id="title" name="title" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem;" placeholder="e.g., Head Chef">
+                            </div>
+                            
+                            <div>
+                                <label for="department" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Department *</label>
+                                <select id="department" name="department" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem;">
+                                    <option value="">Select Department</option>
+                                    <option value="Kitchen">Kitchen</option>
+                                    <option value="Service">Service</option>
+                                    <option value="Management">Management</option>
+                                    <option value="Front of House">Front of House</option>
+                                    <option value="Back of House">Back of House</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="HR">HR</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label for="job_type" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Job Type *</label>
+                                <select id="job_type" name="job_type" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem;">
+                                    <option value="Full Time">Full Time</option>
+                                    <option value="Part Time">Part Time</option>
+                                    <option value="Contract">Contract</option>
+                                    <option value="Internship">Internship</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="location" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Location *</label>
+                                <input type="text" id="location" name="location" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem;" placeholder="e.g., Owerri, Imo State" value="Owerri, Imo State">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="salary_range" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Salary Range</label>
+                            <input type="text" id="salary_range" name="salary_range" style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem;" placeholder="e.g., ₦150,000 - ₦250,000">
+                        </div>
+                        
+                        <div>
+                            <label for="description" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Job Description *</label>
+                            <textarea id="description" name="description" required rows="4" style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem; font-family: inherit;" placeholder="Describe the role, responsibilities, and what makes this position exciting..."></textarea>
+                        </div>
+                        
+                        <div>
+                            <label for="requirements" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Requirements & Qualifications *</label>
+                            <textarea id="requirements" name="requirements" required rows="4" style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem; font-family: inherit;" placeholder="List the required qualifications, skills, and experience (one per line)"></textarea>
+                            <small style="color: var(--gray); font-size: 0.85rem;">Enter each requirement on a new line</small>
+                        </div>
+                        
+                        <div>
+                            <label for="responsibilities" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Key Responsibilities *</label>
+                            <textarea id="responsibilities" name="responsibilities" required rows="4" style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem; font-family: inherit;" placeholder="List the main responsibilities and duties (one per line)"></textarea>
+                            <small style="color: var(--gray); font-size: 0.85rem;">Enter each responsibility on a new line</small>
+                        </div>
+                        
+                        <div>
+                            <label for="benefits" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Benefits & Perks</label>
+                            <textarea id="benefits" name="benefits" rows="3" style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem; font-family: inherit;" placeholder="List the benefits and perks offered (one per line)"></textarea>
+                            <small style="color: var(--gray); font-size: 0.85rem;">Enter each benefit on a new line</small>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label for="status" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Status *</label>
+                                <select id="status" name="status" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem;">
+                                    <option value="draft">Draft</option>
+                                    <option value="active" selected>Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="positions_available" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Positions Available</label>
+                                <input type="number" id="positions_available" name="positions_available" min="1" value="1" style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem;">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="application_deadline" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Application Deadline (Optional)</label>
+                            <input type="date" id="application_deadline" name="application_deadline" style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions" style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--gray-light);">
                         <button type="button" class="action-btn delete-btn" onclick="closeJobModal()">
                             <i class="fas fa-times"></i> Cancel
                         </button>
@@ -1728,6 +1833,22 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application View Modal -->
+    <div id="applicationViewModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-user"></i> Application Details</h3>
+                <button class="close-modal" onclick="closeApplicationViewModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="applicationViewContent">
+                <div style="text-align: center; padding: 2rem;">
+                    <div class="spinner" style="display: inline-block;"></div>
+                    <p>Loading application details...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -1741,12 +1862,27 @@
             <div class="modal-body">
                 <form id="statusForm" onsubmit="updateStatus(event)">
                     <input type="hidden" id="statusApplicationId">
-                    <div class="form-actions">
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="newStatus" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">New Status *</label>
+                        <select id="newStatus" name="status" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem;">
+                            <option value="pending">Pending</option>
+                            <option value="reviewed">Reviewed</option>
+                            <option value="shortlisted">Shortlisted</option>
+                            <option value="interview">Interview</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="hired">Hired</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="statusNotes" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--dark);">Notes (Optional)</label>
+                        <textarea id="statusNotes" name="notes" rows="3" style="width: 100%; padding: 0.75rem; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 0.9rem; font-family: inherit;" placeholder="Add any notes about this status change..."></textarea>
+                    </div>
+                    <div class="form-actions" style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--gray-light);">
                         <button type="button" class="action-btn delete-btn" onclick="closeStatusModal()">
                             <i class="fas fa-times"></i> Cancel
                         </button>
                         <button type="submit" class="action-btn status-update-btn">
-                            <i class="fas fa-check"></i> Update
+                            <i class="fas fa-check"></i> Update Status
                         </button>
                     </div>
                 </form>
@@ -1758,33 +1894,14 @@
     <div id="messageContainer"></div>
 
     <script>
-        // Mock Data
-        const mockJobs = [
-            { id: 1, title: "Head Chef", department: "Kitchen", type: "Full Time", status: "active", applications: 45 },
-            { id: 2, title: "Restaurant Manager", department: "Service", type: "Full Time", status: "active", applications: 32 },
-            { id: 3, title: "Sous Chef", department: "Kitchen", type: "Full Time", status: "active", applications: 28 },
-            { id: 4, title: "Wait Staff", department: "Service", type: "Part Time", status: "active", applications: 65 },
-            { id: 5, title: "Marketing Coordinator", department: "Marketing", type: "Full Time", status: "inactive", applications: 18 }
-        ];
-
-        const mockApplications = [
-            { id: 1, name: "John Okoro", position: "Head Chef", email: "john.okoro@email.com", experience: "5 years", status: "Pending", appliedDate: "2024-01-25" },
-            { id: 2, name: "Chioma Nwosu", position: "Restaurant Manager", email: "chioma.n@email.com", experience: "4 years", status: "Reviewed", appliedDate: "2024-01-24" },
-            { id: 3, name: "Emeka Eze", position: "Sous Chef", email: "emeka.eze@email.com", experience: "3 years", status: "Shortlisted", appliedDate: "2024-01-23" },
-            { id: 4, name: "Aisha Yusuf", position: "Wait Staff", email: "aisha.y@email.com", experience: "2 years", status: "Pending", appliedDate: "2024-01-22" },
-            { id: 5, name: "David Okafor", position: "Marketing Coordinator", email: "david.okafor@email.com", experience: "3 years", status: "Interview", appliedDate: "2024-01-21" }
-        ];
-
-        const mockNotifications = [
-            { id: 1, type: "application", title: "New Application", message: "John Okoro applied for Head Chef", time: "10 min ago", read: false },
-            { id: 2, type: "reminder", title: "Interview Reminder", message: "Interview with Sarah Johnson tomorrow", time: "1 hour ago", read: false },
-            { id: 3, type: "alert", title: "Deadline Alert", message: "Marketing Coordinator closes in 3 days", time: "3 hours ago", read: true }
-        ];
-
+        // API Base URL
+        const API_BASE = '../api/careers-api.php';
+        
         // State
-        let currentJobs = [...mockJobs];
-        let currentApplications = [...mockApplications];
-        let currentNotifications = [...mockNotifications];
+        let currentJobs = [];
+        let currentApplications = [];
+        let currentNotifications = [];
+        let careerStats = null;
 
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
@@ -1795,18 +1912,392 @@
         const notificationDropdown = document.getElementById('notificationDropdown');
         const notificationList = document.getElementById('notificationList');
         const markAllReadBtn = document.getElementById('markAllRead');
-        const notificationBadge = document.querySelector('.notification-badge');
+        const notificationBadge = document.getElementById('notificationBadgeCount') || document.querySelector('.notification-badge');
         const userMenuBtn = document.getElementById('userMenuBtn');
         const userMenuDropdown = document.getElementById('userMenuDropdown');
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            initCharts();
-            renderTables();
-            renderNotifications();
-            updateNotificationBadge();
             setupMobileMenu();
+            loadDashboardData();
+            
+            // Auto-refresh notifications every 15 seconds for real-time updates
+            setInterval(function() {
+                loadNotifications();
+            }, 15000); // 15 seconds for faster updates
+            
+            // Also refresh when the page becomes visible (user switches back to tab)
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    loadNotifications();
+                    loadDashboardData();
+                }
+            });
         });
+
+        // Load notifications separately (for auto-refresh)
+        async function loadNotifications() {
+            try {
+                const notificationsResponse = await fetch(`${API_BASE}?action=get_notifications&unread_only=false&limit=50`);
+                if (notificationsResponse.ok) {
+                    const notifData = await notificationsResponse.json();
+                    if (notifData.success && notifData.notifications) {
+                        const oldUnreadCount = currentNotifications.filter(n => !n.read).length;
+                        const oldNotificationIds = new Set(currentNotifications.map(n => n.id));
+                        
+                        currentNotifications = notifData.notifications.map(notif => ({
+                            id: notif.id,
+                            type: notif.type,
+                            title: notif.title,
+                            message: notif.message,
+                            time: formatTimeAgo(notif.created_at),
+                            read: notif.is_read === 1 || notif.is_read === true
+                        }));
+                        
+                        const newUnreadCount = currentNotifications.filter(n => !n.read).length;
+                        
+                        // Always update notifications
+                        renderNotifications();
+                        updateNotificationBadge();
+                        
+                        // Show visual feedback if new unread notifications arrived
+                        if (newUnreadCount > oldUnreadCount && notificationBadge) {
+                            // Pulse animation for new notifications
+                            notificationBadge.style.animation = 'pulse 0.5s ease-in-out 3';
+                            setTimeout(() => {
+                                if (notificationBadge) notificationBadge.style.animation = '';
+                            }, 1500);
+                        }
+                    } else {
+                        // No notifications or empty response
+                        currentNotifications = [];
+                        renderNotifications();
+                        updateNotificationBadge();
+                    }
+                } else {
+                    // Handle API errors (like 401 unauthorized)
+                    if (notificationsResponse.status === 401) {
+                        console.warn('Not authenticated - redirecting to login');
+                        window.location.href = 'admin-login.php';
+                    } else {
+                        console.warn('Failed to load notifications:', notificationsResponse.status);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                // Don't break the page if notifications fail to load
+            }
+        }
+
+        // Load all dashboard data from API
+        async function loadDashboardData() {
+            try {
+                // Load stats, jobs, applications, and notifications in parallel
+                const [statsResponse, jobsResponse, applicationsResponse, notificationsResponse] = await Promise.all([
+                    fetch(`${API_BASE}?action=get_stats`),
+                    fetch(`${API_BASE}?action=get_jobs`),
+                    fetch(`${API_BASE}?action=get_applications`),
+                    fetch(`${API_BASE}?action=get_notifications&unread_only=false&limit=50`)
+                ]);
+
+                // Process jobs first (needed for charts)
+                if (jobsResponse.ok) {
+                    const jobsData = await jobsResponse.json();
+                    if (jobsData.success) {
+                        currentJobs = jobsData.jobs.map(job => ({
+                            ...job,
+                            applications: 0 // Will be updated when we count applications per job
+                        }));
+                        // Count applications per job
+                        await updateJobApplicationCounts();
+                        renderJobsTable();
+                    }
+                }
+
+                // Process stats (after jobs are loaded for charts)
+                if (statsResponse.ok) {
+                    const statsData = await statsResponse.json();
+                    if (statsData.success) {
+                        careerStats = statsData.stats;
+                        updateStatsCards();
+                        // Update charts after jobs are loaded
+                        updateCharts();
+                    }
+                }
+
+                // Process applications
+                if (applicationsResponse.ok) {
+                    const appsData = await applicationsResponse.json();
+                    if (appsData.success) {
+                        currentApplications = appsData.applications.map(app => ({
+                            id: app.id,
+                            name: app.applicant_name,
+                            position: app.job_title || 'N/A',
+                            email: app.applicant_email,
+                            experience: app.years_experience ? `${app.years_experience} years` : '0 years',
+                            status: app.status.charAt(0).toUpperCase() + app.status.slice(1),
+                            appliedDate: app.applied_date
+                        }));
+                        renderApplicationsTable();
+                        // Update overview and breakdown after applications are loaded
+                        updateApplicationOverview();
+                        updateStatusBreakdown();
+                    }
+                }
+
+                // Process notifications
+                if (notificationsResponse.ok) {
+                    const notifData = await notificationsResponse.json();
+                    if (notifData.success && notifData.notifications) {
+                        currentNotifications = notifData.notifications.map(notif => ({
+                            id: notif.id,
+                            type: notif.type,
+                            title: notif.title,
+                            message: notif.message,
+                            time: formatTimeAgo(notif.created_at),
+                            read: notif.is_read === 1 || notif.is_read === true
+                        }));
+                        renderNotifications();
+                        updateNotificationBadge();
+                    } else {
+                        // No notifications or error
+                        currentNotifications = [];
+                        renderNotifications();
+                        updateNotificationBadge();
+                    }
+                } else {
+                    // API error - log but don't break the page
+                    console.warn('Failed to load notifications:', notificationsResponse.status);
+                    currentNotifications = [];
+                    renderNotifications();
+                    updateNotificationBadge();
+                }
+
+                // Initialize charts after data is loaded (only if not already initialized)
+                // Charts will be initialized/updated by updateCharts() which is called from updateStatsCards()
+                // So we don't need to call initCharts() here
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showMessage('Error loading dashboard data. Please refresh the page.', 'error');
+            }
+        }
+
+        // Update job application counts
+        async function updateJobApplicationCounts() {
+            for (let job of currentJobs) {
+                try {
+                    const response = await fetch(`${API_BASE}?action=get_applications&job_id=${job.id}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            job.applications = data.applications.length;
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error counting applications for job ${job.id}:`, error);
+                }
+            }
+        }
+
+        // Update stats cards
+        function updateStatsCards() {
+            if (!careerStats) return;
+
+            // Update Active Jobs
+            const activeJobsCard = document.querySelector('.stat-card:nth-child(1) .stat-info h3');
+            if (activeJobsCard && careerStats.jobs) {
+                activeJobsCard.textContent = careerStats.jobs.active_jobs || 0;
+            }
+
+            // Update Total Applications
+            const totalAppsCard = document.querySelector('.stat-card:nth-child(2) .stat-info h3');
+            if (totalAppsCard && careerStats.applications) {
+                totalAppsCard.textContent = careerStats.applications.total_applications || 0;
+            }
+
+            // Update Pending Review
+            const pendingCard = document.querySelector('.stat-card:nth-child(3) .stat-info h3');
+            if (pendingCard && careerStats.applications) {
+                pendingCard.textContent = careerStats.applications.pending_applications || 0;
+            }
+
+            // Update Hiring Rate
+            const hiringRateCard = document.querySelector('.stat-card:nth-child(4) .stat-info h3');
+            if (hiringRateCard && careerStats.applications) {
+                const total = careerStats.applications.total_applications || 0;
+                const hired = careerStats.applications.hired_applications || 0;
+                const rate = total > 0 ? Math.round((hired / total) * 100) : 0;
+                hiringRateCard.textContent = `${rate}%`;
+            }
+            
+            // Update Application Overview stats
+            updateApplicationOverview();
+            
+            // Update Status Breakdown
+            updateStatusBreakdown();
+        }
+        
+        // Update Application Overview stats
+        function updateApplicationOverview() {
+            if (!currentApplications || currentApplications.length === 0) {
+                document.getElementById('statThisWeek').textContent = '0';
+                document.getElementById('statThisMonth').textContent = '0';
+                document.getElementById('statThisYear').textContent = '0';
+                document.getElementById('statGrowthRate').textContent = '0%';
+                return;
+            }
+            
+            const now = new Date();
+            const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            const oneYearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+            
+            const thisWeek = currentApplications.filter(app => {
+                const appDate = new Date(app.appliedDate);
+                return appDate >= oneWeekAgo;
+            }).length;
+            
+            const thisMonth = currentApplications.filter(app => {
+                const appDate = new Date(app.appliedDate);
+                return appDate >= oneMonthAgo;
+            }).length;
+            
+            const thisYear = currentApplications.filter(app => {
+                const appDate = new Date(app.appliedDate);
+                return appDate >= oneYearAgo;
+            }).length;
+            
+            // Calculate growth rate (comparing this month to last month)
+            const twoMonthsAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+            const lastMonth = currentApplications.filter(app => {
+                const appDate = new Date(app.appliedDate);
+                return appDate >= twoMonthsAgo && appDate < oneMonthAgo;
+            }).length;
+            
+            const growthRate = lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : (thisMonth > 0 ? 100 : 0);
+            
+            document.getElementById('statThisWeek').textContent = thisWeek;
+            document.getElementById('statThisMonth').textContent = thisMonth;
+            document.getElementById('statThisYear').textContent = thisYear;
+            document.getElementById('statGrowthRate').textContent = `${growthRate}%`;
+        }
+        
+        // Update Status Breakdown
+        function updateStatusBreakdown() {
+            const statusBarsContainer = document.getElementById('statusBarsContainer');
+            if (!statusBarsContainer) return;
+            
+            if (!currentApplications || currentApplications.length === 0) {
+                statusBarsContainer.innerHTML = '<div style="text-align: center; padding: 1rem; color: var(--gray);">No applications yet</div>';
+                return;
+            }
+            
+            // Count applications by status
+            const statusCounts = {
+                'Pending': 0,
+                'Reviewed': 0,
+                'Shortlisted': 0,
+                'Interview': 0,
+                'Rejected': 0,
+                'Hired': 0
+            };
+            
+            currentApplications.forEach(app => {
+                // Handle case-insensitive status matching
+                const status = app.status.charAt(0).toUpperCase() + app.status.slice(1).toLowerCase();
+                if (statusCounts.hasOwnProperty(status)) {
+                    statusCounts[status]++;
+                } else {
+                    // If status doesn't match exactly, try to find a match
+                    const normalizedStatus = status.toLowerCase();
+                    for (const key in statusCounts) {
+                        if (key.toLowerCase() === normalizedStatus) {
+                            statusCounts[key]++;
+                            break;
+                        }
+                    }
+                }
+            });
+            
+            // Status colors
+            const statusColors = {
+                'Pending': 'var(--warning)',
+                'Reviewed': 'var(--info)',
+                'Shortlisted': '#8B5CF6',
+                'Interview': '#3B82F6',
+                'Rejected': 'var(--danger)',
+                'Hired': 'var(--success)'
+            };
+            
+            // Build status bars HTML
+            let statusBarsHTML = '';
+            Object.keys(statusCounts).forEach(status => {
+                if (statusCounts[status] > 0) {
+                    statusBarsHTML += `
+                        <div class="status-bar">
+                            <div class="status-bar-label">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: ${statusColors[status]};"></div>
+                                <span>${status}</span>
+                            </div>
+                            <div class="status-bar-count">${statusCounts[status]}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            if (statusBarsHTML === '') {
+                statusBarsHTML = '<div style="text-align: center; padding: 1rem; color: var(--gray);">No applications with status data</div>';
+            }
+            
+            statusBarsContainer.innerHTML = statusBarsHTML;
+        }
+
+        // Update charts with real data
+        function updateCharts() {
+            // Only update if we have jobs data
+            if (!currentJobs || currentJobs.length === 0) {
+                return;
+            }
+
+            // Calculate department distribution
+            const departmentCounts = {};
+            currentJobs.forEach(job => {
+                departmentCounts[job.department] = (departmentCounts[job.department] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('categoriesChart');
+            if (!ctx) return;
+
+            const existingChart = Chart.getChart(ctx);
+            
+            if (existingChart) {
+                // Update existing chart
+                const labels = Object.keys(departmentCounts);
+                const data = Object.values(departmentCounts);
+                const colors = ['#8B4513', '#D2691E', '#FFA500', '#10B981', '#3B82F6', '#8B5CF6', '#EF4444'];
+                
+                existingChart.data.labels = labels;
+                existingChart.data.datasets[0].data = data;
+                existingChart.data.datasets[0].backgroundColor = colors.slice(0, labels.length);
+                existingChart.update();
+            } else {
+                // Initialize chart if it doesn't exist
+                initCharts();
+            }
+        }
+
+        // Format time ago
+        function formatTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+
+            if (diffInSeconds < 60) return 'Just now';
+            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} min ago`;
+            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hour${Math.floor(diffInSeconds / 3600) > 1 ? 's' : ''} ago`;
+            if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} day${Math.floor(diffInSeconds / 86400) > 1 ? 's' : ''} ago`;
+            return date.toLocaleDateString();
+        }
 
         // Mobile Menu Functions
         function setupMobileMenu() {
@@ -1856,11 +2347,23 @@
             }
         }
 
-        function markAllAsRead() {
-            currentNotifications = currentNotifications.map(n => ({ ...n, read: true }));
-            renderNotifications();
-            updateNotificationBadge();
-            showMessage('All notifications marked as read', 'success');
+        async function markAllAsRead() {
+            try {
+                // Mark all unread notifications as read
+                const unreadNotifications = currentNotifications.filter(n => !n.read);
+                const promises = unreadNotifications.map(notif => 
+                    fetch(`${API_BASE}?action=mark_notification_read&id=${notif.id}`, {
+                        method: 'POST'
+                    })
+                );
+                
+                await Promise.all(promises);
+                await loadDashboardData(); // Reload to get updated notifications
+                showMessage('All notifications marked as read', 'success');
+            } catch (error) {
+                console.error('Error marking notifications as read:', error);
+                showMessage('Error marking notifications as read', 'error');
+            }
         }
 
         function renderNotifications() {
@@ -1868,15 +2371,20 @@
             
             notificationList.innerHTML = '';
             
+            if (currentNotifications.length === 0) {
+                notificationList.innerHTML = '<div class="notification-empty">No notifications</div>';
+                return;
+            }
+            
             currentNotifications.forEach(notification => {
                 const item = document.createElement('li');
                 item.className = `notification-item ${notification.read ? '' : 'unread'}`;
                 item.innerHTML = `
                     <div class="notification-dot" style="${!notification.read ? 'background: var(--primary)' : 'background: transparent'}"></div>
                     <div class="notification-content">
-                        <div class="notification-title">${notification.title}</div>
-                        <div class="notification-message">${notification.message}</div>
-                        <div class="notification-time">${notification.time}</div>
+                        <div class="notification-title">${escapeHtml(notification.title)}</div>
+                        <div class="notification-message">${escapeHtml(notification.message)}</div>
+                        <div class="notification-time">${escapeHtml(notification.time)}</div>
                     </div>
                 `;
                 
@@ -1888,26 +2396,41 @@
                 
                 notificationList.appendChild(item);
             });
-            
-            if (currentNotifications.length === 0) {
-                notificationList.innerHTML = '<div class="notification-empty">No notifications</div>';
-            }
         }
 
-        function markAsRead(notificationId) {
-            const notification = currentNotifications.find(n => n.id === notificationId);
-            if (notification) {
-                notification.read = true;
-                renderNotifications();
-                updateNotificationBadge();
+        async function markAsRead(notificationId) {
+            try {
+                const response = await fetch(`${API_BASE}?action=mark_notification_read&id=${notificationId}`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const notification = currentNotifications.find(n => n.id === notificationId);
+                    if (notification) {
+                        notification.read = true;
+                        renderNotifications();
+                        updateNotificationBadge();
+                    }
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+                // Still update locally even if API call fails
+                const notification = currentNotifications.find(n => n.id === notificationId);
+                if (notification) {
+                    notification.read = true;
+                    renderNotifications();
+                    updateNotificationBadge();
+                }
             }
         }
 
         function updateNotificationBadge() {
             const unreadCount = currentNotifications.filter(n => !n.read).length;
-            if (notificationBadge) {
-                notificationBadge.textContent = unreadCount;
-                notificationBadge.style.display = (unreadCount > 0) ? 'flex' : 'none';
+            const badge = document.getElementById('notificationBadgeCount') || document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = unreadCount;
+                badge.style.display = (unreadCount > 0) ? 'flex' : 'none';
             }
         }
 
@@ -1945,25 +2468,46 @@
         // Original Functions
         function initCharts() {
             const ctx = document.getElementById('categoriesChart');
-            if (ctx) {
-                new Chart(ctx.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Kitchen', 'Service', 'Marketing', 'Finance', 'HR'],
-                        datasets: [{
-                            data: [40, 30, 15, 10, 5],
-                            backgroundColor: ['#8B4513', '#D2691E', '#FFA500', '#10B981', '#3B82F6'],
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { font: { size: 10 } } }
-                        }
-                    }
+            if (!ctx) return;
+            
+            // Check if a chart already exists and destroy it
+            const existingChart = Chart.getChart(ctx);
+            if (existingChart) {
+                existingChart.destroy();
+            }
+            
+            if (currentJobs.length > 0) {
+                // Calculate department distribution
+                const departmentCounts = {};
+                currentJobs.forEach(job => {
+                    departmentCounts[job.department] = (departmentCounts[job.department] || 0) + 1;
                 });
+
+                const labels = Object.keys(departmentCounts);
+                const data = Object.values(departmentCounts);
+                const colors = ['#8B4513', '#D2691E', '#FFA500', '#10B981', '#3B82F6', '#8B5CF6', '#EF4444'];
+
+                // Only create chart if we have data
+                if (labels.length > 0 && data.length > 0) {
+                    new Chart(ctx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: data,
+                                backgroundColor: colors.slice(0, labels.length),
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom', labels: { font: { size: 10 } } }
+                            }
+                        }
+                    });
+                }
             }
         }
 
@@ -2007,15 +2551,21 @@
             
             tbody.innerHTML = '';
             
+            if (currentApplications.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray);">No applications found.</td></tr>';
+                return;
+            }
+            
             currentApplications.forEach(app => {
-                const date = new Date(app.appliedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const date = new Date(app.appliedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const statusClass = app.status.toLowerCase().replace(/\s+/g, '-');
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${app.name}</td>
-                    <td>${app.position}</td>
-                    <td style="font-size: 0.85rem;">${app.email}</td>
-                    <td>${app.experience}</td>
-                    <td><span class="status-badge status-${app.status.toLowerCase()}">${app.status}</span></td>
+                    <td>${escapeHtml(app.name)}</td>
+                    <td>${escapeHtml(app.position)}</td>
+                    <td style="font-size: 0.85rem;">${escapeHtml(app.email)}</td>
+                    <td>${escapeHtml(app.experience)}</td>
+                    <td><span class="status-badge status-${statusClass}">${escapeHtml(app.status)}</span></td>
                     <td>${date}</td>
                     <td>
                         <div class="action-buttons">
@@ -2035,13 +2585,147 @@
             });
         }
 
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // Application Functions
         function updateApplicationStatus(appId) {
             showMessage(`Opening status update for application #${appId}`, 'info');
         }
 
-        function viewApplication(appId) {
-            showMessage(`Viewing application #${appId} details`, 'info');
+        async function viewApplication(appId) {
+            const modal = document.getElementById('applicationViewModal');
+            const content = document.getElementById('applicationViewContent');
+            
+            if (!modal || !content) {
+                showMessage('Application view modal not found', 'error');
+                return;
+            }
+            
+            // Show modal with loading state
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+            
+            content.innerHTML = '<div style="text-align: center; padding: 2rem;"><div class="spinner" style="display: inline-block;"></div><p>Loading application details...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}?action=get_application&id=${appId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const app = result.application;
+                    const appliedDate = new Date(app.applied_date).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    content.innerHTML = `
+                        <div style="display: grid; gap: 1.5rem;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: var(--gray-light); border-radius: 8px;">
+                                <div>
+                                    <strong style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase;">Applicant Name</strong>
+                                    <p style="margin: 0.5rem 0 0 0; font-size: 1.1rem; font-weight: 600;">${escapeHtml(app.applicant_name)}</p>
+                                </div>
+                                <div>
+                                    <strong style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase;">Position Applied</strong>
+                                    <p style="margin: 0.5rem 0 0 0; font-size: 1.1rem; font-weight: 600;">${escapeHtml(app.job_title || 'N/A')}</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <strong style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase;">Email</strong>
+                                    <p style="margin: 0.5rem 0 0 0;">${escapeHtml(app.applicant_email)}</p>
+                                </div>
+                                <div>
+                                    <strong style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase;">Phone</strong>
+                                    <p style="margin: 0.5rem 0 0 0;">${escapeHtml(app.applicant_phone || 'N/A')}</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <strong style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase;">Experience</strong>
+                                    <p style="margin: 0.5rem 0 0 0;">${app.years_experience || 0} years</p>
+                                </div>
+                                <div>
+                                    <strong style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase;">Status</strong>
+                                    <p style="margin: 0.5rem 0 0 0;"><span class="status-badge status-${app.status.toLowerCase()}">${app.status.charAt(0).toUpperCase() + app.status.slice(1)}</span></p>
+                                </div>
+                                <div>
+                                    <strong style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase;">Applied Date</strong>
+                                    <p style="margin: 0.5rem 0 0 0;">${appliedDate}</p>
+                                </div>
+                            </div>
+                            
+                            ${app.current_position ? `
+                            <div>
+                                <strong style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase;">Current Position</strong>
+                                <p style="margin: 0.5rem 0 0 0;">${escapeHtml(app.current_position)}</p>
+                            </div>
+                            ` : ''}
+                            
+                            ${app.current_company ? `
+                            <div>
+                                <strong style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase;">Current Company</strong>
+                                <p style="margin: 0.5rem 0 0 0;">${escapeHtml(app.current_company)}</p>
+                            </div>
+                            ` : ''}
+                            
+                            ${app.cover_letter ? `
+                            <div>
+                                <strong style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase;">Cover Letter</strong>
+                                <div style="margin: 0.5rem 0 0 0; padding: 1rem; background: var(--gray-light); border-radius: 8px; white-space: pre-wrap; line-height: 1.6;">${escapeHtml(app.cover_letter)}</div>
+                            </div>
+                            ` : ''}
+                            
+                            ${app.resume_path ? `
+                            <div>
+                                <strong style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase;">Resume</strong>
+                                <p style="margin: 0.5rem 0 0 0;">
+                                    <a href="../${escapeHtml(app.resume_path)}" target="_blank" style="color: var(--primary); text-decoration: none;">
+                                        <i class="fas fa-download"></i> Download Resume
+                                    </a>
+                                </p>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--gray-light);">
+                            <button class="action-btn delete-btn" onclick="closeApplicationViewModal()">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button class="action-btn status-update-btn" onclick="closeApplicationViewModal(); updateApplicationStatus(${app.id});">
+                                <i class="fas fa-edit"></i> Update Status
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    content.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--danger);"><p>Application not found</p><button class="action-btn delete-btn" onclick="closeApplicationViewModal()">Close</button></div>';
+                }
+            } catch (error) {
+                console.error('Error loading application:', error);
+                content.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--danger);"><p>Error loading application details</p><button class="action-btn delete-btn" onclick="closeApplicationViewModal()">Close</button></div>';
+            }
+        }
+        
+        function closeApplicationViewModal() {
+            const modal = document.getElementById('applicationViewModal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
         }
 
         function downloadCV(appId) {
@@ -2050,18 +2734,95 @@
 
         // Job Functions
         function openJobModal() {
-            showMessage('Opening job creation form', 'info');
+            // Reset form
+            const form = document.getElementById('jobForm');
+            if (form) {
+                form.reset();
+            }
+            const jobIdInput = document.getElementById('jobId');
+            if (jobIdInput) {
+                jobIdInput.value = '';
+            }
+            const modalTitle = document.getElementById('modalTitle');
+            if (modalTitle) {
+                modalTitle.textContent = 'Add New Job';
+            }
+            
+            // Show modal
+            const modal = document.getElementById('jobModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                // Trigger animation
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+            }
         }
 
-        function editJob(jobId) {
-            showMessage(`Editing job #${jobId}`, 'info');
+        async function editJob(jobId) {
+            try {
+                const response = await fetch(`${API_BASE}?action=get_job&id=${jobId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const job = result.job;
+                    
+                    // Populate form fields
+                    document.getElementById('jobId').value = job.id;
+                    document.getElementById('modalTitle').textContent = 'Edit Job';
+                    document.getElementById('title').value = job.title || '';
+                    document.getElementById('department').value = job.department || '';
+                    document.getElementById('job_type').value = job.job_type || 'Full Time';
+                    document.getElementById('location').value = job.location || '';
+                    document.getElementById('salary_range').value = job.salary_range || '';
+                    document.getElementById('description').value = job.description || '';
+                    document.getElementById('requirements').value = job.requirements || '';
+                    document.getElementById('responsibilities').value = job.responsibilities || '';
+                    document.getElementById('benefits').value = job.benefits || '';
+                    document.getElementById('status').value = job.status || 'active';
+                    document.getElementById('positions_available').value = job.positions_available || 1;
+                    
+                    if (job.application_deadline) {
+                        document.getElementById('application_deadline').value = job.application_deadline;
+                    }
+                    
+                    // Show modal
+                    const modal = document.getElementById('jobModal');
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        setTimeout(() => {
+                            modal.classList.add('show');
+                        }, 10);
+                    }
+                } else {
+                    showMessage('Job not found', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading job:', error);
+                showMessage('Error loading job details', 'error');
+            }
         }
 
-        function deleteJob(jobId) {
-            if (confirm('Are you sure you want to delete this job?')) {
-                currentJobs = currentJobs.filter(job => job.id !== jobId);
-                renderJobsTable();
-                showMessage('Job deleted successfully', 'success');
+        async function deleteJob(jobId) {
+            if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}?action=delete_job&id=${jobId}`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showMessage('Job deleted successfully', 'success');
+                    loadDashboardData(); // Reload data
+                } else {
+                    showMessage(result.message || 'Failed to delete job', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting job:', error);
+                showMessage('Error deleting job', 'error');
             }
         }
 
@@ -2088,27 +2849,126 @@
             }, 3000);
         }
 
-        // Close modals functions (placeholder)
+        // Close modals functions
         function closeJobModal() {
             const modal = document.getElementById('jobModal');
-            if (modal) modal.style.display = 'none';
-            showMessage('Job modal closed', 'info');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
         }
+        
+        // Close modal when clicking outside
+        document.addEventListener('DOMContentLoaded', function() {
+            const jobModal = document.getElementById('jobModal');
+            if (jobModal) {
+                jobModal.addEventListener('click', function(e) {
+                    if (e.target === jobModal) {
+                        closeJobModal();
+                    }
+                });
+            }
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const jobModal = document.getElementById('jobModal');
+                    const applicationViewModal = document.getElementById('applicationViewModal');
+                    const statusModal = document.getElementById('statusModal');
+                    
+                    if (jobModal && jobModal.style.display === 'flex') {
+                        closeJobModal();
+                    } else if (applicationViewModal && applicationViewModal.style.display === 'flex') {
+                        closeApplicationViewModal();
+                    } else if (statusModal && statusModal.style.display === 'flex') {
+                        closeStatusModal();
+                    }
+                }
+            });
+            
+            // Close application view modal when clicking outside
+            const applicationViewModal = document.getElementById('applicationViewModal');
+            if (applicationViewModal) {
+                applicationViewModal.addEventListener('click', function(e) {
+                    if (e.target === applicationViewModal) {
+                        closeApplicationViewModal();
+                    }
+                });
+            }
+            
+            // Close status modal when clicking outside
+            const statusModal = document.getElementById('statusModal');
+            if (statusModal) {
+                statusModal.addEventListener('click', function(e) {
+                    if (e.target === statusModal) {
+                        closeStatusModal();
+                    }
+                });
+            }
+        });
 
         function closeStatusModal() {
             const modal = document.getElementById('statusModal');
-            if (modal) modal.style.display = 'none';
-            showMessage('Status modal closed', 'info');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
         }
 
-        function saveJob(event) {
+        async function saveJob(event) {
             event.preventDefault();
-            showMessage('Job saved successfully', 'success');
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const jobId = document.getElementById('jobId').value;
+            
+            const data = {};
+            formData.forEach((value, key) => {
+                // Skip the 'id' field when creating a new job
+                if (key !== 'id' || jobId) {
+                    data[key] = value;
+                }
+            });
+            
+            // Remove id from data if it's empty (new job)
+            if (!jobId) {
+                delete data.id;
+            }
+
+            try {
+                const url = jobId 
+                    ? `${API_BASE}?action=update_job&id=${jobId}`
+                    : `${API_BASE}?action=create_job`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showMessage(jobId ? 'Job updated successfully' : 'Job created successfully', 'success');
+                    closeJobModal();
+                    loadDashboardData(); // Reload data
+                } else {
+                    showMessage(result.message || 'Failed to save job', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving job:', error);
+                showMessage('Error saving job: ' + error.message, 'error');
+            }
         }
 
         function updateStatus(event) {
             event.preventDefault();
-            showMessage('Status updated successfully', 'success');
+            showMessage('Status update feature - implement form', 'info');
         }
 
         // Event Listeners

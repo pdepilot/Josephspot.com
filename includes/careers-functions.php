@@ -28,6 +28,9 @@ function getCareersDB() {
                     PDO::ATTR_EMULATE_PREPARES => false
                 ]
             );
+            
+            // Auto-create careers tables if they don't exist
+            createCareersTablesIfNotExist($pdo);
         } catch (PDOException $e) {
             error_log("Careers DB Connection Error: " . $e->getMessage());
             throw new Exception("Database connection failed: " . $e->getMessage());
@@ -38,14 +41,50 @@ function getCareersDB() {
 }
 
 /**
+ * Create careers tables if they don't exist
+ * @param PDO $pdo
+ */
+function createCareersTablesIfNotExist($pdo) {
+    try {
+        // Check if jobs table exists
+        $stmt = $pdo->query("SHOW TABLES LIKE 'jobs'");
+        if ($stmt->rowCount() == 0) {
+            // Read and execute schema file
+            $schemaFile = __DIR__ . '/../database/careers_schema.sql';
+            if (file_exists($schemaFile)) {
+                $sql = file_get_contents($schemaFile);
+                // Remove comments
+                $sql = preg_replace('/--.*$/m', '', $sql);
+                // Split by semicolon
+                $statements = array_filter(array_map('trim', explode(';', $sql)));
+                
+                foreach ($statements as $statement) {
+                    if (!empty($statement) && strlen($statement) > 10) {
+                        try {
+                            $pdo->exec($statement);
+                        } catch (PDOException $e) {
+                            // Ignore "already exists" errors
+                            if (strpos($e->getMessage(), 'already exists') === false) {
+                                error_log("Error creating careers table: " . $e->getMessage());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } catch (PDOException $e) {
+        error_log("Error checking/creating careers tables: " . $e->getMessage());
+    }
+}
+
+/**
  * Get jobs with optional filters
  * @param array $filters - Array of filter options (status, department, job_type, etc.)
  * @return array
  */
 function getJobs($filters = []) {
-    global $pdo;
-    
     try {
+        $pdo = getCareersDB();
         $whereConditions = [];
         $params = [];
         
@@ -597,17 +636,43 @@ function sendApplicationNotification($applicationId) {
             return false;
         }
         
-        // Get all admin users
-        $stmt = $pdo->query("SELECT id FROM admin_users WHERE status = 'active'");
-        $admins = $stmt->fetchAll();
+        // Get all admin users - try admin_users first, then admins table
+        $admins = [];
+        try {
+            // Check if admin_users table exists and has records
+            $stmt = $pdo->query("SELECT id FROM admin_users LIMIT 1");
+            $stmt->fetch();
+            // If we get here, table exists, get all admins
+            $stmt = $pdo->query("SELECT id FROM admin_users");
+            $admins = $stmt->fetchAll();
+        } catch (PDOException $e) {
+            // admin_users doesn't exist, try admins table
+            try {
+                $stmt = $pdo->query("SELECT id FROM admins WHERE is_active = 1");
+                $admins = $stmt->fetchAll();
+            } catch (PDOException $e2) {
+                // If admins table also doesn't work, create notification without recipient_id (for all admins)
+                error_log("Could not find admin_users or admins table: " . $e2->getMessage());
+            }
+        }
         
-        // Create notification for each admin
-        foreach ($admins as $admin) {
+        // Create notification for each admin, or one general notification if no admins found
+        if (!empty($admins)) {
+            foreach ($admins as $admin) {
+                createNotification(
+                    'new_application',
+                    "New Job Application",
+                    "New application received for {$application['job_title']} from {$application['applicant_name']}",
+                    $admin['id']
+                );
+            }
+        } else {
+            // Create a general notification without specific recipient (will show to all admins)
             createNotification(
                 'new_application',
                 "New Job Application",
                 "New application received for {$application['job_title']} from {$application['applicant_name']}",
-                $admin['id']
+                null
             );
         }
         
@@ -627,9 +692,30 @@ function sendApplicationNotification($applicationId) {
  * @return bool
  */
 function createNotification($type, $title, $message, $recipientId = null) {
-    global $pdo;
-    
     try {
+        $pdo = getCareersDB();
+        
+        // Ensure career_notifications table exists
+        $stmt = $pdo->query("SHOW TABLES LIKE 'career_notifications'");
+        if ($stmt->rowCount() == 0) {
+            // Create the table
+            $createTableSql = "CREATE TABLE IF NOT EXISTS `career_notifications` (
+                `id` INT(11) NOT NULL AUTO_INCREMENT,
+                `type` ENUM('new_application', 'application_status_change', 'job_deadline', 'interview_scheduled') NOT NULL,
+                `title` VARCHAR(255) NOT NULL,
+                `message` TEXT NOT NULL,
+                `recipient_id` INT(11) DEFAULT NULL,
+                `is_read` TINYINT(1) NOT NULL DEFAULT 0,
+                `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (`id`),
+                INDEX `idx_recipient` (`recipient_id`),
+                INDEX `idx_is_read` (`is_read`),
+                INDEX `idx_type` (`type`),
+                INDEX `idx_created_at` (`created_at`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+            $pdo->exec($createTableSql);
+        }
+        
         $stmt = $pdo->prepare("INSERT INTO career_notifications (type, title, message, recipient_id) 
                               VALUES (:type, :title, :message, :recipient_id)");
         $stmt->execute([
@@ -652,17 +738,27 @@ function createNotification($type, $title, $message, $recipientId = null) {
  * @param int $limit
  * @return array
  */
-function getNotifications($userId, $unreadOnly = false, $limit = 50) {
+function getNotifications($userId = null, $unreadOnly = false, $limit = 50) {
     try {
         $pdo = getCareersDB();
-        $whereConditions = ["recipient_id = :user_id"];
-        $params = [':user_id' => $userId];
+        $whereConditions = [];
+        $params = [];
+        
+        // Always get notifications for the user AND general notifications (recipient_id IS NULL)
+        // This ensures all admins see notifications created for "all admins"
+        if ($userId !== null) {
+            $whereConditions[] = "(recipient_id = :user_id OR recipient_id IS NULL)";
+            $params[':user_id'] = $userId;
+        } else {
+            // If no user ID, get all general notifications (recipient_id IS NULL)
+            $whereConditions[] = "recipient_id IS NULL";
+        }
         
         if ($unreadOnly) {
             $whereConditions[] = "is_read = 0";
         }
         
-        $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
         
         $sql = "SELECT * FROM career_notifications 
                 {$whereClause} 
@@ -676,7 +772,11 @@ function getNotifications($userId, $unreadOnly = false, $limit = 50) {
         return $stmt->fetchAll();
     } catch (PDOException $e) {
         error_log("Error getting notifications: " . $e->getMessage());
-        return [];
+        // If table doesn't exist, return empty array
+        if (strpos($e->getMessage(), "doesn't exist") !== false) {
+            return [];
+        }
+        throw $e;
     }
 }
 

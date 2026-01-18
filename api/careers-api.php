@@ -308,7 +308,8 @@ try {
                 throw new Exception('Method not allowed');
             }
             
-            $userId = $_SESSION['admin_id'] ?? 0;
+            // Get notifications for current admin, or all if no specific user
+            $userId = isset($_SESSION['admin_id']) ? $_SESSION['admin_id'] : null;
             $unreadOnly = isset($_GET['unread_only']) && $_GET['unread_only'] === 'true';
             $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 50;
             

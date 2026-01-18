@@ -4,6 +4,18 @@ require_once __DIR__ . '/includes/appearance_settings.php';
 
 // Load restaurant information from database
 require_once __DIR__ . '/includes/restaurant_info.php';
+
+// Load careers functions
+require_once __DIR__ . '/includes/careers-functions.php';
+
+// Fetch active jobs from database
+$activeJobs = [];
+try {
+    $activeJobs = getJobs(['active_only' => true]);
+} catch (Exception $e) {
+    error_log("Error fetching jobs: " . $e->getMessage());
+    $activeJobs = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -548,6 +560,7 @@ require_once __DIR__ . '/includes/restaurant_info.php';
             margin-bottom: 2rem;
             display: -webkit-box;
             -webkit-line-clamp: 3;
+            line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -893,6 +906,17 @@ require_once __DIR__ . '/includes/restaurant_info.php';
             font-size: 1rem;
             transition: all 0.3s ease;
             background: var(--white);
+            color: #333;
+        }
+        
+        .form-group textarea {
+            color: #333;
+        }
+        
+        .form-group input[type="text"]::placeholder,
+        .form-group textarea::placeholder {
+            color: #999;
+            opacity: 1;
         }
 
         .form-group input:focus,
@@ -901,6 +925,7 @@ require_once __DIR__ . '/includes/restaurant_info.php';
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(210, 105, 30, 0.1);
+            color: #333;
         }
 
         .file-upload {
@@ -1535,221 +1560,98 @@ require_once __DIR__ . '/includes/restaurant_info.php';
         </div>
         
         <div class="jobs-grid">
-            <!-- Job Card 1 -->
-            <div class="job-card" data-category="kitchen" data-aos="fade-up">
-                <span class="job-badge full-time">Full Time</span>
-                <h3 class="job-title">Head Chef</h3>
-                <div class="job-department">
-                    <i class="fas fa-utensils"></i>
-                    Kitchen Department
-                </div>
-                <div class="job-details">
-                    <div class="job-detail">
-                        <i class="fas fa-map-marker-alt"></i>
-                        Owerri, Imo State
-                    </div>
-                    <div class="job-detail">
-                        <i class="fas fa-clock"></i>
-                        5+ Years Experience
-                    </div>
-                    <div class="job-detail">
-                        <i class="fas fa-money-bill-wave"></i>
-                        Competitive Salary
-                    </div>
-                </div>
-                <p class="job-description">
-                    Lead our culinary team in creating authentic Nigerian cuisine with a modern twist. 
-                    Oversee menu development, kitchen operations, and mentor junior chefs.
-                </p>
-                <div class="job-actions">
-                    <button class="view-job-btn" onclick="viewJobDetails(1)">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
-                    <button class="apply-btn" onclick="openApplicationModal(1)">
-                        <i class="fas fa-paper-plane"></i> Apply Now
-                    </button>
-                </div>
-            </div>
+            <?php 
+            // Helper function to map department to category for filtering
+            function getJobCategory($department) {
+                $categoryMap = [
+                    'Kitchen' => 'kitchen',
+                    'Service' => 'service',
+                    'Management' => 'management',
+                    'Front of House' => 'service',
+                    'Back of House' => 'kitchen'
+                ];
+                return $categoryMap[$department] ?? 'management';
+            }
             
-            <!-- Job Card 2 -->
-            <div class="job-card" data-category="service" data-aos="fade-up" data-aos-delay="100">
-                <span class="job-badge full-time">Full Time</span>
-                <h3 class="job-title">Waiter/Waitress</h3>
-                <div class="job-department">
-                    <i class="fas fa-concierge-bell"></i>
-                    Service Department
-                </div>
-                <div class="job-details">
-                    <div class="job-detail">
-                        <i class="fas fa-map-marker-alt"></i>
-                        Owerri, Imo State
-                    </div>
-                    <div class="job-detail">
-                        <i class="fas fa-clock"></i>
-                        3+ Years Experience
-                    </div>
-                    <div class="job-detail">
-                        <i class="fas fa-money-bill-wave"></i>
-                        Competitive + Bonus
-                    </div>
-                </div>
-                <p class="job-description">
-                    Oversee daily restaurant operations, manage staff, ensure exceptional guest experiences, 
-                    and drive business growth through strategic planning and execution.
-                </p>
-                <div class="job-actions">
-                    <button class="view-job-btn" onclick="viewJobDetails(2)">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
-                    <button class="apply-btn" onclick="openApplicationModal(2)">
-                        <i class="fas fa-paper-plane"></i> Apply Now
-                    </button>
-                </div>
-            </div>
+            // Helper function to get badge class from job type
+            function getJobBadgeClass($jobType) {
+                $badgeMap = [
+                    'Full Time' => 'full-time',
+                    'Part Time' => 'part-time',
+                    'Contract' => 'contract',
+                    'Internship' => 'internship'
+                ];
+                return $badgeMap[$jobType] ?? 'full-time';
+            }
             
-            <!-- Job Card 3 -->
-            <div class="job-card" data-category="kitchen" data-aos="fade-up" data-aos-delay="200">
-                <span class="job-badge full-time">Full Time</span>
-                <h3 class="job-title">Sous Chef</h3>
-                <div class="job-department">
-                    <i class="fas fa-utensils"></i>
-                    Kitchen Department
-                </div>
-                <div class="job-details">
-                    <div class="job-detail">
-                        <i class="fas fa-map-marker-alt"></i>
-                        Owerri, Imo State
-                    </div>
-                    <div class="job-detail">
-                        <i class="fas fa-clock"></i>
-                        3+ Years Experience
-                    </div>
-                    <div class="job-detail">
-                        <i class="fas fa-money-bill-wave"></i>
-                        Competitive Salary
-                    </div>
-                </div>
-                <p class="job-description">
-                    Assist the Head Chef in kitchen operations, supervise kitchen staff, ensure food quality 
-                    standards, and contribute to menu innovation.
-                </p>
-                <div class="job-actions">
-                    <button class="view-job-btn" onclick="viewJobDetails(3)">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
-                    <button class="apply-btn" onclick="openApplicationModal(3)">
-                        <i class="fas fa-paper-plane"></i> Apply Now
-                    </button>
-                </div>
-            </div>
+            // Helper function to get department icon
+            function getDepartmentIcon($department) {
+                $iconMap = [
+                    'Kitchen' => 'fa-utensils',
+                    'Service' => 'fa-concierge-bell',
+                    'Management' => 'fa-bullhorn',
+                    'Front of House' => 'fa-user-tie',
+                    'Back of House' => 'fa-utensil-spoon'
+                ];
+                return $iconMap[$department] ?? 'fa-briefcase';
+            }
             
-            <!-- Job Card 4 -->
-            <div class="job-card" data-category="service" data-aos="fade-up" data-aos-delay="300">
-                <span class="job-badge part-time">Part Time</span>
-                <h3 class="job-title">Wait Staff</h3>
+            if (empty($activeJobs)): ?>
+                <div class="no-jobs-message" style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-light);">
+                    <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <h3>No Job Openings at the Moment</h3>
+                    <p>We're not actively hiring right now, but we'd love to hear from you! Please check back later or submit your resume for future opportunities.</p>
+                </div>
+            <?php else: 
+                $delay = 0;
+                foreach ($activeJobs as $job): 
+                    $jobCategory = getJobCategory($job['department']);
+                    $badgeClass = getJobBadgeClass($job['job_type']);
+                    $departmentIcon = getDepartmentIcon($job['department']);
+                    $description = htmlspecialchars(substr($job['description'], 0, 150)) . '...';
+                    $location = htmlspecialchars($job['location']);
+                    $salary = !empty($job['salary_range']) ? htmlspecialchars($job['salary_range']) : 'Competitive Salary';
+            ?>
+            <div class="job-card" data-category="<?php echo $jobCategory; ?>" data-aos="fade-up" data-aos-delay="<?php echo $delay; ?>">
+                <span class="job-badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($job['job_type']); ?></span>
+                <h3 class="job-title"><?php echo htmlspecialchars($job['title']); ?></h3>
                 <div class="job-department">
-                    <i class="fas fa-user-tie"></i>
-                    Service Department
+                    <i class="fas <?php echo $departmentIcon; ?>"></i>
+                    <?php echo htmlspecialchars($job['department']); ?>
                 </div>
                 <div class="job-details">
                     <div class="job-detail">
                         <i class="fas fa-map-marker-alt"></i>
-                        Owerri, Imo State
+                        <?php echo $location; ?>
                     </div>
+                    <?php if (!empty($job['application_deadline'])): ?>
                     <div class="job-detail">
-                        <i class="fas fa-clock"></i>
-                        Flexible Hours
+                        <i class="fas fa-calendar-alt"></i>
+                        Deadline: <?php echo date('M d, Y', strtotime($job['application_deadline'])); ?>
                     </div>
+                    <?php endif; ?>
                     <div class="job-detail">
                         <i class="fas fa-money-bill-wave"></i>
-                        Hourly + Tips
+                        <?php echo $salary; ?>
                     </div>
                 </div>
                 <p class="job-description">
-                    Provide exceptional table service, guide guests through our menu, ensure timely food 
-                    delivery, and create memorable dining experiences.
+                    <?php echo $description; ?>
                 </p>
                 <div class="job-actions">
-                    <button class="view-job-btn" onclick="viewJobDetails(4)">
+                    <button class="view-job-btn" onclick="viewJobDetails(<?php echo $job['id']; ?>)">
                         <i class="fas fa-eye"></i> View Details
                     </button>
-                    <button class="apply-btn" onclick="openApplicationModal(4)">
+                    <button class="apply-btn" onclick="openApplicationModal(<?php echo $job['id']; ?>)">
                         <i class="fas fa-paper-plane"></i> Apply Now
                     </button>
                 </div>
             </div>
-            
-            <!-- Job Card 5 -->
-            <div class="job-card" data-category="kitchen" data-aos="fade-up" data-aos-delay="400">
-                <span class="job-badge internship">Internship</span>
-                <h3 class="job-title">Culinary Intern</h3>
-                <div class="job-department">
-                    <i class="fas fa-utensil-spoon"></i>
-                    Kitchen Department
-                </div>
-                <div class="job-details">
-                    <div class="job-detail">
-                        <i class="fas fa-map-marker-alt"></i>
-                        Owerri, Imo State
-                    </div>
-                    <div class="job-detail">
-                        <i class="fas fa-clock"></i>
-                        6 Months Program
-                    </div>
-                    <div class="job-detail">
-                        <i class="fas fa-money-bill-wave"></i>
-                        Stipend Provided
-                    </div>
-                </div>
-                <p class="job-description">
-                    Learn authentic Nigerian cooking techniques, assist in food preparation, and gain 
-                    hands-on experience in a professional kitchen environment.
-                </p>
-                <div class="job-actions">
-                    <button class="view-job-btn" onclick="viewJobDetails(5)">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
-                    <button class="apply-btn" onclick="openApplicationModal(5)">
-                        <i class="fas fa-paper-plane"></i> Apply Now
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Job Card 6 -->
-            <div class="job-card" data-category="management" data-aos="fade-up" data-aos-delay="500">
-                <span class="job-badge full-time">Full Time</span>
-                <h3 class="job-title">Marketing Coordinator</h3>
-                <div class="job-department">
-                    <i class="fas fa-bullhorn"></i>
-                    Management
-                </div>
-                <div class="job-details">
-                    <div class="job-detail">
-                        <i class="fas fa-map-marker-alt"></i>
-                        Owerri, Imo State
-                    </div>
-                    <div class="job-detail">
-                        <i class="fas fa-clock"></i>
-                        2+ Years Experience
-                    </div>
-                    <div class="job-detail">
-                        <i class="fas fa-money-bill-wave"></i>
-                        Competitive Salary
-                    </div>
-                </div>
-                <p class="job-description">
-                    Develop and execute marketing strategies, manage social media presence, coordinate events, 
-                    and drive brand awareness for Joseph's Pot.
-                </p>
-                <div class="job-actions">
-                    <button class="view-job-btn" onclick="viewJobDetails(6)">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
-                    <button class="apply-btn" onclick="openApplicationModal(6)">
-                        <i class="fas fa-paper-plane"></i> Apply Now
-                    </button>
-                </div>
-            </div>
+            <?php 
+                $delay += 100;
+                endforeach; 
+            endif; 
+            ?>
         </div>
     </section>
 
@@ -2151,242 +2053,68 @@ require_once __DIR__ . '/includes/restaurant_info.php';
             });
         });
 
-        // Job Details Data
-        const jobDetailsData = {
-            1: {
-                title: "Head Chef",
-                type: "Full Time",
-                department: "Kitchen Department",
-                location: "Owerri, Imo State",
-                experience: "5+ Years Experience",
-                posted: "Posted: 2 weeks ago",
-                salary: "₦450,000 - ₦600,000 monthly + Benefits",
-                description: "Lead our culinary team in creating authentic Nigerian cuisine with a modern twist. As Head Chef at Joseph's Pot, you will be responsible for overseeing all kitchen operations, menu development, and maintaining the highest standards of food quality and presentation. This is a leadership role that requires both culinary expertise and strong management skills.",
-                qualifications: [
-                    "Professional culinary training from a recognized institution",
-                    "Minimum 5 years experience in a high-volume restaurant kitchen",
-                    "Proven experience in Nigerian and West African cuisine",
-                    "Strong leadership and team management skills",
-                    "Knowledge of food safety standards and HACCP",
-                    "Ability to manage kitchen inventory and control costs",
-                    "Creative menu development skills",
-                    "Excellent communication and interpersonal skills"
-                ],
-                responsibilities: [
-                    "Oversee all kitchen operations and staff",
-                    "Develop seasonal menus featuring authentic Nigerian cuisine",
-                    "Maintain food quality and presentation standards",
-                    "Train and mentor junior chefs and kitchen staff",
-                    "Manage kitchen inventory and food costs",
-                    "Ensure compliance with health and safety regulations",
-                    "Collaborate with restaurant management on special events",
-                    "Source high-quality local ingredients"
-                ],
-                benefits: [
-                    "Competitive salary package",
-                    "Comprehensive health insurance",
-                    "Annual performance bonus",
-                    "Staff meals provided daily",
-                    "Professional development opportunities",
-                    "Paid annual leave",
-                    "Recognition and reward programs",
-                    "Opportunity for career advancement"
-                ]
-            },
-            2: {
-                title: "Restaurant Manager",
-                type: "Full Time",
-                department: "Service Department",
-                location: "Owerri, Imo State",
-                experience: "3+ Years Experience",
-                posted: "Posted: 1 week ago",
-                salary: "₦350,000 - ₦500,000 monthly + Commission",
-                description: "Oversee daily restaurant operations and ensure exceptional guest experiences. As Restaurant Manager, you will be responsible for managing staff, driving business growth, and maintaining the highest standards of service. You will play a key role in creating memorable dining experiences for our guests.",
-                qualifications: [
-                    "Bachelor's degree in Hospitality Management or related field",
-                    "Minimum 3 years experience in restaurant management",
-                    "Strong leadership and team management skills",
-                    "Excellent customer service orientation",
-                    "Knowledge of restaurant operations and inventory management",
-                    "Ability to analyze financial reports",
-                    "Strong problem-solving skills",
-                    "Excellent communication skills"
-                ],
-                responsibilities: [
-                    "Manage daily restaurant operations",
-                    "Supervise and train service staff",
-                    "Ensure exceptional guest experiences",
-                    "Monitor inventory and place orders",
-                    "Analyze sales reports and implement growth strategies",
-                    "Handle customer feedback and complaints",
-                    "Coordinate with kitchen staff for smooth service",
-                    "Implement marketing initiatives"
-                ],
-                benefits: [
-                    "Competitive salary + performance commission",
-                    "Health insurance coverage",
-                    "Professional development allowance",
-                    "Paid vacation days",
-                    "Staff discount on meals",
-                    "Leadership training programs",
-                    "Monthly recognition awards",
-                    "Career growth opportunities"
-                ]
-            },
-            3: {
-                title: "Sous Chef",
-                type: "Full Time",
-                department: "Kitchen Department",
-                location: "Owerri, Imo State",
-                experience: "3+ Years Experience",
-                posted: "Posted: 3 days ago",
-                salary: "₦250,000 - ₦350,000 monthly + Benefits",
-                description: "Assist the Head Chef in kitchen operations and contribute to menu innovation. As Sous Chef, you will play a crucial role in maintaining kitchen efficiency, supervising staff, and ensuring food quality standards are met consistently.",
-                qualifications: [
-                    "Culinary school diploma or equivalent experience",
-                    "Minimum 3 years in a professional kitchen",
-                    "Strong knowledge of Nigerian cuisine",
-                    "Ability to work in a fast-paced environment",
-                    "Good organizational skills",
-                    "Team leadership capabilities",
-                    "Knowledge of food safety standards"
-                ],
-                responsibilities: [
-                    "Assist Head Chef in daily operations",
-                    "Supervise kitchen staff during service",
-                    "Maintain food quality and consistency",
-                    "Help with menu development and testing",
-                    "Train junior kitchen staff",
-                    "Monitor kitchen inventory",
-                    "Ensure kitchen cleanliness and organization"
-                ],
-                benefits: [
-                    "Competitive salary package",
-                    "Health insurance benefits",
-                    "Staff meals provided",
-                    "Skill development workshops",
-                    "Paid time off",
-                    "Performance bonuses",
-                    "Career advancement opportunities"
-                ]
-            },
-            4: {
-                title: "Wait Staff",
-                type: "Part Time",
-                department: "Service Department",
-                location: "Owerri, Imo State",
-                experience: "Previous experience preferred",
-                posted: "Posted: 5 days ago",
-                salary: "Hourly rate + Tips",
-                description: "Provide exceptional table service and create memorable dining experiences for our guests. As Wait Staff, you will be the face of Joseph's Pot, ensuring guests feel welcomed and well taken care of throughout their dining experience.",
-                qualifications: [
-                    "Previous restaurant experience preferred",
-                    "Excellent communication skills",
-                    "Friendly and professional demeanor",
-                    "Ability to work in a team",
-                    "Basic math skills for handling payments",
-                    "Knowledge of Nigerian cuisine is a plus",
-                    "Flexible schedule availability"
-                ],
-                responsibilities: [
-                    "Greet and seat guests warmly",
-                    "Take food and drink orders accurately",
-                    "Provide menu recommendations",
-                    "Ensure timely food delivery",
-                    "Handle guest inquiries professionally",
-                    "Maintain table and station cleanliness",
-                    "Process payments accurately"
-                ],
-                benefits: [
-                    "Competitive hourly wage",
-                    "Tip sharing program",
-                    "Flexible scheduling",
-                    "Staff meals during shifts",
-                    "Training and development",
-                    "Performance incentives",
-                    "Opportunity for full-time position"
-                ]
-            },
-            5: {
-                title: "Culinary Intern",
-                type: "Internship",
-                department: "Kitchen Department",
-                location: "Owerri, Imo State",
-                experience: "Culinary students welcome",
-                posted: "Posted: 1 week ago",
-                salary: "Monthly Stipend + Meals",
-                description: "Gain hands-on experience in a professional kitchen environment and learn authentic Nigerian cooking techniques. This internship is perfect for culinary students looking to develop their skills in a real restaurant setting.",
-                qualifications: [
-                    "Currently enrolled in culinary school",
-                    "Passion for Nigerian cuisine",
-                    "Willingness to learn and work hard",
-                    "Basic knife skills",
-                    "Good communication skills",
-                    "Team player attitude",
-                    "Available for 6-month program"
-                ],
-                responsibilities: [
-                    "Assist with food preparation",
-                    "Learn kitchen organization",
-                    "Observe cooking techniques",
-                    "Help with ingredient preparation",
-                    "Maintain kitchen cleanliness",
-                    "Assist during service periods",
-                    "Participate in team meetings"
-                ],
-                benefits: [
-                    "Monthly stipend provided",
-                    "Daily meals included",
-                    "Hands-on training from experienced chefs",
-                    "Certificate of completion",
-                    "Potential job offer after internship",
-                    "Networking opportunities",
-                    "Skill development workshops"
-                ]
-            },
-            6: {
-                title: "Marketing Coordinator",
-                type: "Full Time",
-                department: "Management",
-                location: "Owerri, Imo State",
-                experience: "2+ Years Experience",
-                posted: "Posted: 2 weeks ago",
-                salary: "₦300,000 - ₦400,000 monthly",
-                description: "Develop and execute marketing strategies to drive brand awareness and business growth for Joseph's Pot. This role combines creativity with strategic thinking to promote our restaurant and culinary experiences.",
-                qualifications: [
-                    "Bachelor's degree in Marketing or related field",
-                    "2+ years marketing experience",
-                    "Social media management skills",
-                    "Content creation abilities",
-                    "Analytical and strategic thinking",
-                    "Excellent writing and communication skills",
-                    "Knowledge of digital marketing tools"
-                ],
-                responsibilities: [
-                    "Develop marketing strategies",
-                    "Manage social media accounts",
-                    "Create engaging content",
-                    "Coordinate promotional events",
-                    "Analyze marketing performance",
-                    "Collaborate with local influencers",
-                    "Manage email marketing campaigns"
-                ],
-                benefits: [
-                    "Competitive salary package",
-                    "Health insurance coverage",
-                    "Performance bonuses",
-                    "Professional development budget",
-                    "Flexible work arrangements",
-                    "Creative freedom",
-                    "Career growth opportunities"
-                ]
+        // Job Details Data - Generated from Database
+        const jobDetailsData = <?php 
+            if (!empty($activeJobs)) {
+                $jobDataArray = [];
+                foreach ($activeJobs as $job) {
+                    // Parse requirements and responsibilities (assuming they're stored as text with bullet points or newlines)
+                    $requirements = !empty($job['requirements']) ? $job['requirements'] : '';
+                    $responsibilities = !empty($job['responsibilities']) ? $job['responsibilities'] : '';
+                    $benefits = !empty($job['benefits']) ? $job['benefits'] : '';
+                    
+                    // Convert newline-separated text to arrays
+                    $requirementsList = array_filter(array_map('trim', explode("\n", str_replace(['•', '-', '*'], '', $requirements))));
+                    $responsibilitiesList = array_filter(array_map('trim', explode("\n", str_replace(['•', '-', '*'], '', $responsibilities))));
+                    $benefitsList = array_filter(array_map('trim', explode("\n", str_replace(['•', '-', '*'], '', $benefits))));
+                    
+                    // If no items found, create default arrays
+                    if (empty($requirementsList)) {
+                        $requirementsList = ['See job description for requirements'];
+                    }
+                    if (empty($responsibilitiesList)) {
+                        $responsibilitiesList = ['See job description for responsibilities'];
+                    }
+                    if (empty($benefitsList)) {
+                        $benefitsList = ['Competitive salary and benefits'];
+                    }
+                    
+                    $postedText = "Posted: " . date('F j, Y', strtotime($job['created_at'] ?? 'now'));
+                    $experienceText = !empty($job['requirements']) ? 'See requirements below' : 'Experience preferred';
+                    $salary = !empty($job['salary_range']) ? htmlspecialchars($job['salary_range'], ENT_QUOTES) : 'Competitive Salary';
+                    
+                    $jobDataArray[$job['id']] = [
+                        'title' => $job['title'],
+                        'type' => $job['job_type'],
+                        'department' => $job['department'],
+                        'location' => $job['location'],
+                        'experience' => $experienceText,
+                        'posted' => $postedText,
+                        'salary' => $salary,
+                        'description' => $job['description'],
+                        'qualifications' => array_values($requirementsList),
+                        'responsibilities' => array_values($responsibilitiesList),
+                        'benefits' => array_values($benefitsList)
+                    ];
+                }
+                echo json_encode($jobDataArray, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES);
+            } else {
+                echo '{}';
             }
-        };
+        ?>;
 
         // Job Details Modal Functions
         function viewJobDetails(jobId) {
-            const jobData = jobDetailsData[jobId];
-            if (!jobData) return;
+            if (!jobDetailsData || typeof jobDetailsData !== 'object') {
+                console.error('Job details data not available');
+                return;
+            }
+            // Convert jobId to string since JSON keys are strings
+            const jobData = jobDetailsData[String(jobId)];
+            if (!jobData) {
+                console.error('Job not found:', jobId);
+                return;
+            }
             
             // Populate modal with job data
             document.getElementById('modalJobTitle').textContent = jobData.title;
@@ -2460,10 +2188,12 @@ require_once __DIR__ . '/includes/restaurant_info.php';
             setTimeout(() => {
                 // Find job ID from title
                 let jobId = 0;
-                for (const id in jobDetailsData) {
-                    if (jobDetailsData[id].title === jobTitle) {
-                        jobId = id;
-                        break;
+                if (jobDetailsData && typeof jobDetailsData === 'object') {
+                    for (const id in jobDetailsData) {
+                        if (jobDetailsData[id] && jobDetailsData[id].title === jobTitle) {
+                            jobId = id;
+                            break;
+                        }
                     }
                 }
                 
@@ -2484,11 +2214,15 @@ require_once __DIR__ . '/includes/restaurant_info.php';
             jobIdInput.value = jobId;
             
             // Get job title for modal header
-            const jobData = jobDetailsData[jobId];
-            if (jobData) {
+            // Convert jobId to string since JSON keys are strings
+            const jobIdStr = String(jobId);
+            if (jobDetailsData && typeof jobDetailsData === 'object' && jobDetailsData[jobIdStr]) {
+                const jobData = jobDetailsData[jobIdStr];
                 // Update modal title
                 const modalTitle = modal.querySelector('h3');
-                modalTitle.textContent = `Apply for: ${jobData.title}`;
+                if (modalTitle && jobData.title) {
+                    modalTitle.textContent = `Apply for: ${jobData.title}`;
+                }
             }
             
             // Reset form
@@ -2623,17 +2357,42 @@ require_once __DIR__ . '/includes/restaurant_info.php';
                 }
                 
                 try {
-                    // Create FormData object
-                    const formData = new FormData(this);
+                    // Create FormData object and map fields to API format
+                    const formData = new FormData();
                     
-                    // Add files to FormData
-                    selectedFiles.forEach(file => {
-                        formData.append('files[]', file);
+                    // Map form fields to API fields
+                    const jobId = document.getElementById('jobId').value;
+                    const firstName = document.getElementById('firstName').value.trim();
+                    const lastName = document.getElementById('lastName').value.trim();
+                    
+                    formData.append('job_id', jobId);
+                    formData.append('applicant_name', firstName + ' ' + lastName);
+                    formData.append('applicant_email', document.getElementById('email').value.trim());
+                    formData.append('applicant_phone', document.getElementById('phone').value.trim());
+                    formData.append('cover_letter', document.getElementById('coverLetter').value.trim());
+                    formData.append('years_experience', document.getElementById('experience').value);
+                    
+                    const currentRole = document.getElementById('currentRole').value.trim();
+                    if (currentRole) {
+                        formData.append('current_position', currentRole);
+                    }
+                    
+                    // Add resume file (first file only, as API expects single resume)
+                    if (selectedFiles.length > 0 && selectedFiles[0]) {
+                        formData.append('resume', selectedFiles[0]);
+                    }
+                    
+                    // Send to careers API
+                    const response = await fetch('./api/careers-api.php?action=create_application', {
+                        method: 'POST',
+                        body: formData
                     });
                     
-                    // In a real implementation, you would send this to your server
-                    // For demo purposes, simulate API call
-                    await simulateApiCall(formData);
+                    const result = await response.json();
+                    
+                    if (!result.success) {
+                        throw new Error(result.message || 'Failed to submit application');
+                    }
                     
                     showMessage('Application submitted successfully! We\'ll contact you soon.', 'success');
                     
@@ -2656,21 +2415,6 @@ require_once __DIR__ . '/includes/restaurant_info.php';
             });
         }
         
-        // Simulate API call (replace with actual fetch to your server)
-        function simulateApiCall(formData) {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    console.log('Form data would be sent to server:', {
-                        jobId: formData.get('jobId'),
-                        firstName: formData.get('firstName'),
-                        lastName: formData.get('lastName'),
-                        email: formData.get('email'),
-                        files: selectedFiles.length
-                    });
-                    resolve();
-                }, 1500);
-            });
-        }
         
         // Show message function
         function showMessage(text, type) {
