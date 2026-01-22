@@ -1,8 +1,13 @@
 <?php
 /**
  * Debug endpoint to check country data in database
- * Remove this file after debugging
+ * SECURITY: Only accessible to authenticated admins
+ * TODO: Remove this file in production or add proper authentication
  */
+
+// Require admin authentication
+require_once __DIR__ . '/../admin/admin-auth.php';
+checkPageAccess();
 
 header('Content-Type: application/json');
 require_once __DIR__ . '/../db_connection.php';

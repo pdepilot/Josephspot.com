@@ -1162,9 +1162,6 @@ $browserUsageJson = json_encode($browserUsage);
         const deviceTypes = <?php echo $deviceTypesJson; ?>;
         const browserUsage = <?php echo $browserUsageJson; ?>;
         
-        // Debug: Log data to console
-        console.log('Top Countries Data:', topCountries);
-        
         // Chart instances
         let visitorsChart = null, sourcesChart = null, devicesChart = null;
 
@@ -1389,8 +1386,6 @@ $browserUsageJson = json_encode($browserUsage);
         function populateTopCountries() {
             const container = document.getElementById('topCountries');
             container.innerHTML = '';
-            
-            console.log('populateTopCountries called, data:', topCountries);
             
             if (topCountries && topCountries.length > 0) {
                 topCountries.forEach(country => {

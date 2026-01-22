@@ -1,5 +1,13 @@
 <?php
-// config/database.php
+/**
+ * Database Configuration (mysqli-based)
+ * 
+ * NOTE: This file may be unused. The project primarily uses:
+ * - db_connection.php (PDO-based, used by analytics and APIs)
+ * - includes/Database.php (PDO-based, uses config/database_config.php)
+ * 
+ * If getDBConnection() is not referenced anywhere, this file can be removed.
+ */
 
 // Database Configuration for Joseph's Pot
 define('DB_HOST', 'localhost');
@@ -32,6 +40,6 @@ function testDatabaseConnection() {
     }
 }
 
-// Uncomment the line below to test database connection
-testDatabaseConnection();
+// To test database connection, call testDatabaseConnection() manually
+// testDatabaseConnection();
 ?>
