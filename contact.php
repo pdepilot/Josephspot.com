@@ -31,6 +31,12 @@ require_once __DIR__ . '/includes/restaurant_info.php';
   <!-- Google Maps API -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqawMh1_TWjUGPFbPvOl39eYYNvKvX5eM&callback=initMap" async defer></script>
 
+  <!-- Firebase Analytics -->
+  <?php require_once __DIR__ . '/includes/firebase-analytics.php'; ?>
+  
+  <!-- PHP Analytics Tracker -->
+  <script src="includes/analytics-tracker.js"></script>
+
   <style>
     /* CSS Starts Here */
     /* Override CSS variables - using :root */

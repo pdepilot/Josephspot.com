@@ -38,7 +38,7 @@ function isLoggedIn()
 function getAdminData($admin_id)
 {
     $conn = getDBConnection();
-    $stmt = $conn->prepare("SELECT id, username, email, full_name, role, last_login, created_at FROM admin_users WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, username, email, full_name, role, permissions, last_login, created_at FROM admin_users WHERE id = ?");
     if ($stmt) {
         $stmt->bind_param("i", $admin_id);
         $stmt->execute();
@@ -1458,6 +1458,93 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             border-color: var(--primary);
         }
 
+        /* Permissions Container Styles */
+        .permissions-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--gray-dark);
+            border-radius: 6px;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+
+        .permission-group {
+            margin-bottom: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .permission-parent {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .permission-parent:hover {
+            background: #f5f5f5;
+        }
+
+        .permission-parent input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .permission-label {
+            flex: 1;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .permission-toggle {
+            margin-left: auto;
+            transition: transform 0.3s;
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        .permission-group.expanded .permission-toggle {
+            transform: rotate(180deg);
+        }
+
+        .permission-children {
+            display: none;
+            padding: 0 15px 10px 40px;
+            background: #fafafa;
+        }
+
+        .permission-group.expanded .permission-children {
+            display: block;
+        }
+
+        .permission-child {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .permission-child:hover {
+            color: var(--primary);
+        }
+
+        .permission-child input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .permission-child:disabled,
+        .permission-child input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .form-actions {
             display: flex;
             justify-content: flex-end;
@@ -1792,11 +1879,11 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                     </a>
                 </li>
                 <?php endif; ?>
-                <?php if (checkAdminPermission('menu_management', 'view')): ?>
+                <?php if (checkAdminPermission('food_management', 'view')): ?>
                 <li class="menu-item">
                     <a href="admin-menu-management.php">
                         <i class="fas fa-utensils"></i>
-                        <span>Menu Management</span>
+                        <span>Food Management</span>
                     </a>
                 </li>
                 <?php endif; ?>
@@ -1858,6 +1945,14 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                     </a>
                 </li>
                 <?php endif; ?>
+
+                <li class="menu-label">Analytics</li>
+                <li class="menu-item">
+                    <a href="../site-traffic.php">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Traffic Analytics</span>
+                    </a>
+                </li>
 
                 <li class="menu-label">Account</li>
                 <?php if (checkAdminPermission('admin_management', 'view')): ?>
@@ -2127,18 +2222,310 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                         <option value="">Select Role</option>
                         <option value="Super Admin">Super Admin</option>
                         <option value="Manager">Manager</option>
-                        <option value="Content Manager">Content Manager</option>
+                        <option value="Chef">Chef</option>
+                        <option value="Supervisor">Supervisor</option>
                         <option value="Support">Support</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="adminPermissions">Permissions</label>
-                    <select id="adminPermissions">
-                        <option value="">Select Permissions</option>
-                        <option value="Full Access">Full Access</option>
-                        <option value="Limited Access">Limited Access</option>
-                        <option value="View Only">View Only</option>
-                    </select>
+                    <label>Permissions</label>
+                    <div id="adminPermissions" class="permissions-container">
+                        <!-- Dashboard -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="dashboard" value="dashboard">
+                                <span class="permission-label">Dashboard</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="dashboard" data-sub="view" value="view">
+                                    <span>View Dashboard</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="dashboard" data-sub="widgets" value="widgets">
+                                    <span>Dashboard Widgets</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="dashboard" data-sub="reports" value="reports">
+                                    <span>View Reports</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Contact Messages -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="contact_messages" value="contact_messages">
+                                <span class="permission-label">Contact Messages</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="contact_messages" data-sub="view" value="view">
+                                    <span>View Messages</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="contact_messages" data-sub="reply" value="reply">
+                                    <span>Reply to Messages</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="contact_messages" data-sub="delete" value="delete">
+                                    <span>Delete Messages</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Food Management -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="food_management" value="food_management">
+                                <span class="permission-label">Food Management</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="food_management" data-sub="view" value="view">
+                                    <span>View Menu</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="food_management" data-sub="create" value="create">
+                                    <span>Create Items</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="food_management" data-sub="edit" value="edit">
+                                    <span>Edit Items</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="food_management" data-sub="delete" value="delete">
+                                    <span>Delete Items</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Reservations -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="reservations" value="reservations">
+                                <span class="permission-label">Reservations</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="reservations" data-sub="view" value="view">
+                                    <span>View Reservations</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="reservations" data-sub="create" value="create">
+                                    <span>Create Reservations</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="reservations" data-sub="edit" value="edit">
+                                    <span>Edit Reservations</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="reservations" data-sub="delete" value="delete">
+                                    <span>Cancel Reservations</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Orders -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="orders" value="orders">
+                                <span class="permission-label">Orders</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="orders" data-sub="view" value="view">
+                                    <span>View Orders</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="orders" data-sub="edit" value="edit">
+                                    <span>Update Order Status</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="orders" data-sub="delete" value="delete">
+                                    <span>Delete Orders</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Order Online Menu -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="order_online_menu" value="order_online_menu">
+                                <span class="permission-label">Order Online Menu</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="order_online_menu" data-sub="view" value="view">
+                                    <span>View Menu</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="order_online_menu" data-sub="create" value="create">
+                                    <span>Add Items</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="order_online_menu" data-sub="edit" value="edit">
+                                    <span>Edit Items</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="order_online_menu" data-sub="delete" value="delete">
+                                    <span>Delete Items</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Reviews -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="reviews" value="reviews">
+                                <span class="permission-label">Reviews</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="reviews" data-sub="view" value="view">
+                                    <span>View Reviews</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="reviews" data-sub="approve" value="approve">
+                                    <span>Approve Reviews</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="reviews" data-sub="reply" value="reply">
+                                    <span>Reply to Reviews</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="reviews" data-sub="delete" value="delete">
+                                    <span>Delete Reviews</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Events -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="events" value="events">
+                                <span class="permission-label">Events</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="events" data-sub="view" value="view">
+                                    <span>View Events</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="events" data-sub="create" value="create">
+                                    <span>Create Events</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="events" data-sub="edit" value="edit">
+                                    <span>Edit Events</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="events" data-sub="delete" value="delete">
+                                    <span>Delete Events</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Gallery -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="gallery" value="gallery">
+                                <span class="permission-label">Gallery</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="gallery" data-sub="view" value="view">
+                                    <span>View Gallery</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="gallery" data-sub="upload" value="upload">
+                                    <span>Upload Images</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="gallery" data-sub="delete" value="delete">
+                                    <span>Delete Images</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Admin Management -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="admin_management" value="admin_management">
+                                <span class="permission-label">Admin Management</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="admin_management" data-sub="view" value="view">
+                                    <span>View Admins</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="admin_management" data-sub="create" value="create">
+                                    <span>Create Admins</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="admin_management" data-sub="edit" value="edit">
+                                    <span>Edit Admins</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="admin_management" data-sub="delete" value="delete">
+                                    <span>Delete Admins</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Settings -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="settings" value="settings">
+                                <span class="permission-label">Settings</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="settings" data-sub="view" value="view">
+                                    <span>View Settings</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="settings" data-sub="edit" value="edit">
+                                    <span>Edit Settings</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Customers -->
+                        <div class="permission-group">
+                            <label class="permission-parent">
+                                <input type="checkbox" class="permission-module" data-module="customers" value="customers">
+                                <span class="permission-label">Customers</span>
+                                <i class="fas fa-chevron-down permission-toggle"></i>
+                            </label>
+                            <div class="permission-children">
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="customers" data-sub="view" value="view">
+                                    <span>View Customers</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="customers" data-sub="edit" value="edit">
+                                    <span>Edit Customers</span>
+                                </label>
+                                <label class="permission-child">
+                                    <input type="checkbox" class="permission-sub" data-module="customers" data-sub="delete" value="delete">
+                                    <span>Delete Customers</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
@@ -2295,6 +2682,166 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
     const closeEditProfileModal = document.getElementById('closeEditProfileModal');
     const cancelEditProfileBtn = document.getElementById('cancelEditProfileBtn');
 
+    // ==================== PERMISSIONS MANAGEMENT ====================
+    
+    // Initialize permissions system
+    function initPermissions() {
+        const permissionsContainer = document.getElementById('adminPermissions');
+        if (!permissionsContainer) return;
+        
+        // Handle parent checkbox clicks
+        const parentCheckboxes = permissionsContainer.querySelectorAll('.permission-module');
+        parentCheckboxes.forEach(parentCheckbox => {
+            parentCheckbox.addEventListener('change', function() {
+                const module = this.dataset.module;
+                const children = permissionsContainer.querySelectorAll(
+                    `.permission-sub[data-module="${module}"]`
+                );
+                
+                if (this.checked) {
+                    // Enable all children when parent is checked
+                    children.forEach(child => {
+                        child.disabled = false;
+                    });
+                } else {
+                    // Disable and uncheck all children when parent is unchecked
+                    children.forEach(child => {
+                        child.disabled = true;
+                        child.checked = false;
+                    });
+                }
+            });
+        });
+        
+        // Handle child checkbox clicks
+        const childCheckboxes = permissionsContainer.querySelectorAll('.permission-sub');
+        childCheckboxes.forEach(childCheckbox => {
+            childCheckbox.addEventListener('change', function() {
+                const module = this.dataset.module;
+                const parentCheckbox = permissionsContainer.querySelector(
+                    `.permission-module[data-module="${module}"]`
+                );
+                const siblings = permissionsContainer.querySelectorAll(
+                    `.permission-sub[data-module="${module}"]`
+                );
+                
+                // Check if any sibling is checked
+                const anyChecked = Array.from(siblings).some(sibling => sibling.checked);
+                
+                // Update parent checkbox state
+                if (anyChecked) {
+                    parentCheckbox.checked = true;
+                    // Enable all siblings
+                    siblings.forEach(sibling => {
+                        sibling.disabled = false;
+                    });
+                } else {
+                    // If no children are checked, uncheck parent
+                    parentCheckbox.checked = false;
+                }
+            });
+        });
+        
+        // Handle expand/collapse
+        const permissionParents = permissionsContainer.querySelectorAll('.permission-parent');
+        permissionParents.forEach(parent => {
+            parent.addEventListener('click', function(e) {
+                // Don't toggle if clicking the checkbox
+                if (e.target.type === 'checkbox') return;
+                
+                const group = this.closest('.permission-group');
+                group.classList.toggle('expanded');
+            });
+        });
+    }
+    
+    // Serialize permissions to JSON structure
+    function serializePermissions() {
+        const permissionsContainer = document.getElementById('adminPermissions');
+        if (!permissionsContainer) return {};
+        
+        const permissions = {};
+        const modules = permissionsContainer.querySelectorAll('.permission-module');
+        
+        modules.forEach(moduleCheckbox => {
+            const module = moduleCheckbox.dataset.module;
+            if (moduleCheckbox.checked) {
+                permissions[module] = {
+                    access: true,
+                    sub_permissions: {}
+                };
+                
+                // Get all sub-permissions for this module
+                const subCheckboxes = permissionsContainer.querySelectorAll(
+                    `.permission-sub[data-module="${module}"]`
+                );
+                
+                subCheckboxes.forEach(subCheckbox => {
+                    if (subCheckbox.checked) {
+                        const sub = subCheckbox.dataset.sub;
+                        permissions[module].sub_permissions[sub] = true;
+                    }
+                });
+            }
+        });
+        
+        return permissions;
+    }
+    
+    // Load permissions from JSON structure
+    function loadPermissions(permissionsJson) {
+        const permissionsContainer = document.getElementById('adminPermissions');
+        if (!permissionsContainer) return;
+        
+        // Clear all checkboxes first
+        const allCheckboxes = permissionsContainer.querySelectorAll('input[type="checkbox"]');
+        allCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+            checkbox.disabled = false;
+        });
+        
+        if (!permissionsJson || typeof permissionsJson === 'string') {
+            try {
+                permissionsJson = permissionsJson ? JSON.parse(permissionsJson) : {};
+            } catch (e) {
+                console.error('Error parsing permissions JSON:', e);
+                permissionsJson = {};
+            }
+        }
+        
+        // Load permissions
+        Object.keys(permissionsJson).forEach(module => {
+            const moduleData = permissionsJson[module];
+            if (moduleData && moduleData.access) {
+                const moduleCheckbox = permissionsContainer.querySelector(
+                    `.permission-module[data-module="${module}"]`
+                );
+                if (moduleCheckbox) {
+                    moduleCheckbox.checked = true;
+                    
+                    // Enable and check sub-permissions
+                    const subCheckboxes = permissionsContainer.querySelectorAll(
+                        `.permission-sub[data-module="${module}"]`
+                    );
+                    subCheckboxes.forEach(subCheckbox => {
+                        subCheckbox.disabled = false;
+                        const sub = subCheckbox.dataset.sub;
+                        if (moduleData.sub_permissions && moduleData.sub_permissions[sub]) {
+                            subCheckbox.checked = true;
+                        }
+                    });
+                }
+            }
+        });
+    }
+    
+    // Initialize permissions on page load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initPermissions);
+    } else {
+        initPermissions();
+    }
+
     // ==================== EDIT PROFILE FUNCTIONS ====================
     
     // Open Edit Profile Modal
@@ -2423,7 +2970,13 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
         if (roleField) roleField.value = adminData.role || '';
         // Clear password field - don't show existing password for security
         if (passwordField) passwordField.value = '';
-        // Note: permissions field is not stored in database, so we don't populate it
+        // Load permissions if available
+        if (adminData.permissions) {
+            loadPermissions(adminData.permissions);
+        } else {
+            // Clear permissions if none exist
+            loadPermissions({});
+        }
         
         // Change modal title and submit button text
         const modalHeader = document.querySelector('#addAdminModal .modal-header h3');
@@ -2525,10 +3078,19 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                 ? (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase()
                 : admin.name.substring(0, 2).toUpperCase();
             
+            // Ensure role is displayed, fallback to 'N/A' if empty
+            const displayRole = admin.role && admin.role.trim() !== '' ? admin.role : 'N/A';
+            
+            console.log(`[DEBUG] Rendering admin ${index + 1}: ID=${admin.id}, Name=${admin.name}, Role=${admin.role}, DisplayRole=${displayRole}`);
+            
+            // Escape HTML to prevent XSS
+            const escapedName = admin.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const escapedRole = displayRole.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            
             adminCard.innerHTML = `
                 <div class="admin-card-avatar">${initials}</div>
-                <div class="admin-card-name">${admin.name}</div>
-                <div class="admin-card-role">${admin.role}</div>
+                <div class="admin-card-name">${escapedName}</div>
+                <div class="admin-card-role">${escapedRole}</div>
                 <div class="admin-card-actions">
                     <button type="button" class="admin-card-btn edit" title="Edit Admin" data-admin-id="${admin.id}">
                         <i class="fas fa-edit"></i>
@@ -2540,7 +3102,7 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             `;
 
             adminsGrid.appendChild(adminCard);
-            console.log(`[DEBUG] Admin card ${index + 1} appended for admin ID: ${admin.id}, Name: ${admin.name}`);
+            console.log(`[DEBUG] Admin card ${index + 1} appended for admin ID: ${admin.id}, Name: ${admin.name}, Role: ${displayRole}`);
         });
         
         console.log('[DEBUG] All admin cards rendered, setting up event delegation');
@@ -2558,6 +3120,10 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                     window.admins = admins; // Update global reference
                     console.log('[DEBUG] Loaded admins:', admins);
                     console.log('[DEBUG] Updated window.admins:', window.admins);
+                    // Log each admin's role for debugging
+                    admins.forEach((admin, idx) => {
+                        console.log(`[DEBUG] Admin ${idx + 1}: ID=${admin.id}, Name=${admin.name}, Role=${admin.role || 'EMPTY'}`);
+                    });
                     renderAdmins();
                 } else {
                     console.error('[DEBUG] Error loading admins:', data.message);
@@ -2769,7 +3335,7 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
         const email = document.getElementById('adminEmail').value;
         const password = document.getElementById('adminPassword').value;
         const role = document.getElementById('adminRole').value;
-        const permissions = document.getElementById('adminPermissions').value;
+        const permissions = serializePermissions();
 
         // URGENT DEBUG: Log form values before submission
         console.log('===========================================');
@@ -2808,6 +3374,7 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                         formData.append('name', name);
                         formData.append('email', email);
                         formData.append('role', role);
+                        formData.append('permissions', JSON.stringify(permissions));
                         // Only append password if it's provided (optional in edit mode)
                         if (password.trim() !== '') {
                             formData.append('password', password);
@@ -2931,6 +3498,7 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             formData.append('email', email);
             formData.append('role', role);
             formData.append('password', password);
+            formData.append('permissions', JSON.stringify(permissions));
             
             // URGENT DEBUG: Log FormData contents
             console.log('DEBUG: FormData contents:');

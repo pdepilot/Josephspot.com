@@ -27,6 +27,13 @@ require_once __DIR__ . '/includes/restaurant_info.php';
       onerror="console.error('Failed to load Google Fonts');"
     />
     <link rel="stylesheet" href="./CSS/order-online.css">
+    
+    <!-- Firebase Analytics -->
+    <?php require_once __DIR__ . '/includes/firebase-analytics.php'; ?>
+    
+    <!-- PHP Analytics Tracker -->
+    <script src="includes/analytics-tracker.js"></script>
+    
     <!-- Note: QRCode and html2pdf scripts moved to body for better loading -->
     <!-- Dynamic Theme Colors (must come after CSS to override) -->
     <style id="dynamic-theme-colors">

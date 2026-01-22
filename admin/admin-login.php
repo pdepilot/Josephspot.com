@@ -11,6 +11,9 @@ define('DB_NAME', 'joseph_pot_admin');
 // Debug mode
 define('DEBUG', false); 
 
+// Include admin authentication functions
+require_once __DIR__ . '/admin-auth.php';
+
 // Create database connection and setup
 function setupDatabase() {
     // First connect without database to create it
@@ -840,17 +843,24 @@ function handleRequest() {
                 } else {
                     $response = handleLogin($username, $password, $remember);
                     
-                    // If login successful, redirect to admin dashboard
+                    // If login successful, redirect to first accessible page
                     if ($response['success']) {
                         // Set a session variable to show success message on redirect
                         $_SESSION['login_success'] = true;
                         
-                        if (DEBUG) {
-                            error_log("Login successful, redirecting to dashboard.php");
+                        // Get first accessible page based on permissions
+                        if (function_exists('getFirstAccessiblePage')) {
+                            $redirect_page = getFirstAccessiblePage();
+                        } else {
+                            $redirect_page = 'dashboard.php'; // Fallback
                         }
                         
-                        // Redirect to main dashboard
-                        header("Location: dashboard.php");
+                        if (DEBUG) {
+                            error_log("Login successful, redirecting to: " . $redirect_page);
+                        }
+                        
+                        // Redirect to first accessible page
+                        header("Location: " . $redirect_page);
                         exit;
                     }
                 }
@@ -897,7 +907,13 @@ if (isset($_GET['init']) && $_GET['init'] == '1') {
 
 // Check if user is already logged in and redirect
 if (isLoggedIn()) {
-    header("Location: dashboard.php");
+    // Redirect to first accessible page
+    if (function_exists('getFirstAccessiblePage')) {
+        $redirect_page = getFirstAccessiblePage();
+    } else {
+        $redirect_page = 'dashboard.php'; // Fallback
+    }
+    header("Location: " . $redirect_page);
     exit;
 }
 ?>

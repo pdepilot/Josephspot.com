@@ -48,6 +48,12 @@ try {
     <!-- Main CSS -->
     <link rel="stylesheet" href="CSS/index.css">
     
+    <!-- Firebase Analytics -->
+    <?php require_once __DIR__ . '/includes/firebase-analytics.php'; ?>
+    
+    <!-- PHP Analytics Tracker -->
+    <script src="includes/analytics-tracker.js"></script>
+    
     <!-- Careers Page Specific CSS -->
     <style>
         /* ===== CAREERS PAGE SPECIFIC STYLES ===== */
@@ -1441,7 +1447,7 @@ try {
     <section class="career-hero">
         <!-- Background with Image -->
         <div class="hero-background">
-            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+            <img src="./images/611274538_866211769471498_3515934356623108686_n.jpeg" 
                  alt="Professional kitchen team preparing food" 
                  class="hero-background-image">
             <div class="hero-overlay"></div>

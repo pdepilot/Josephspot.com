@@ -147,6 +147,47 @@ function hasAdminPermission($module, $permission = 'view') {
         
         $conn = getAuthDBConnection();
         
+        // FIRST: Check admin-specific permissions (stored in admin_users.permissions column)
+        $admin_id = isset($_SESSION['admin_id']) ? $_SESSION['admin_id'] : null;
+        if ($admin_id) {
+            // Check if permissions column exists
+            $col_check = $conn->query("SHOW COLUMNS FROM admin_users LIKE 'permissions'");
+            if ($col_check && $col_check->num_rows > 0) {
+                $stmt = $conn->prepare("SELECT permissions FROM admin_users WHERE id = ?");
+                if ($stmt) {
+                    $stmt->bind_param("i", $admin_id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    if ($result->num_rows > 0) {
+                        $admin_data = $result->fetch_assoc();
+                        $stmt->close();
+                        
+                        if (!empty($admin_data['permissions'])) {
+                            $admin_permissions = json_decode($admin_data['permissions'], true);
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($admin_permissions)) {
+                                // Check if module has access
+                                if (isset($admin_permissions[$module]) && isset($admin_permissions[$module]['access']) && $admin_permissions[$module]['access']) {
+                                    // Check sub-permission if specified
+                                    if ($permission === 'view' || $permission === 'all') {
+                                        // 'view' or 'all' is granted if module access is true
+                                        return true;
+                                    } else if (isset($admin_permissions[$module]['sub_permissions'])) {
+                                        // Check specific sub-permission
+                                        if (isset($admin_permissions[$module]['sub_permissions'][$permission]) && $admin_permissions[$module]['sub_permissions'][$permission]) {
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        $stmt->close();
+                    }
+                }
+            }
+        }
+        
+        // SECOND: Fall back to role-based permissions (from admin_permissions table)
         // Check if admin_permissions table exists
         $table_check = $conn->query("SHOW TABLES LIKE 'admin_permissions'");
         if ($table_check->num_rows === 0) {
@@ -190,13 +231,57 @@ function hasAdminPermission($module, $permission = 'view') {
     return false;
 }
 
+// Get first accessible page for admin based on permissions
+function getFirstAccessiblePage($admin_id = null) {
+    if (!$admin_id && isset($_SESSION['admin_id'])) {
+        $admin_id = $_SESSION['admin_id'];
+    }
+    
+    if (!$admin_id) {
+        return 'dashboard.php'; // Default fallback
+    }
+    
+    // Super Admin always has access to dashboard
+    $role = isset($_SESSION['admin_role']) ? $_SESSION['admin_role'] : null;
+    if ($role === 'super_admin' || $role === 'Super Admin') {
+        return 'dashboard.php';
+    }
+    
+    // Define page order (priority order)
+    $page_order = [
+        'dashboard.php' => 'dashboard',
+        'admin-orders.php' => 'orders',
+        'admin-reservation.php' => 'reservations',
+        'admin-menu-management.php' => 'food_management',
+        'admin-contact-messages.php' => 'contact_messages',
+        'admin-order-online-menu.php' => 'order_online_menu',
+        'admin-reviews.php' => 'reviews',
+        'admin-events.php' => 'events',
+        'admin-gallery.php' => 'gallery',
+        'admin-customers.php' => 'customers',
+        'admin-settings.php' => 'settings'
+    ];
+    
+    // Note: Admin management is checked within dashboard.php, so it's included in dashboard check
+    
+    // Check each page in order
+    foreach ($page_order as $page => $module) {
+        if (hasAdminPermission($module, 'view')) {
+            return $page;
+        }
+    }
+    
+    // Fallback to dashboard
+    return 'dashboard.php';
+}
+
 // Map page filename to module name
 function getModuleFromPage($filename) {
     $page_to_module = [
         'dashboard.php' => 'dashboard',
         'admin-orders.php' => 'orders',
         'admin-reservation.php' => 'reservations',
-        'admin-menu-management.php' => 'menu_management',
+        'admin-menu-management.php' => 'food_management',
         'admin-contact-messages.php' => 'contact_messages',
         'admin-reviews.php' => 'reviews',
         'admin-events.php' => 'events',

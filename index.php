@@ -29,6 +29,12 @@ require_once __DIR__ . '/includes/restaurant_info.php';
     <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="CSS/index.css">
     
+    <!-- Firebase Analytics -->
+    <?php require_once __DIR__ . '/includes/firebase-analytics.php'; ?>
+    
+    <!-- PHP Analytics Tracker -->
+    <script src="includes/analytics-tracker.js"></script>
+    
     <!-- Dynamic Theme Colors (must come after CSS to override) -->
     <style id="dynamic-theme-colors">
         /* Override CSS variables - using :root */

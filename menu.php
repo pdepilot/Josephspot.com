@@ -53,6 +53,13 @@ try {
     <link rel="stylesheet" href="./fontawesome-free-6.7.2-web/css/all.min.css">
     <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="./CSS/menu.css">
+    
+    <!-- Firebase Analytics -->
+    <?php require_once __DIR__ . '/includes/firebase-analytics.php'; ?>
+    
+    <!-- PHP Analytics Tracker -->
+    <script src="includes/analytics-tracker.js"></script>
+    
     <!-- Dynamic Theme Colors (must come after CSS to override) -->
     <style id="dynamic-theme-colors">
         /* Override CSS variables - using :root */

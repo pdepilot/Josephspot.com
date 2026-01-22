@@ -2001,6 +2001,14 @@ function formatTime($date) {
                     </a>
                 </li>
 
+                <li class="menu-label">Analytics</li>
+                <li class="menu-item">
+                    <a href="../site-traffic.php">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Traffic Analytics</span>
+                    </a>
+                </li>
+
                 <li class="menu-label">Settings</li>
                 <li class="menu-item">
                     <a href="admin-settings.php">

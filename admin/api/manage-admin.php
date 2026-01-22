@@ -28,8 +28,12 @@ if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_role'])) {
 }
 
 // Check if user is Super Admin for admin management operations
-$current_role = $_SESSION['admin_role'];
-$current_admin_id = $_SESSION['admin_id'];
+$current_role = isset($_SESSION['admin_role']) ? $_SESSION['admin_role'] : '';
+$current_admin_id = isset($_SESSION['admin_id']) ? $_SESSION['admin_id'] : 0;
+
+// Debug logging for role check
+error_log("DEBUG manage-admin.php: Current role from session: '" . $current_role . "'");
+error_log("DEBUG manage-admin.php: Is Super Admin: " . (isSuperAdmin($current_role) ? 'YES' : 'NO'));
 
 // Get action from request
 $action = isset($_POST['action']) ? $_POST['action'] : (isset($_GET['action']) ? $_GET['action'] : '');
@@ -46,38 +50,75 @@ if ($action === 'create' || $action === 'update') {
 $conn = getDBConnection();
 
 // Helper function to map role names to database values for admin_users table
-// Now stores exact role names: 'Super Admin', 'Manager', 'Content Manager', 'Support'
+// Stores exact role names: 'Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support'
 function mapRoleToDB($role) {
-    // If already in display format, return as is
-    $valid_roles = ['Super Admin', 'Manager', 'Content Manager', 'Support', 'Admin'];
+    // If already in valid format, return as is
+    $valid_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
     if (in_array($role, $valid_roles)) {
         return $role; // Store exact name
     }
     
     // Map form values and legacy values to database format
     $roleMap = [
-        // Form values (from dropdown)
+        // Form values (from dropdown) - exact matches
+        'Super Admin' => 'Super Admin',
+        'Manager' => 'Manager',
+        'Chef' => 'Chef',
+        'Supervisor' => 'Supervisor',
+        'Support' => 'Support',
+        
+        // Legacy/normalized values
         'super_admin' => 'Super Admin',
-        'manager' => 'Manager',  // Form sends 'manager', not 'admin'
-        'content_manager' => 'Content Manager',  // Form sends 'content_manager', not 'content_editor'
-        'support' => 'Support',  // Form sends 'support', not 'moderator'
+        'manager' => 'Manager',
+        'chef' => 'Chef',
+        'supervisor' => 'Supervisor',
+        'support' => 'Support',
         
         // Legacy mapping for backward compatibility
         'admin' => 'Manager',
         'moderator' => 'Support',
-        'content_editor' => 'Content Manager'
+        'content_manager' => 'Chef',  // Map old content_manager to Chef
+        'content_editor' => 'Chef'    // Map old content_editor to Chef
     ];
     
     // Normalize the role value (trim and lowercase for comparison)
     $role_normalized = strtolower(trim($role));
     
-    return isset($roleMap[$role_normalized]) ? $roleMap[$role_normalized] : 'Manager';
+    // Check normalized first
+    if (isset($roleMap[$role_normalized])) {
+        return $roleMap[$role_normalized];
+    }
+    
+    // Check original value
+    if (isset($roleMap[$role])) {
+        return $roleMap[$role];
+    }
+    
+    // Default fallback
+    return 'Manager';
+}
+
+// Helper function to check if user is Super Admin
+function isSuperAdmin($role) {
+    if (empty($role)) {
+        return false;
+    }
+    $role_normalized = strtolower(trim($role));
+    // Check for both formats: 'super_admin' and 'super admin' (with space)
+    return ($role_normalized === 'super_admin' || 
+            $role_normalized === 'super admin' || 
+            $role === 'Super Admin');
 }
 
 // Helper function to map database role values to display names
 function mapRoleFromDB($role) {
-    // If already in display format, return as is
-    $display_roles = ['Super Admin', 'Manager', 'Content Manager', 'Support', 'Admin'];
+    // Handle empty or null roles
+    if (empty($role) || $role === null || trim($role) === '') {
+        return 'Manager'; // Default role
+    }
+    
+    // If already in valid display format, return as is
+    $display_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
     if (in_array($role, $display_roles)) {
         return $role;
     }
@@ -85,18 +126,23 @@ function mapRoleFromDB($role) {
     // Legacy mapping for backward compatibility
     $roleMap = [
         'super_admin' => 'Super Admin',
+        'super admin' => 'Super Admin',
         'admin' => 'Manager',
         'moderator' => 'Support',
-        'content_editor' => 'Content Manager'
+        'content_manager' => 'Chef',
+        'content_editor' => 'Chef',
+        'content manager' => 'Chef'
     ];
-    return isset($roleMap[$role]) ? $roleMap[$role] : 'Manager';
+    
+    $role_normalized = strtolower(trim($role));
+    return isset($roleMap[$role_normalized]) ? $roleMap[$role_normalized] : $role; // Return original if not found in map
 }
 
 try {
     switch ($action) {
         case 'create':
-            // Only Super Admin can create admins (check both formats)
-            if ($current_role !== 'super_admin' && $current_role !== 'Super Admin') {
+            // Only Super Admin can create admins
+            if (!isSuperAdmin($current_role)) {
                 echo json_encode(['success' => false, 'message' => 'Only Super Admin can create new admins']);
                 exit;
             }
@@ -106,6 +152,7 @@ try {
             $email = isset($_POST['email']) ? trim($_POST['email']) : '';
             $role = isset($_POST['role']) ? trim($_POST['role']) : '';
             $password = isset($_POST['password']) ? $_POST['password'] : '';
+            $permissions = isset($_POST['permissions']) ? $_POST['permissions'] : '{}';
             
             // URGENT DEBUG: Log all received values (already logged in action check, but log again for clarity)
             error_log("DEBUG api/manage-admin.php create: Extracted values - name='$name', email='$email', role='$role', password=" . (empty($password) ? 'EMPTY' : 'SET'));
@@ -184,7 +231,7 @@ try {
             error_log("===========================================");
             
             // Validate role is one of the allowed values
-            $allowed_roles = ['Super Admin', 'Manager', 'Content Manager', 'Support', 'Admin'];
+            $allowed_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
             if (!in_array($dbRole, $allowed_roles)) {
                 error_log("ERROR api/manage-admin.php create: Invalid role '$dbRole' not in allowed list");
                 echo json_encode(['success' => false, 'message' => 'Invalid role selected: ' . $dbRole]);
@@ -198,19 +245,36 @@ try {
                 exit;
             }
             
-            // Check which status column exists and prepare appropriate INSERT
+            // Validate and sanitize permissions JSON
+            $permissionsJson = '{}';
+            if (!empty($permissions)) {
+                $decoded = json_decode($permissions, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $permissionsJson = json_encode($decoded);
+                }
+            }
+            
+            // Check which columns exist and prepare appropriate INSERT
             $testStmt = $conn->query("SHOW COLUMNS FROM admin_users LIKE 'status'");
             $hasStatus = $testStmt && $testStmt->num_rows > 0;
+            $testStmt2 = $conn->query("SHOW COLUMNS FROM admin_users LIKE 'permissions'");
+            $hasPermissions = $testStmt2 && $testStmt2->num_rows > 0;
             
-            if ($hasStatus) {
+            if ($hasStatus && $hasPermissions) {
+                $insertSql = "INSERT INTO admin_users (username, email, password_hash, full_name, role, permissions, status) VALUES (?, ?, ?, ?, ?, ?, 'active')";
+            } else if ($hasStatus) {
                 $insertSql = "INSERT INTO admin_users (username, email, password_hash, full_name, role, status) VALUES (?, ?, ?, ?, ?, 'active')";
             } else {
                 // Check if is_active exists
-                $testStmt2 = $conn->query("SHOW COLUMNS FROM admin_users LIKE 'is_active'");
-                $hasIsActive = $testStmt2 && $testStmt2->num_rows > 0;
+                $testStmt3 = $conn->query("SHOW COLUMNS FROM admin_users LIKE 'is_active'");
+                $hasIsActive = $testStmt3 && $testStmt3->num_rows > 0;
                 
-                if ($hasIsActive) {
+                if ($hasIsActive && $hasPermissions) {
+                    $insertSql = "INSERT INTO admin_users (username, email, password_hash, full_name, role, permissions, is_active) VALUES (?, ?, ?, ?, ?, ?, 1)";
+                } else if ($hasIsActive) {
                     $insertSql = "INSERT INTO admin_users (username, email, password_hash, full_name, role, is_active) VALUES (?, ?, ?, ?, ?, 1)";
+                } else if ($hasPermissions) {
+                    $insertSql = "INSERT INTO admin_users (username, email, password_hash, full_name, role, permissions) VALUES (?, ?, ?, ?, ?, ?)";
                 } else {
                     // No status column, just insert without it
                     $insertSql = "INSERT INTO admin_users (username, email, password_hash, full_name, role) VALUES (?, ?, ?, ?, ?)";
@@ -238,7 +302,24 @@ try {
             // URGENT DEBUG: Log bind parameters before execution
             error_log("DEBUG api/manage-admin.php create: Binding parameters - username='$username', email='$email', name='$name', dbRole='$dbRole'");
             
-            $stmt->bind_param("sssss", $username, $email, $password_hash, $name, $dbRole);
+            // Bind parameters based on SQL structure
+            if ($hasStatus && $hasPermissions) {
+                $stmt->bind_param("ssssss", $username, $email, $password_hash, $name, $dbRole, $permissionsJson);
+            } else if ($hasStatus) {
+                $stmt->bind_param("sssss", $username, $email, $password_hash, $name, $dbRole);
+            } else {
+                $testStmt3 = $conn->query("SHOW COLUMNS FROM admin_users LIKE 'is_active'");
+                $hasIsActive = $testStmt3 && $testStmt3->num_rows > 0;
+                if ($hasIsActive && $hasPermissions) {
+                    $stmt->bind_param("ssssss", $username, $email, $password_hash, $name, $dbRole, $permissionsJson);
+                } else if ($hasIsActive) {
+                    $stmt->bind_param("sssss", $username, $email, $password_hash, $name, $dbRole);
+                } else if ($hasPermissions) {
+                    $stmt->bind_param("ssssss", $username, $email, $password_hash, $name, $dbRole, $permissionsJson);
+                } else {
+                    $stmt->bind_param("sssss", $username, $email, $password_hash, $name, $dbRole);
+                }
+            }
             
             if ($stmt->execute()) {
                 $adminId = $conn->insert_id;
@@ -294,7 +375,7 @@ try {
             
         case 'update':
             // Only Super Admin can update admins
-            if ($current_role !== 'super_admin') {
+            if (!isSuperAdmin($current_role)) {
                 echo json_encode(['success' => false, 'message' => 'Only Super Admin can update admins']);
                 exit;
             }
@@ -305,6 +386,7 @@ try {
             $email = isset($_POST['email']) ? trim($_POST['email']) : '';
             $role = isset($_POST['role']) ? trim($_POST['role']) : '';
             $password = isset($_POST['password']) ? trim($_POST['password']) : '';
+            $permissions = isset($_POST['permissions']) ? $_POST['permissions'] : null;
             
             if (empty($id) || empty($name) || empty($email) || empty($role)) {
                 echo json_encode(['success' => false, 'message' => 'All fields are required']);
@@ -324,7 +406,7 @@ try {
             $dbRole = mapRoleToDB($role);
             
             // Validate role is one of the allowed values
-            $allowed_roles = ['Super Admin', 'Manager', 'Content Manager', 'Support', 'Admin'];
+            $allowed_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
             if (!in_array($dbRole, $allowed_roles)) {
                 echo json_encode(['success' => false, 'message' => 'Invalid role selected']);
                 exit;
@@ -341,6 +423,19 @@ try {
             }
             $checkStmt->close();
             
+            // Validate and sanitize permissions JSON
+            $permissionsJson = null;
+            if ($permissions !== null) {
+                $decoded = json_decode($permissions, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $permissionsJson = json_encode($decoded);
+                }
+            }
+            
+            // Check if permissions column exists
+            $testStmt = $conn->query("SHOW COLUMNS FROM admin_users LIKE 'permissions'");
+            $hasPermissions = $testStmt && $testStmt->num_rows > 0;
+            
             // Update admin (with or without password)
             if (!empty($password)) {
                 // Validate password strength
@@ -349,11 +444,21 @@ try {
                     exit;
                 }
                 $password_hash = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $conn->prepare("UPDATE admin_users SET username = ?, email = ?, password_hash = ?, full_name = ?, role = ? WHERE id = ?");
-                $stmt->bind_param("sssssi", $username, $email, $password_hash, $name, $dbRole, $id);
+                if ($hasPermissions && $permissionsJson !== null) {
+                    $stmt = $conn->prepare("UPDATE admin_users SET username = ?, email = ?, password_hash = ?, full_name = ?, role = ?, permissions = ? WHERE id = ?");
+                    $stmt->bind_param("ssssssi", $username, $email, $password_hash, $name, $dbRole, $permissionsJson, $id);
+                } else {
+                    $stmt = $conn->prepare("UPDATE admin_users SET username = ?, email = ?, password_hash = ?, full_name = ?, role = ? WHERE id = ?");
+                    $stmt->bind_param("sssssi", $username, $email, $password_hash, $name, $dbRole, $id);
+                }
             } else {
-                $stmt = $conn->prepare("UPDATE admin_users SET username = ?, email = ?, full_name = ?, role = ? WHERE id = ?");
-                $stmt->bind_param("ssssi", $username, $email, $name, $dbRole, $id);
+                if ($hasPermissions && $permissionsJson !== null) {
+                    $stmt = $conn->prepare("UPDATE admin_users SET username = ?, email = ?, full_name = ?, role = ?, permissions = ? WHERE id = ?");
+                    $stmt->bind_param("sssssi", $username, $email, $name, $dbRole, $permissionsJson, $id);
+                } else {
+                    $stmt = $conn->prepare("UPDATE admin_users SET username = ?, email = ?, full_name = ?, role = ? WHERE id = ?");
+                    $stmt->bind_param("ssssi", $username, $email, $name, $dbRole, $id);
+                }
             }
             
             if ($stmt->execute()) {
@@ -364,7 +469,7 @@ try {
                         'id' => $id,
                         'username' => $username,
                         'email' => $email,
-                        'role' => $role,
+                        'role' => $dbRole, // Return the mapped role, not the original
                         'name' => $name
                     ]
                 ]);
@@ -376,7 +481,7 @@ try {
             
         case 'delete':
             // Only Super Admin can delete admins
-            if ($current_role !== 'super_admin') {
+            if (!isSuperAdmin($current_role)) {
                 echo json_encode(['success' => false, 'message' => 'Only Super Admin can delete admins']);
                 exit;
             }
@@ -409,13 +514,13 @@ try {
         case 'get':
         case 'list':
             // Only Super Admin can list all admins
-            if ($current_role !== 'super_admin') {
+            if (!isSuperAdmin($current_role)) {
                 echo json_encode(['success' => false, 'message' => 'Only Super Admin can view admin list']);
                 exit;
             }
             
             // Get all admins from admin_users table except current admin
-            $stmt = $conn->prepare("SELECT id, username, email, full_name, role, last_login, created_at FROM admin_users WHERE id != ? ORDER BY created_at DESC");
+            $stmt = $conn->prepare("SELECT id, username, email, full_name, role, permissions, last_login, created_at FROM admin_users WHERE id != ? ORDER BY created_at DESC");
             $stmt->bind_param("i", $current_admin_id);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -433,8 +538,17 @@ try {
                         $avatar = strtoupper(substr($row['email'], 0, 2));
                     }
                     
-                    // Map role back to display format
-                    $displayRole = mapRoleFromDB($row['role']);
+                    // Map role back to display format - ensure it's not empty
+                    $rawRole = isset($row['role']) ? $row['role'] : '';
+                    $displayRole = mapRoleFromDB($rawRole);
+                    
+                    // Ensure role is never empty
+                    if (empty($displayRole) || trim($displayRole) === '') {
+                        $displayRole = 'Manager'; // Default fallback
+                    }
+                    
+                    // Get permissions if available
+                    $permissions = isset($row['permissions']) ? $row['permissions'] : null;
                     
                     $admins[] = [
                         'id' => $row['id'],
@@ -442,6 +556,7 @@ try {
                         'email' => $row['email'],
                         'username' => $row['username'],
                         'role' => $displayRole,
+                        'permissions' => $permissions,
                         'avatar' => $avatar,
                         'last_login' => isset($row['last_login']) && $row['last_login'] ? date('M j, Y g:i A', strtotime($row['last_login'])) : 'Never'
                     ];

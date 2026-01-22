@@ -480,7 +480,7 @@ function admin_change_password($pdo, $admin_id) {
  */
 function mapRoleToDBValue($role) {
     // If already in display format, return as is
-    $valid_roles = ['Super Admin', 'Manager', 'Content Manager', 'Support', 'Admin'];
+    $valid_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
     if (in_array($role, $valid_roles)) {
         return $role; // Store exact name
     }
@@ -490,13 +490,15 @@ function mapRoleToDBValue($role) {
         // Form values (from dropdown)
         'super_admin' => 'Super Admin',
         'manager' => 'Manager',  // Form sends 'manager', not 'admin'
-        'content_manager' => 'Content Manager',  // Form sends 'content_manager', not 'content_editor'
+        'chef' => 'Chef',  // Form sends 'chef', not 'chef'
+        'supervisor' => 'Supervisor',  // Form sends 'supervisor', not 'supervisor'
         'support' => 'Support',  // Form sends 'support', not 'moderator'
         
         // Legacy mapping for backward compatibility
         'admin' => 'Manager',
         'moderator' => 'Support',
-        'content_editor' => 'Content Manager'
+        'chef' => 'Chef',
+        'supervisor' => 'Supervisor'
     ];
     
     // Normalize the role value (trim and lowercase for comparison)
@@ -550,7 +552,7 @@ function admin_add_user($pdo, $current_admin_id) {
         error_log("DEBUG admin_add_user: Form role='$role', Mapped role='$dbRole'");
         
         // Validate role is one of the allowed values
-        $allowed_roles = ['Super Admin', 'Manager', 'Content Manager', 'Support', 'Admin'];
+        $allowed_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
         if (!in_array($dbRole, $allowed_roles)) {
             error_log("DEBUG admin_add_user: Invalid role '$dbRole' not in allowed list");
             return ['success' => false, 'message' => 'Invalid role selected: ' . $dbRole];
@@ -2224,6 +2226,14 @@ $all_admins = get_all_admins($pdo);
                     <a href="admin-career.php">
                         <i class="fas fa-briefcase"></i>
                         <span>Careers</span>
+                    </a>
+                </li>
+
+                <li class="menu-label">Analytics</li>
+                <li class="menu-item">
+                    <a href="../site-traffic.php">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Traffic Analytics</span>
                     </a>
                 </li>
 
