@@ -1816,6 +1816,7 @@ let awaitingName = false;
 let awaitingAddress = false;
 let suggestionShown = false;
 let cartClickCount = 0;
+let previouslySuggestedItems = new Set(); // Track suggested items to avoid repetition
 
 let savedName = localStorage.getItem("aiChat-name") || null;
 let savedAddress = localStorage.getItem("aiChat-address") || null;
@@ -1833,7 +1834,7 @@ const chatFoodMap = {
   Jollof: 8,
 };
 
-// --- Basic price map used for checkout summary (edit prices as you like) ---
+// --- Enhanced price map with categories for intelligent pairing ---
 const menuPrices = {
   nkwobi: 3000,
   abacha: 1500,
@@ -1845,12 +1846,183 @@ const menuPrices = {
   jollof: 2500,
 };
 
+// --- Food categories for intelligent pairing ---
+const foodCategories = {
+  soups: ["nsala", "ofe owerri", "nkwobi"],
+  rice: ["asun rice", "jollof"],
+  swallow: ["abacha"], // Can add more swallow items
+  drinks: ["palm wine", "drinks"],
+  proteins: ["nkwobi", "abacha"]
+};
+
+// --- Conversational responses ---
+const conversationalResponses = {
+  itemAdded: [
+    "Perfect! I've added {item} to your cart.",
+    "Great choice! {item} is now in your cart.",
+    "Excellent! {item} added successfully.",
+    "Done! I've added {item} for you."
+  ],
+  cartUpdate: [
+    "Your cart now has {count} item{plural} with a total of ₦{total}.",
+    "You've got {count} item{plural} in your cart totaling ₦{total}.",
+    "Cart updated: {count} item{plural} - ₦{total} total."
+  ],
+  checkoutPrompt: [
+    "Would you like to checkout now or add more items?",
+    "Ready to checkout, or would you like to add more?",
+    "Should we proceed to checkout, or keep shopping?",
+    "Checkout now or continue adding items?"
+  ],
+  continueShopping: [
+    "Sure thing! Let me suggest some items that would go great with what you have.",
+    "Of course! Here are some perfect additions to complete your meal.",
+    "Great! Let me help you find the perfect additions."
+  ]
+};
+
 // --- helper to get local widget cart (used for checkout summary) ---
 function getLocalWidgetCart() {
   return JSON.parse(localStorage.getItem("aiChat-localCart") || "[]");
 }
 function setLocalWidgetCart(arr) {
   localStorage.setItem("aiChat-localCart", JSON.stringify(arr));
+}
+
+// --- Get cart count and total ---
+function getCartInfo() {
+  const localCart = getLocalWidgetCart();
+  const count = localCart.length;
+  let total = 0;
+  localCart.forEach((it) => {
+    const key = (it.name || "").toLowerCase();
+    total += menuPrices[key] || 0;
+  });
+  return { count, total };
+}
+
+// --- Show cart summary after item addition ---
+function showCartUpdate() {
+  const { count, total } = getCartInfo();
+  const responses = conversationalResponses.cartUpdate;
+  const response = responses[Math.floor(Math.random() * responses.length)]
+    .replace("{count}", count)
+    .replace("{plural}", count === 1 ? "" : "s")
+    .replace("{total}", total.toLocaleString());
+  appendBubble("bot", `🛒 ${response}`);
+}
+
+// --- Get items currently in cart ---
+function getCartItems() {
+  const localCart = getLocalWidgetCart();
+  return localCart.map(item => item.name.toLowerCase());
+}
+
+// --- Intelligent food pairing suggestions based on cart ---
+function getIntelligentSuggestions() {
+  const cartItems = getCartItems();
+  const suggestions = [];
+  const suggested = new Set();
+  
+  // Reset previously suggested if cart is empty
+  if (cartItems.length === 0) {
+    previouslySuggestedItems.clear();
+  }
+  
+  // Check for soups -> suggest swallow or side
+  const hasSoup = cartItems.some(item => 
+    foodCategories.soups.some(soup => item.includes(soup))
+  );
+  if (hasSoup && !cartItems.some(item => item.includes("abacha"))) {
+    suggestions.push("Abacha");
+    suggested.add("abacha");
+  }
+  
+  // Check for rice -> suggest protein or drink
+  const hasRice = cartItems.some(item => 
+    foodCategories.rice.some(rice => item.includes(rice))
+  );
+  if (hasRice) {
+    if (!cartItems.some(item => foodCategories.proteins.some(p => item.includes(p)))) {
+      suggestions.push("Nkwobi");
+      suggested.add("nkwobi");
+    }
+    if (!cartItems.some(item => foodCategories.drinks.some(d => item.includes(d)))) {
+      suggestions.push("Palm Wine");
+      suggested.add("palm wine");
+    }
+  }
+  
+  // Check for meat/protein -> suggest drink
+  const hasProtein = cartItems.some(item => 
+    foodCategories.proteins.some(p => item.includes(p))
+  );
+  if (hasProtein && !cartItems.some(item => foodCategories.drinks.some(d => item.includes(d)))) {
+    suggestions.push("Palm Wine");
+    suggested.add("palm wine");
+  }
+  
+  // Check for multiple heavy meals -> suggest drink
+  const heavyMeals = cartItems.filter(item => 
+    foodCategories.soups.some(s => item.includes(s)) || 
+    foodCategories.rice.some(r => item.includes(r))
+  );
+  if (heavyMeals.length >= 2 && !cartItems.some(item => foodCategories.drinks.some(d => item.includes(d)))) {
+    if (!suggested.has("palm wine")) {
+      suggestions.push("Palm Wine");
+      suggested.add("palm wine");
+    }
+  }
+  
+  // If no drink exists -> suggest drink
+  const hasDrink = cartItems.some(item => 
+    foodCategories.drinks.some(d => item.includes(d))
+  );
+  if (!hasDrink && !suggested.has("palm wine") && !suggested.has("drinks")) {
+    suggestions.push("Palm Wine");
+    suggested.add("palm wine");
+  }
+  
+  // Filter out items already in cart
+  const filtered = suggestions.filter(item => {
+    const itemLower = item.toLowerCase();
+    return !cartItems.some(cartItem => cartItem.includes(itemLower));
+  });
+  
+  // Filter out previously suggested items
+  const finalSuggestions = filtered.filter(item => {
+    const itemLower = item.toLowerCase();
+    return !previouslySuggestedItems.has(itemLower);
+  });
+  
+  // If we have suggestions, mark them as suggested
+  finalSuggestions.forEach(item => {
+    previouslySuggestedItems.add(item.toLowerCase());
+  });
+  
+  // If no intelligent suggestions, return some general ones (excluding cart items)
+  if (finalSuggestions.length === 0) {
+    const allItems = Object.keys(chatFoodMap);
+    const available = allItems.filter(item => {
+      const itemLower = item.toLowerCase();
+      return !cartItems.some(cartItem => cartItem.includes(itemLower)) &&
+             !previouslySuggestedItems.has(itemLower);
+    });
+    return available.slice(0, 3); // Return up to 3 general suggestions
+  }
+  
+  return finalSuggestions.slice(0, 3); // Return up to 3 intelligent suggestions
+}
+
+// --- Get conversational response ---
+function getConversationalResponse(key, replacements = {}) {
+  const responses = conversationalResponses[key] || [];
+  if (responses.length === 0) return "";
+  let response = responses[Math.floor(Math.random() * responses.length)];
+  Object.keys(replacements).forEach(key => {
+    response = response.replace(`{${key}}`, replacements[key]);
+  });
+  return response;
 }
 
 // --- safeAddToCart: tries site addToCart(), else local fallback. Always updates widget storage and lastOrder.
@@ -1873,6 +2045,11 @@ function safeAddToCart(itemId, itemName) {
   const localCart = getLocalWidgetCart();
   localCart.push({ id: itemId || null, name: itemName });
   setLocalWidgetCart(localCart);
+  
+  // Show cart update after addition
+  setTimeout(() => {
+    showCartUpdate();
+  }, 500);
 }
 
 // --- small helper to append bubbles consistently (keeps UI unchanged) ---
@@ -1898,8 +2075,8 @@ function appendBubble(type, msg, isTyping = false) {
   }
 }
 
-// --- show the main "order" suggestions as clickable buttons (cleans previous suggestions first) ---
-function showFoodSuggestions() {
+// --- show intelligent food suggestions with prices (cleans previous suggestions first) ---
+function showFoodSuggestions(useIntelligentSuggestions = true) {
   if (!messagesDiv) return;
 
   // remove existing suggestion blocks so we don't duplicate
@@ -1913,19 +2090,62 @@ function showFoodSuggestions() {
   suggestionDiv.style.gap = "8px";
   suggestionDiv.style.margin = "8px 0";
 
-  Object.keys(chatFoodMap).forEach((food) => {
+  // Get items to suggest (intelligent or all)
+  let itemsToShow = [];
+  if (useIntelligentSuggestions) {
+    const intelligent = getIntelligentSuggestions();
+    if (intelligent.length > 0) {
+      itemsToShow = intelligent;
+    } else {
+      // Fallback to all items if no intelligent suggestions
+      itemsToShow = Object.keys(chatFoodMap);
+    }
+  } else {
+    itemsToShow = Object.keys(chatFoodMap);
+  }
+
+  // Show suggestions with prices
+  itemsToShow.forEach((food) => {
     const btn = document.createElement("button");
     btn.className = "chat-suggestion-btn";
     btn.setAttribute("data-name", food);
     btn.setAttribute("data-id", chatFoodMap[food]);
     btn.type = "button";
+    
+    // Get price for this item
+    const priceKey = food.toLowerCase();
+    const price = menuPrices[priceKey] || 0;
+    
+    // Create button content with price
+    const btnContent = document.createElement("div");
+    btnContent.style.display = "flex";
+    btnContent.style.flexDirection = "column";
+    btnContent.style.alignItems = "flex-start";
+    btnContent.style.gap = "2px";
+    
+    const foodName = document.createElement("span");
+    foodName.textContent = food;
+    foodName.style.fontWeight = "500";
+    
+    const priceSpan = document.createElement("span");
+    priceSpan.textContent = `₦${price.toLocaleString()}`;
+    priceSpan.style.fontSize = "0.85em";
+    priceSpan.style.color = "#666";
+    priceSpan.style.fontWeight = "400";
+    
+    btnContent.appendChild(foodName);
+    btnContent.appendChild(priceSpan);
+    btn.appendChild(btnContent);
+    
     // styling is minimal — won't override site design (you can style .chat-suggestion-btn in your CSS)
-    btn.style.padding = "6px 10px";
+    btn.style.padding = "8px 12px";
     btn.style.borderRadius = "6px";
     btn.style.border = "1px solid rgba(0,0,0,0.08)";
     btn.style.background = "white";
     btn.style.cursor = "pointer";
-    btn.textContent = food;
+    btn.style.minWidth = "100px";
+    btn.style.textAlign = "left";
+    
     suggestionDiv.appendChild(btn);
   });
 
@@ -1945,6 +2165,8 @@ function showFoodSuggestions() {
     lastOrder = [];
     // also clear local widget cart
     setLocalWidgetCart([]);
+    previouslySuggestedItems.clear();
+    cartClickCount = 0;
     appendBubble("bot", "✅ Your order history has been cleared.");
     trySpeak("Your order history has been cleared.");
   };
@@ -1956,19 +2178,135 @@ function showFoodSuggestions() {
 
 // --- helper: show checkout summary (count + total) using widget local cart ---
 function showCartSummary() {
-  const localCart = getLocalWidgetCart();
-  const count = localCart.length;
-  let total = 0;
-  localCart.forEach((it) => {
-    const key = (it.name || "").toLowerCase();
-    total += menuPrices[key] || 0;
-  });
+  const { count, total } = getCartInfo();
   appendBubble(
     "bot",
     `🛒 You have ${count} item${
       count === 1 ? "" : "s"
     } in your cart.\n💰 Total: ₦${total.toLocaleString()}`
   );
+}
+
+// --- Sync chatbot cart to main site cart (for order-online.php) ---
+function syncCartToMainSite() {
+  const localCart = getLocalWidgetCart();
+  if (localCart.length === 0) return;
+  
+  // Get main site cart from localStorage (order-online.php uses "cart" key)
+  let mainCart = [];
+  try {
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      mainCart = JSON.parse(storedCart);
+    }
+  } catch (e) {
+    console.warn("Could not read main cart:", e);
+  }
+  
+  // Merge chatbot items into main cart
+  localCart.forEach(chatItem => {
+    const existingIndex = mainCart.findIndex(item => item.id === chatItem.id);
+    if (existingIndex >= 0) {
+      // Item exists, increment quantity
+      mainCart[existingIndex].quantity = (mainCart[existingIndex].quantity || 1) + 1;
+    } else {
+      // New item, add to cart
+      // Try to get full item details from menuItems if available
+      const menuItem = typeof menuItems !== 'undefined' && Array.isArray(menuItems) 
+        ? menuItems.find(item => item.id === chatItem.id)
+        : null;
+      
+      if (menuItem) {
+        mainCart.push({
+          ...menuItem,
+          quantity: 1
+        });
+      } else {
+        // Fallback: create basic item structure
+        const priceKey = (chatItem.name || "").toLowerCase();
+        mainCart.push({
+          id: chatItem.id,
+          title: chatItem.name,
+          price: menuPrices[priceKey] || 0,
+          quantity: 1,
+          image: "./images/default-food.jpg" // Default image
+        });
+      }
+    }
+  });
+  
+  // Save merged cart
+  localStorage.setItem("cart", JSON.stringify(mainCart));
+}
+
+// --- Redirect to order-online.php with cart sync ---
+function redirectToCheckout() {
+  syncCartToMainSite();
+  appendBubble("bot", "Perfect! Taking you to checkout now...");
+  trySpeak("Redirecting you to checkout.");
+  setTimeout(() => {
+    window.location.href = "./order-online.php";
+  }, 1000);
+}
+
+// --- Show checkout prompt with natural conversation ---
+function showCheckoutPrompt() {
+  const { count, total } = getCartInfo();
+  const responses = conversationalResponses.checkoutPrompt;
+  const response = responses[Math.floor(Math.random() * responses.length)];
+  
+  appendBubble("bot", `🛒 You've added ${count} item${count === 1 ? "" : "s"} to your cart (₦${total.toLocaleString()} total). ${response}`);
+  trySpeak(`You have ${count} items in your cart. ${response}`);
+  
+  // Remove old suggestion blocks
+  const prevBlocks = messagesDiv.querySelectorAll(".chat-suggestions");
+  prevBlocks.forEach((el) => el.remove());
+  
+  const choiceDiv = document.createElement("div");
+  choiceDiv.className = "chat-suggestions";
+  choiceDiv.style.display = "flex";
+  choiceDiv.style.flexWrap = "wrap";
+  choiceDiv.style.gap = "8px";
+  choiceDiv.style.margin = "8px 0";
+  
+  const checkoutBtn = document.createElement("button");
+  checkoutBtn.type = "button";
+  checkoutBtn.className = "chat-suggestion-btn";
+  checkoutBtn.textContent = "Checkout";
+  checkoutBtn.style.padding = "8px 16px";
+  checkoutBtn.style.borderRadius = "6px";
+  checkoutBtn.style.border = "1px solid rgba(0,0,0,0.08)";
+  checkoutBtn.style.background = "#4CAF50";
+  checkoutBtn.style.color = "white";
+  checkoutBtn.style.cursor = "pointer";
+  checkoutBtn.style.fontWeight = "500";
+  checkoutBtn.onclick = () => {
+    redirectToCheckout();
+  };
+  
+  const continueBtn = document.createElement("button");
+  continueBtn.type = "button";
+  continueBtn.className = "chat-suggestion-btn";
+  continueBtn.textContent = "Add More";
+  continueBtn.style.padding = "8px 16px";
+  continueBtn.style.borderRadius = "6px";
+  continueBtn.style.border = "1px solid rgba(0,0,0,0.08)";
+  continueBtn.style.background = "white";
+  continueBtn.style.cursor = "pointer";
+  continueBtn.onclick = () => {
+    const responses = conversationalResponses.continueShopping;
+    const response = responses[Math.floor(Math.random() * responses.length)];
+    appendBubble("bot", response);
+    cartClickCount = 0; // Reset so we prompt again after next additions
+    setTimeout(() => {
+      showFoodSuggestions(true); // Use intelligent suggestions
+    }, 500);
+  };
+  
+  choiceDiv.appendChild(checkoutBtn);
+  choiceDiv.appendChild(continueBtn);
+  messagesDiv.appendChild(choiceDiv);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
 // --- event delegation for suggestion button clicks (keeps code small and robust) ---
@@ -1986,88 +2324,50 @@ if (messagesDiv) {
     // use safeAddToCart to avoid "addToCart not found" issues
     safeAddToCart(itemId, foodName);
 
-    // Confirm to user (consistent messaging)
-    appendBubble("bot", `✅ ${foodName} added to your cart.`);
+    // Confirm to user with conversational response
+    const confirmMsg = getConversationalResponse("itemAdded", { item: foodName });
+    appendBubble("bot", `✅ ${confirmMsg || `${foodName} added to your cart.`}`);
     // speak confirmation (queued if necessary). trySpeak suppresses cart-add messages via regex already.
     trySpeak(`${foodName} added to your cart.`);
 
-    // Update click count and possibly prompt checkout after 3 additions
+    // Update click count and possibly prompt checkout after 2 additions (more natural)
     cartClickCount += 1;
 
-    if (cartClickCount >= 3) {
-      // remove old suggestion blocks (so checkout options are visible)
-      const prevBlocks = messagesDiv.querySelectorAll(".chat-suggestions");
-      prevBlocks.forEach((el) => el.remove());
-
-      appendBubble(
-        "bot",
-        `🛒 You've added ${cartClickCount} items. Would you like to checkout now or keep adding more?`
-      );
-      trySpeak(
-        `You have added ${cartClickCount} items. Would you like to checkout now or keep adding more?`
-      );
-
-      const choiceDiv = document.createElement("div");
-      choiceDiv.className = "chat-suggestions";
-
-      const checkoutBtn = document.createElement("button");
-      checkoutBtn.type = "button";
-      checkoutBtn.className = "chat-suggestion-btn";
-      checkoutBtn.textContent = "Checkout";
-      checkoutBtn.style.marginRight = "8px";
-      checkoutBtn.onclick = () => {
-        // show widget summary AND try to open site cart
-        showCartSummary();
-        trySpeak("Opening your cart. Please review and proceed to payment.");
-        const cartIcon =
-          document.getElementById("cart-icon") ||
-          document.querySelector(".cart-toggle") ||
-          document.querySelector(".open-cart");
-        if (cartIcon) {
-          cartIcon.click();
-        } else {
-          appendBubble(
-            "bot",
-            "If your cart didn't open automatically, please open it from the page header."
-          );
-        }
-      };
-
-      const moreBtn = document.createElement("button");
-      moreBtn.type = "button";
-      moreBtn.className = "chat-suggestion-btn";
-      moreBtn.textContent = "Add More";
-      moreBtn.onclick = () => {
-        appendBubble("bot", "Sure — here are more options:");
-        // reset count so we prompt again after next 3 clicks if needed
-        cartClickCount = 0;
-        showFoodSuggestions();
-      };
-
-      choiceDiv.appendChild(checkoutBtn);
-      choiceDiv.appendChild(moreBtn);
-      messagesDiv.appendChild(choiceDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    } else {
-      // After short delay confirm and show suggestions again
+    if (cartClickCount >= 2) {
+      // Show checkout prompt after 2+ items
       setTimeout(() => {
+        showCheckoutPrompt();
+      }, 1000);
+    } else {
+      // After short delay show intelligent suggestions
+      setTimeout(() => {
+        const { count } = getCartInfo();
         appendBubble(
           "bot",
-          "Would you like to add another? Here are some options:"
+          `Great! Would you like to add something else? I can suggest items that pair well with what you have.`
         );
-        showFoodSuggestions();
-      }, 700);
+        showFoodSuggestions(true); // Use intelligent suggestions
+      }, 1000);
     }
   });
 }
 
 // --- Ask for order (bot prompt that triggers suggestions) ---
 function askForOrder() {
-  appendBubble(
-    "bot",
-    "Would you like Nkwobi, Abacha, Nsala, Asun Rice, Ofe Owerri, Palm Wine, Drinks, or Jollof today?"
-  );
-  showFoodSuggestions();
+  const { count } = getCartInfo();
+  if (count === 0) {
+    appendBubble(
+      "bot",
+      "What would you like to order today? Here are some of our popular dishes:"
+    );
+    showFoodSuggestions(false); // Show all items for first order
+  } else {
+    appendBubble(
+      "bot",
+      "What else would you like to add? Here are some great options:"
+    );
+    showFoodSuggestions(true); // Use intelligent suggestions
+  }
 }
 
 // --- Multi free fallback: tries Dictionary -> DuckDuckGo -> Wikipedia -> generic ---
@@ -2311,15 +2611,58 @@ if (sendBtn) {
     // Clear order via typed command (keeps previous behavior)
     if (
       text.toLowerCase().includes("clear order") ||
-      text.toLowerCase().includes("reset")
+      text.toLowerCase().includes("reset") ||
+      text.toLowerCase().includes("clear cart")
     ) {
       if (!confirm("Are you sure you want to clear your order history?"))
         return;
       localStorage.removeItem("aiChat-lastOrder");
       lastOrder = [];
       setLocalWidgetCart([]);
+      previouslySuggestedItems.clear();
+      cartClickCount = 0;
       appendBubble("bot", "✅ Your order history has been cleared.");
       trySpeak("Your order history has been cleared.");
+      return;
+    }
+
+    // Handle checkout commands
+    const checkoutKeywords = ["checkout", "i'm done", "done", "finish", "complete order", "proceed to checkout"];
+    if (checkoutKeywords.some(keyword => text.toLowerCase().includes(keyword))) {
+      const { count } = getCartInfo();
+      if (count === 0) {
+        appendBubble("bot", "Your cart is empty. Would you like to add some items first?");
+        showFoodSuggestions(true);
+      } else {
+        redirectToCheckout();
+      }
+      return;
+    }
+    
+    // Handle continue/add more commands
+    const continueKeywords = ["yes", "continue", "add more", "more", "keep shopping", "i want more"];
+    if (continueKeywords.some(keyword => text.toLowerCase().includes(keyword))) {
+      const responses = conversationalResponses.continueShopping;
+      const response = responses[Math.floor(Math.random() * responses.length)];
+      appendBubble("bot", response);
+      cartClickCount = 0;
+      setTimeout(() => {
+        showFoodSuggestions(true); // Use intelligent suggestions
+      }, 500);
+      return;
+    }
+    
+    // Handle "no" - ask if they want to checkout
+    if (text.toLowerCase().trim() === "no" || text.toLowerCase().includes("no thanks")) {
+      const { count } = getCartInfo();
+      if (count > 0) {
+        appendBubble("bot", "No problem! Would you like to proceed to checkout then?");
+        setTimeout(() => {
+          showCheckoutPrompt();
+        }, 500);
+      } else {
+        appendBubble("bot", "Alright! Let me know if you change your mind.");
+      }
       return;
     }
 
@@ -2331,47 +2674,23 @@ if (sendBtn) {
       const itemId = chatFoodMap[typedFood];
       // use safeAddToCart so we don't display "(addToCart not found)"
       safeAddToCart(itemId, typedFood);
-      appendBubble("bot", `✅ ${typedFood} added to your cart.`);
+      
+      // Confirm with conversational response
+      const confirmMsg = getConversationalResponse("itemAdded", { item: typedFood });
+      appendBubble("bot", `✅ ${confirmMsg || `${typedFood} added to your cart.`}`);
       trySpeak(`${typedFood} added to your cart.`);
 
       // save last order already handled in safeAddToCart
       cartClickCount++;
-      if (cartClickCount >= 3) {
-        appendBubble(
-          "bot",
-          `🛒 You've added ${cartClickCount} items. Checkout or add more?`
-        );
-        // show checkout/add more choices
-        const div = document.createElement("div");
-        div.className = "chat-suggestions";
-        const cBtn = document.createElement("button");
-        cBtn.textContent = "Checkout";
-        cBtn.onclick = () => {
-          // show summary and try open site cart
-          showCartSummary();
-          const cartIcon =
-            document.getElementById("cart-icon") ||
-            document.querySelector(".cart-toggle") ||
-            document.querySelector(".open-cart");
-          if (cartIcon) cartIcon.click();
-          else
-            appendBubble("bot", "Please open the cart to proceed to checkout.");
-        };
-        const mBtn = document.createElement("button");
-        mBtn.textContent = "Add More";
-        mBtn.onclick = () => {
-          cartClickCount = 0;
-          appendBubble("bot", "Here are more options:");
-          showFoodSuggestions();
-        };
-        div.appendChild(cBtn);
-        div.appendChild(mBtn);
-        messagesDiv.appendChild(div);
+      if (cartClickCount >= 2) {
+        setTimeout(() => {
+          showCheckoutPrompt();
+        }, 1000);
       } else {
         setTimeout(() => {
-          appendBubble("bot", "Would you like to add another?");
-          showFoodSuggestions();
-        }, 600);
+          appendBubble("bot", "Great! Would you like to add something else?");
+          showFoodSuggestions(true); // Use intelligent suggestions
+        }, 1000);
       }
       return;
     }

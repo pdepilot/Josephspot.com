@@ -64,7 +64,9 @@ require_once __DIR__ . '/includes/restaurant_info.php';
             "url": "https://josephspot.com",
             "address": {
                 "@type": "PostalAddress",
-                "streetAddress": "<?php echo !empty($restaurant_info['restaurant_address']) ? addslashes($restaurant_info['restaurant_address']) : '120 Ikenegbu Layout'; ?>",
+                "streetAddress": "<?php echo !empty($restaurant_info['restaurant_address']) ? addslashes($restaurant_info['restaurant_address']) : 'Plot 119
+                                Ikenegbu Layout, Maris junction, Owerri
+                                Imo State, Nigeria'; ?>",
                 "addressLocality": "Owerri",
                 "addressRegion": "Imo State",
                 "addressCountry": "Nigeria"
@@ -656,31 +658,6 @@ require_once __DIR__ . '/includes/restaurant_info.php';
 
         <div class="slider-dots" id="sliderDots"></div>
       </div>
-
-      <!-- ADMIN SECTION FOR REVIEW APPROVALS -->
-      <!-- <div id="adminPanel">
-        <h3>Review Moderation</h3>
-
-        <div class="admin-tabs">
-          <button class="admin-tab active" data-tab="pending">
-            Pending Reviews
-          </button>
-          <button class="admin-tab" data-tab="approved">
-            Approved Reviews
-          </button>
-        </div>
-
-        <div
-          id="pendingReviews"
-          class="admin-tab-content active"
-          data-tab-content="pending"
-        ></div>
-        <div
-          id="approvedReviews"
-          class="admin-tab-content"
-          data-tab-content="approved"
-        ></div>
-      </div> -->
     </div>
 
     <!-- Admin toggle button (hidden by default) -->
@@ -733,8 +710,8 @@ require_once __DIR__ . '/includes/restaurant_info.php';
                             <?php if (!empty($restaurant_info['restaurant_address'])): ?>
                                 <?php echo nl2br(htmlspecialchars($restaurant_info['restaurant_address'])); ?><br>
                             <?php else: ?>
-                                123 Food Street,<br>
-                                Ikenegbu Layout, Owerri<br>
+                                Plot 119<br>
+                                Ikenegbu Layout, Maris junction Owerri<br>
                                 Imo State, Nigeria<br>
                             <?php endif; ?>
                             <a href="https://maps.google.com?q=<?php echo urlencode(!empty($restaurant_info['restaurant_name']) ? $restaurant_info['restaurant_name'] . ' Owerri' : "Joseph's Pot Owerri"); ?>" target="_blank">📍 <span>
