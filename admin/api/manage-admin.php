@@ -50,52 +50,53 @@ if ($action === 'create' || $action === 'update') {
 $conn = getDBConnection();
 
 // Helper function to map role names to database values for admin_users table
-// Stores exact role names: 'Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support'
+// For valid roles: Returns EXACTLY as provided (no changes)
+// For legacy roles: Maps to standard format
+// NO FALLBACKS - empty roles remain empty
 function mapRoleToDB($role) {
-    // If already in valid format, return as is
-    $valid_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
-    if (in_array($role, $valid_roles)) {
-        return $role; // Store exact name
+    // Trim whitespace
+    $role = trim($role);
+    
+    // If empty, return empty (don't default to Manager)
+    if (empty($role)) {
+        return '';
     }
     
-    // Map form values and legacy values to database format
+    // Define valid roles list
+    $valid_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
+    
+    // CRITICAL: If role is in valid list, return it EXACTLY as provided (case-sensitive, no changes)
+    if (in_array($role, $valid_roles)) {
+        return $role; // Return exact value - no mapping, no transformation
+    }
+    
+    // Only map legacy/normalized values if NOT in valid list (for backward compatibility with old data)
     $roleMap = [
-        // Form values (from dropdown) - exact matches
-        'Super Admin' => 'Super Admin',
-        'Manager' => 'Manager',
-        'Chef' => 'Chef',
-        'Supervisor' => 'Supervisor',
-        'Support' => 'Support',
-        
-        // Legacy/normalized values
+        // Legacy lowercase versions
         'super_admin' => 'Super Admin',
         'manager' => 'Manager',
         'chef' => 'Chef',
         'supervisor' => 'Supervisor',
         'support' => 'Support',
+        'admin' => 'Admin',
         
-        // Legacy mapping for backward compatibility
-        'admin' => 'Manager',
+        // Legacy deprecated roles
         'moderator' => 'Support',
-        'content_manager' => 'Chef',  // Map old content_manager to Chef
-        'content_editor' => 'Chef'    // Map old content_editor to Chef
+        'content_manager' => 'Chef',
+        'content_editor' => 'Chef'
     ];
     
-    // Normalize the role value (trim and lowercase for comparison)
-    $role_normalized = strtolower(trim($role));
+    // Normalize for comparison (only for legacy mapping)
+    $role_normalized = strtolower($role);
     
-    // Check normalized first
+    // Map legacy values
     if (isset($roleMap[$role_normalized])) {
         return $roleMap[$role_normalized];
     }
     
-    // Check original value
-    if (isset($roleMap[$role])) {
-        return $roleMap[$role];
-    }
-    
-    // Default fallback
-    return 'Manager';
+    // If not in valid list and not in legacy map, return as-is (don't default to Manager)
+    // This preserves the exact value that was selected
+    return $role;
 }
 
 // Helper function to check if user is Super Admin
@@ -111,31 +112,53 @@ function isSuperAdmin($role) {
 }
 
 // Helper function to map database role values to display names
+// Returns EXACT role from database for valid roles
+// Only maps legacy values for backward compatibility
+// NO FALLBACKS - empty roles remain empty
 function mapRoleFromDB($role) {
-    // Handle empty or null roles
-    if (empty($role) || $role === null || trim($role) === '') {
-        return 'Manager'; // Default role
+    // Handle null
+    if ($role === null) {
+        return '';
     }
     
-    // If already in valid display format, return as is
-    $display_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
-    if (in_array($role, $display_roles)) {
-        return $role;
+    // Trim whitespace
+    $role = trim($role);
+    
+    // If empty, return empty string (don't default to Manager)
+    if (empty($role)) {
+        return '';
     }
     
-    // Legacy mapping for backward compatibility
-    $roleMap = [
+    // Define valid roles - if role is valid, return it EXACTLY as stored
+    $valid_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
+    if (in_array($role, $valid_roles)) {
+        return $role; // Return exact value from database - no mapping
+    }
+    
+    // Only map legacy values (for backward compatibility with old data)
+    $legacyMap = [
         'super_admin' => 'Super Admin',
         'super admin' => 'Super Admin',
-        'admin' => 'Manager',
+        'admin' => 'Admin',  // Map old lowercase 'admin' to 'Admin'
+        'manager' => 'Manager',
+        'chef' => 'Chef',
+        'supervisor' => 'Supervisor',
+        'support' => 'Support',
         'moderator' => 'Support',
         'content_manager' => 'Chef',
         'content_editor' => 'Chef',
         'content manager' => 'Chef'
     ];
     
-    $role_normalized = strtolower(trim($role));
-    return isset($roleMap[$role_normalized]) ? $roleMap[$role_normalized] : $role; // Return original if not found in map
+    $role_normalized = strtolower($role);
+    
+    // Map legacy values only
+    if (isset($legacyMap[$role_normalized])) {
+        return $legacyMap[$role_normalized];
+    }
+    
+    // Return the role exactly as stored in database (no changes, no defaults)
+    return $role;
 }
 
 try {
@@ -158,8 +181,15 @@ try {
             error_log("DEBUG api/manage-admin.php create: Extracted values - name='$name', email='$email', role='$role', password=" . (empty($password) ? 'EMPTY' : 'SET'));
             
             // Validate required fields
-            if (empty($name) || empty($email) || empty($role)) {
-                echo json_encode(['success' => false, 'message' => 'Name, email, and role are required']);
+            if (empty($name) || empty($email)) {
+                echo json_encode(['success' => false, 'message' => 'Name and email are required']);
+                exit;
+            }
+            
+            // CRITICAL: Validate role is provided and not empty
+            if (empty($role) || trim($role) === '') {
+                error_log("ERROR api/manage-admin.php create: Role is empty or missing!");
+                echo json_encode(['success' => false, 'message' => 'Role is required. Please select a role.']);
                 exit;
             }
             
@@ -217,7 +247,22 @@ try {
             // Hash password with password_hash()
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
             
-            // Map role to database format (now stores exact role names)
+            // Validate role BEFORE mapping - use original role for validation
+            $allowed_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
+            if (!in_array($role, $allowed_roles)) {
+                error_log("ERROR api/manage-admin.php create: Invalid role '$role' not in allowed list");
+                echo json_encode(['success' => false, 'message' => 'Invalid role selected: ' . $role]);
+                exit;
+            }
+            
+            // Ensure role is not empty
+            if (empty($role)) {
+                error_log("ERROR api/manage-admin.php create: Role is empty!");
+                echo json_encode(['success' => false, 'message' => 'Role cannot be empty. Please select a valid role.']);
+                exit;
+            }
+            
+            // Map role to database format - for valid roles, this should return the role as-is
             $dbRole = mapRoleToDB($role);
             
             // URGENT DEBUG: Log role mapping in detail
@@ -225,22 +270,22 @@ try {
             error_log("DEBUG api/manage-admin.php create: ROLE MAPPING");
             error_log("  - Original role from POST: '$role'");
             error_log("  - Role length: " . strlen($role));
-            error_log("  - Role type check: " . (in_array($role, ['Super Admin', 'Manager', 'Content Manager', 'Support', 'Admin']) ? 'VALID' : 'NOT IN VALID LIST'));
+            error_log("  - Role in allowed list: " . (in_array($role, $allowed_roles) ? 'YES' : 'NO'));
             error_log("  - Mapped role (dbRole): '$dbRole'");
             error_log("  - dbRole length: " . strlen($dbRole));
+            error_log("  - Roles match: " . ($role === $dbRole ? 'YES' : 'NO'));
             error_log("===========================================");
             
-            // Validate role is one of the allowed values
-            $allowed_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
-            if (!in_array($dbRole, $allowed_roles)) {
-                error_log("ERROR api/manage-admin.php create: Invalid role '$dbRole' not in allowed list");
-                echo json_encode(['success' => false, 'message' => 'Invalid role selected: ' . $dbRole]);
-                exit;
+            // Final validation - ensure dbRole matches original (for valid roles, they should match)
+            if ($dbRole !== $role && in_array($role, $allowed_roles)) {
+                error_log("WARNING api/manage-admin.php create: Role was changed during mapping! Original: '$role', Mapped: '$dbRole'");
+                // Use original role instead of mapped one for valid roles
+                $dbRole = $role;
             }
             
             // Ensure dbRole is not empty
             if (empty($dbRole)) {
-                error_log("ERROR api/manage-admin.php create: dbRole is empty! Original role was: '$role'");
+                error_log("ERROR api/manage-admin.php create: dbRole is empty after mapping! Original role was: '$role'");
                 echo json_encode(['success' => false, 'message' => 'Role cannot be empty. Please select a valid role.']);
                 exit;
             }
@@ -251,6 +296,43 @@ try {
                 $decoded = json_decode($permissions, true);
                 if (json_last_error() === JSON_ERROR_NONE) {
                     $permissionsJson = json_encode($decoded);
+                }
+            }
+            
+            // CRITICAL: Verify role column exists before inserting
+            $testRoleColumn = $conn->query("SHOW COLUMNS FROM admin_users LIKE 'role'");
+            $hasRoleColumn = $testRoleColumn && $testRoleColumn->num_rows > 0;
+            
+            if (!$hasRoleColumn) {
+                error_log("ERROR api/manage-admin.php create: role column does not exist in admin_users table!");
+                // Try to add the column
+                $addRoleColumn = "ALTER TABLE `admin_users` ADD COLUMN `role` VARCHAR(50) DEFAULT NULL AFTER `full_name`";
+                if ($conn->query($addRoleColumn)) {
+                    error_log("SUCCESS: Added role column to admin_users table");
+                    $hasRoleColumn = true;
+                } else {
+                    error_log("ERROR: Failed to add role column: " . $conn->error);
+                    echo json_encode(['success' => false, 'message' => 'Database error: role column missing. Please run admin/ensure_role_column.php']);
+                    exit;
+                }
+            } else {
+                // Check if role column is ENUM (which might not support all role values)
+                $columnInfo = $conn->query("SHOW COLUMNS FROM admin_users WHERE Field = 'role'");
+                if ($columnInfo && $columnInfo->num_rows > 0) {
+                    $info = $columnInfo->fetch_assoc();
+                    $columnType = strtolower($info['Type']);
+                    
+                    // If column is ENUM, change it to VARCHAR to support all role names
+                    if (strpos($columnType, 'enum') !== false) {
+                        error_log("WARNING: role column is ENUM type. Changing to VARCHAR(50) to support all role names...");
+                        $modifyColumn = "ALTER TABLE `admin_users` MODIFY COLUMN `role` VARCHAR(50) DEFAULT NULL";
+                        if ($conn->query($modifyColumn)) {
+                            error_log("SUCCESS: Changed role column from ENUM to VARCHAR(50)");
+                        } else {
+                            error_log("ERROR: Failed to modify role column: " . $conn->error);
+                            // Continue anyway - might still work if role is in ENUM list
+                        }
+                    }
                 }
             }
             
@@ -301,6 +383,14 @@ try {
             
             // URGENT DEBUG: Log bind parameters before execution
             error_log("DEBUG api/manage-admin.php create: Binding parameters - username='$username', email='$email', name='$name', dbRole='$dbRole'");
+            error_log("DEBUG api/manage-admin.php create: dbRole value check - empty: " . (empty($dbRole) ? 'YES' : 'NO') . ", length: " . strlen($dbRole));
+            
+            // CRITICAL: Verify dbRole is not empty before binding
+            if (empty($dbRole) || trim($dbRole) === '') {
+                error_log("ERROR api/manage-admin.php create: dbRole is empty! Cannot insert admin without role.");
+                echo json_encode(['success' => false, 'message' => 'Role cannot be empty. Please select a valid role.']);
+                exit;
+            }
             
             // Bind parameters based on SQL structure
             if ($hasStatus && $hasPermissions) {
@@ -321,11 +411,14 @@ try {
                 }
             }
             
+            // Log the actual bound values for debugging
+            error_log("DEBUG api/manage-admin.php create: About to execute INSERT with role='$dbRole'");
+            
             if ($stmt->execute()) {
                 $adminId = $conn->insert_id;
                 
-                // Verify the role was actually saved
-                $verifyStmt = $conn->prepare("SELECT role FROM admin_users WHERE id = ?");
+                // CRITICAL: Verify the role was actually saved
+                $verifyStmt = $conn->prepare("SELECT role, full_name, email FROM admin_users WHERE id = ?");
                 $verifyStmt->bind_param("i", $adminId);
                 $verifyStmt->execute();
                 $result = $verifyStmt->get_result();
@@ -337,18 +430,40 @@ try {
                     error_log("DEBUG api/manage-admin.php create: POST-INSERT VERIFICATION");
                     error_log("  - Admin ID: $adminId");
                     error_log("  - Expected role (dbRole): '$dbRole'");
-                    error_log("  - Saved role (from DB): '{$savedAdmin['role']}'");
-                    error_log("  - Match: " . ($savedAdmin['role'] === $dbRole ? 'YES' : 'NO'));
-                    if ($savedAdmin['role'] !== $dbRole) {
-                        error_log("  - ERROR: ROLE MISMATCH!");
-                        error_log("  - Expected length: " . strlen($dbRole));
-                        error_log("  - Saved length: " . strlen($savedAdmin['role']));
-                        error_log("  - Expected bytes: " . bin2hex($dbRole));
-                        error_log("  - Saved bytes: " . bin2hex($savedAdmin['role']));
+                    error_log("  - Saved role (from DB): '" . ($savedAdmin['role'] ?? 'NULL') . "'");
+                    error_log("  - Role is NULL: " . (($savedAdmin['role'] ?? null) === null ? 'YES' : 'NO'));
+                    error_log("  - Role is empty: " . (empty($savedAdmin['role']) ? 'YES' : 'NO'));
+                    error_log("  - Match: " . (($savedAdmin['role'] ?? '') === $dbRole ? 'YES' : 'NO'));
+                    
+                    if (empty($savedAdmin['role']) || ($savedAdmin['role'] ?? '') !== $dbRole) {
+                        error_log("  - ERROR: ROLE NOT SAVED CORRECTLY!");
+                        error_log("  - Expected: '$dbRole' (length: " . strlen($dbRole) . ")");
+                        error_log("  - Saved: '" . ($savedAdmin['role'] ?? 'NULL') . "' (length: " . strlen($savedAdmin['role'] ?? '') . ")");
+                        
+                        // Try to fix it by updating the role directly
+                        $fixStmt = $conn->prepare("UPDATE admin_users SET role = ? WHERE id = ?");
+                        $fixStmt->bind_param("si", $dbRole, $adminId);
+                        if ($fixStmt->execute()) {
+                            error_log("  - FIXED: Updated role directly in database");
+                            $savedAdmin['role'] = $dbRole;
+                        } else {
+                            error_log("  - ERROR: Failed to fix role: " . $conn->error);
+                        }
+                        $fixStmt->close();
                     }
                     error_log("===========================================");
                 } else {
                     error_log("ERROR api/manage-admin.php create: Could not verify saved admin - query returned no results!");
+                }
+                
+                // Use the verified role from database (single source of truth)
+                $verifiedRole = isset($savedAdmin['role']) && !empty($savedAdmin['role']) ? $savedAdmin['role'] : $dbRole;
+                
+                // Final check - if role is still empty, this is a critical error
+                if (empty($verifiedRole)) {
+                    error_log("CRITICAL ERROR: Role is still empty after all attempts!");
+                    echo json_encode(['success' => false, 'message' => 'Failed to save role. Please check database structure.']);
+                    exit;
                 }
                 
                 echo json_encode([
@@ -358,7 +473,7 @@ try {
                         'id' => $adminId,
                         'username' => $username,
                         'email' => $email,
-                        'role' => $dbRole, // Return the mapped role, not the original
+                        'role' => $verifiedRole, // Return the role as verified from database
                         'name' => $name
                     ]
                 ]);
@@ -402,14 +517,19 @@ try {
             // Generate username from name
             $username = strtolower(str_replace(' ', '_', $name));
             
-            // Map role to database format (now stores exact role names)
+            // Validate role BEFORE mapping - use original role for validation
+            $allowed_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
+            if (!in_array($role, $allowed_roles)) {
+                echo json_encode(['success' => false, 'message' => 'Invalid role selected: ' . $role]);
+                exit;
+            }
+            
+            // Map role to database format - for valid roles, this should return the role as-is
             $dbRole = mapRoleToDB($role);
             
-            // Validate role is one of the allowed values
-            $allowed_roles = ['Super Admin', 'Manager', 'Chef', 'Supervisor', 'Support', 'Admin'];
-            if (!in_array($dbRole, $allowed_roles)) {
-                echo json_encode(['success' => false, 'message' => 'Invalid role selected']);
-                exit;
+            // For valid roles, ensure we use the original (mapping should not change valid roles)
+            if ($dbRole !== $role && in_array($role, $allowed_roles)) {
+                $dbRole = $role; // Use original role for valid selections
             }
             
             // Check if email is being changed and if it already exists
@@ -429,6 +549,43 @@ try {
                 $decoded = json_decode($permissions, true);
                 if (json_last_error() === JSON_ERROR_NONE) {
                     $permissionsJson = json_encode($decoded);
+                }
+            }
+            
+            // CRITICAL: Verify role column exists
+            $testRoleColumn = $conn->query("SHOW COLUMNS FROM admin_users LIKE 'role'");
+            $hasRoleColumn = $testRoleColumn && $testRoleColumn->num_rows > 0;
+            
+            if (!$hasRoleColumn) {
+                error_log("ERROR api/manage-admin.php update: role column does not exist!");
+                // Try to add the column
+                $addRoleColumn = "ALTER TABLE `admin_users` ADD COLUMN `role` VARCHAR(50) DEFAULT NULL AFTER `full_name`";
+                if ($conn->query($addRoleColumn)) {
+                    error_log("SUCCESS: Added role column to admin_users table");
+                    $hasRoleColumn = true;
+                } else {
+                    error_log("ERROR: Failed to add role column: " . $conn->error);
+                    echo json_encode(['success' => false, 'message' => 'Database error: role column missing. Please run admin/ensure_role_column.php']);
+                    exit;
+                }
+            } else {
+                // Check if role column is ENUM (which might not support all role values)
+                $columnInfo = $conn->query("SHOW COLUMNS FROM admin_users WHERE Field = 'role'");
+                if ($columnInfo && $columnInfo->num_rows > 0) {
+                    $info = $columnInfo->fetch_assoc();
+                    $columnType = strtolower($info['Type']);
+                    
+                    // If column is ENUM, change it to VARCHAR to support all role names
+                    if (strpos($columnType, 'enum') !== false) {
+                        error_log("WARNING: role column is ENUM type. Changing to VARCHAR(50) to support all role names...");
+                        $modifyColumn = "ALTER TABLE `admin_users` MODIFY COLUMN `role` VARCHAR(50) DEFAULT NULL";
+                        if ($conn->query($modifyColumn)) {
+                            error_log("SUCCESS: Changed role column from ENUM to VARCHAR(50)");
+                        } else {
+                            error_log("ERROR: Failed to modify role column: " . $conn->error);
+                            // Continue anyway - might still work if role is in ENUM list
+                        }
+                    }
                 }
             }
             
@@ -462,6 +619,45 @@ try {
             }
             
             if ($stmt->execute()) {
+                // CRITICAL: Verify the role was actually saved
+                $verifyStmt = $conn->prepare("SELECT role, full_name, email FROM admin_users WHERE id = ?");
+                $verifyStmt->bind_param("i", $id);
+                $verifyStmt->execute();
+                $result = $verifyStmt->get_result();
+                $savedAdmin = $result->fetch_assoc();
+                $verifyStmt->close();
+                
+                if ($savedAdmin) {
+                    error_log("DEBUG api/manage-admin.php update: POST-UPDATE VERIFICATION");
+                    error_log("  - Admin ID: $id");
+                    error_log("  - Expected role (dbRole): '$dbRole'");
+                    error_log("  - Saved role (from DB): '" . ($savedAdmin['role'] ?? 'NULL') . "'");
+                    
+                    if (empty($savedAdmin['role']) || ($savedAdmin['role'] ?? '') !== $dbRole) {
+                        error_log("  - ERROR: ROLE NOT SAVED CORRECTLY!");
+                        // Try to fix it by updating the role directly
+                        $fixStmt = $conn->prepare("UPDATE admin_users SET role = ? WHERE id = ?");
+                        $fixStmt->bind_param("si", $dbRole, $id);
+                        if ($fixStmt->execute()) {
+                            error_log("  - FIXED: Updated role directly in database");
+                            $savedAdmin['role'] = $dbRole;
+                        } else {
+                            error_log("  - ERROR: Failed to fix role: " . $conn->error);
+                        }
+                        $fixStmt->close();
+                    }
+                }
+                
+                // Use the verified role from database (single source of truth)
+                $verifiedRole = isset($savedAdmin['role']) && !empty($savedAdmin['role']) ? $savedAdmin['role'] : $dbRole;
+                
+                // Final check - if role is still empty, this is a critical error
+                if (empty($verifiedRole)) {
+                    error_log("CRITICAL ERROR: Role is still empty after update!");
+                    echo json_encode(['success' => false, 'message' => 'Failed to save role. Please check database structure.']);
+                    exit;
+                }
+                
                 echo json_encode([
                     'success' => true,
                     'message' => 'Admin updated successfully',
@@ -469,7 +665,7 @@ try {
                         'id' => $id,
                         'username' => $username,
                         'email' => $email,
-                        'role' => $dbRole, // Return the mapped role, not the original
+                        'role' => $verifiedRole, // Return the role as verified from database
                         'name' => $name
                     ]
                 ]);
@@ -519,8 +715,42 @@ try {
                 exit;
             }
             
-            // Get all admins from admin_users table except current admin
-            $stmt = $conn->prepare("SELECT id, username, email, full_name, role, permissions, last_login, created_at FROM admin_users WHERE id != ? ORDER BY created_at DESC");
+            // CRITICAL: Verify role column exists
+            $checkRoleColumn = $conn->query("SHOW COLUMNS FROM admin_users LIKE 'role'");
+            $hasRoleColumn = $checkRoleColumn && $checkRoleColumn->num_rows > 0;
+            
+            if (!$hasRoleColumn) {
+                error_log("ERROR api/manage-admin.php list: role column does not exist!");
+                echo json_encode(['success' => false, 'message' => 'Database error: role column missing. Please run admin/ensure_role_column.php']);
+                exit;
+            }
+            
+            // Check which columns exist in admin_users table
+            $checkPermissions = $conn->query("SHOW COLUMNS FROM admin_users LIKE 'permissions'");
+            $hasPermissions = $checkPermissions && $checkPermissions->num_rows > 0;
+            
+            // Build query - ALWAYS include role column (it's required)
+            // Dynamically include permissions column only if it exists
+            // This ensures newly created admins appear immediately
+            if ($hasPermissions) {
+                $sql = "SELECT id, username, email, full_name, role, permissions, last_login, created_at 
+                        FROM admin_users 
+                        WHERE id != ? 
+                        ORDER BY created_at DESC";
+            } else {
+                $sql = "SELECT id, username, email, full_name, role, last_login, created_at 
+                        FROM admin_users 
+                        WHERE id != ? 
+                        ORDER BY created_at DESC";
+            }
+            
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                error_log("Error preparing admin list query: " . $conn->error);
+                echo json_encode(['success' => false, 'message' => 'Database error: ' . $conn->error]);
+                exit;
+            }
+            
             $stmt->bind_param("i", $current_admin_id);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -538,17 +768,49 @@ try {
                         $avatar = strtoupper(substr($row['email'], 0, 2));
                     }
                     
-                    // Map role back to display format - ensure it's not empty
-                    $rawRole = isset($row['role']) ? $row['role'] : '';
-                    $displayRole = mapRoleFromDB($rawRole);
-                    
-                    // Ensure role is never empty
-                    if (empty($displayRole) || trim($displayRole) === '') {
-                        $displayRole = 'Manager'; // Default fallback
+                    // Get role directly from database - CRITICAL: role column must exist
+                    // Check if 'role' key exists in the row (column might not be selected)
+                    if (!isset($row['role'])) {
+                        error_log("ERROR api/manage-admin.php list: 'role' column not found in query result for admin ID {$row['id']}!");
+                        // Try to get role with a separate query as fallback
+                        $roleQuery = $conn->prepare("SELECT role FROM admin_users WHERE id = ?");
+                        $roleQuery->bind_param("i", $row['id']);
+                        $roleQuery->execute();
+                        $roleResult = $roleQuery->get_result();
+                        if ($roleRow = $roleResult->fetch_assoc()) {
+                            $row['role'] = $roleRow['role'];
+                            error_log("FIXED: Retrieved role from separate query for admin ID {$row['id']}: '{$row['role']}'");
+                        } else {
+                            $row['role'] = null;
+                            error_log("ERROR: Could not retrieve role even from separate query for admin ID {$row['id']}");
+                        }
+                        $roleQuery->close();
                     }
                     
-                    // Get permissions if available
-                    $permissions = isset($row['permissions']) ? $row['permissions'] : null;
+                    $rawRole = isset($row['role']) ? $row['role'] : null;
+                    
+                    // Log for debugging if role is missing
+                    if ($rawRole === null || $rawRole === '') {
+                        error_log("WARNING api/manage-admin.php list: Admin ID {$row['id']} ({$row['username']}) has no role in database! Raw value: " . var_export($rawRole, true));
+                    }
+                    
+                    // Map role (only for legacy values, valid roles returned as-is)
+                    $displayRole = mapRoleFromDB($rawRole);
+                    
+                    // Ensure we have a role value (even if empty, don't default)
+                    // This ensures we display exactly what's in the database
+                    if ($displayRole === null) {
+                        $displayRole = ''; // Show empty if null
+                    }
+                    
+                    // Log the role being returned (only for debugging - can be removed in production)
+                    // error_log("DEBUG api/manage-admin.php list: Admin {$row['id']} - rawRole: '" . ($rawRole ?? 'NULL') . "', displayRole: '$displayRole'");
+                    
+                    // Get permissions if available (only if column exists)
+                    $permissions = null;
+                    if ($hasPermissions && isset($row['permissions'])) {
+                        $permissions = $row['permissions'];
+                    }
                     
                     $admins[] = [
                         'id' => $row['id'],
@@ -563,6 +825,9 @@ try {
                 }
             }
             $stmt->close();
+            
+            // Log for debugging
+            error_log("Admin list query returned " . count($admins) . " admins");
             
             echo json_encode(['success' => true, 'admins' => $admins]);
             break;

@@ -342,6 +342,64 @@ if ($admin_data) {
 // Get dashboard statistics
 $dashboard_stats = getDashboardStats($conn);
 
+// Get analytics statistics
+require_once __DIR__ . '/../includes/analytics-functions.php';
+require_once __DIR__ . '/../includes/setup-analytics-db.php';
+
+$analytics_stats = [
+    'total_visits' => 0,
+    'unique_visitors' => 0,
+    'most_visited_pages' => []
+];
+
+try {
+    // Get total visits (all time, excluding bots)
+    if (function_exists('getTotalVisits')) {
+        $analytics_stats['total_visits'] = getTotalVisits(365); // Last year
+    } else {
+        // Fallback: count all page views
+        global $pdo;
+        if (isset($pdo)) {
+            $stmt = $pdo->query("SELECT COUNT(*) as total FROM page_views WHERE device_type != 'bot'");
+            $result = $stmt->fetch();
+            $analytics_stats['total_visits'] = $result['total'] ?? 0;
+        }
+    }
+    
+    // Get unique visitors (based on distinct IPs, last 30 days)
+    global $pdo;
+    if (isset($pdo)) {
+        $stmt = $pdo->query("SELECT COUNT(DISTINCT ip_address) as unique_visitors 
+                            FROM page_views 
+                            WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+                            AND device_type != 'bot'");
+        $result = $stmt->fetch();
+        $analytics_stats['unique_visitors'] = $result['unique_visitors'] ?? 0;
+        
+        // Get most visited pages
+        $analytics_stats['most_visited_pages'] = getTopPages(5);
+        
+        // Get bounce rate (last 30 days)
+        if (function_exists('getBounceRate')) {
+            $analytics_stats['bounce_rate'] = getBounceRate(30);
+        } else {
+            $analytics_stats['bounce_rate'] = 0.0;
+        }
+        
+        // Get average session duration (last 30 days)
+        if (function_exists('getAverageSessionDuration')) {
+            $analytics_stats['avg_session_duration'] = getAverageSessionDuration(30);
+        } else {
+            $analytics_stats['avg_session_duration'] = 0.0;
+        }
+    }
+} catch (Exception $e) {
+    error_log("Error getting analytics stats: " . $e->getMessage());
+    // Set defaults on error
+    $analytics_stats['bounce_rate'] = 0.0;
+    $analytics_stats['avg_session_duration'] = 0.0;
+}
+
 // Get login history
 $login_history = getLoginHistory($_SESSION['admin_id'], 5);
 ?>
@@ -959,6 +1017,10 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
             background: var(--danger);
         }
 
+        .stat-card.analytics::before {
+            background: var(--info);
+        }
+
         .stat-card i {
             font-size: 2rem;
             margin-bottom: 15px;
@@ -979,6 +1041,10 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
 
         .stat-card.reservations i {
             color: var(--danger);
+        }
+
+        .stat-card.analytics i {
+            color: var(--info);
         }
 
         .stat-value {
@@ -2089,6 +2155,103 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                         <i class="fas fa-arrow-down"></i> 3% from yesterday
                     </div>
                 </div>
+
+                <!-- Website Analytics Card -->
+                <div class="stat-card analytics reveal reveal-delay-4">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="stat-value"><?php echo number_format($analytics_stats['total_visits']); ?></div>
+                    <div class="stat-label">Total Site Visits</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-users"></i> <?php echo number_format($analytics_stats['unique_visitors']); ?> unique visitors
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section: Advanced Metrics -->
+            <div class="analytics-section reveal" style="margin-bottom: 30px;">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Traffic Analytics (Last 30 Days)</h3>
+                    </div>
+                    <div style="padding: 20px;">
+                        <!-- Advanced Metrics Grid -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                            <!-- Bounce Rate Card -->
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 20px; color: white;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                    <div>
+                                        <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">Bounce Rate</div>
+                                        <div style="font-size: 2rem; font-weight: 600;">
+                                            <?php echo number_format($analytics_stats['bounce_rate'] ?? 0, 1); ?>%
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 2.5rem; opacity: 0.3;">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.85rem; opacity: 0.8;">
+                                    Visitors who viewed only one page
+                                </div>
+                            </div>
+                            
+                            <!-- Average Session Duration Card -->
+                            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; padding: 20px; color: white;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                    <div>
+                                        <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">Avg. Session Duration</div>
+                                        <div style="font-size: 2rem; font-weight: 600;">
+                                            <?php 
+                                            if (function_exists('formatDuration')) {
+                                                echo formatDuration($analytics_stats['avg_session_duration'] ?? 0);
+                                            } else {
+                                                $duration = $analytics_stats['avg_session_duration'] ?? 0;
+                                                if ($duration < 60) {
+                                                    echo round($duration) . 's';
+                                                } elseif ($duration < 3600) {
+                                                    echo round($duration / 60, 1) . 'm';
+                                                } else {
+                                                    echo round($duration / 3600, 1) . 'h';
+                                                }
+                                            }
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 2.5rem; opacity: 0.3;">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.85rem; opacity: 0.8;">
+                                    Average time spent per session
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Most Visited Pages -->
+                        <?php if (!empty($analytics_stats['most_visited_pages'])): ?>
+                        <div style="margin-top: 20px;">
+                            <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; color: var(--primary);">Most Visited Pages</h4>
+                            <ul style="list-style: none; padding: 0;">
+                                <?php foreach ($analytics_stats['most_visited_pages'] as $index => $page): ?>
+                                <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 500; color: #333; margin-bottom: 4px;">
+                                            <?php echo htmlspecialchars($page['page_url']); ?>
+                                        </div>
+                                        <div style="font-size: 0.85rem; color: #666;">
+                                            <?php echo number_format($page['visits']); ?> visits • 
+                                            <?php echo number_format($page['unique_visitors']); ?> unique visitors
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 1.2rem; font-weight: 600; color: var(--primary); margin-left: 20px;">
+                                        #<?php echo $index + 1; ?>
+                                    </div>
+                                </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
             </div>
 
             <!-- Charts Section -->
@@ -3078,8 +3241,18 @@ $login_history = getLoginHistory($_SESSION['admin_id'], 5);
                 ? (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase()
                 : admin.name.substring(0, 2).toUpperCase();
             
-            // Ensure role is displayed, fallback to 'N/A' if empty
-            const displayRole = admin.role && admin.role.trim() !== '' ? admin.role : 'N/A';
+            // Get role from admin object - show exactly what's in database
+            // Only show 'N/A' if role is truly missing (null, undefined, or empty string)
+            let displayRole = '';
+            if (admin.role !== null && admin.role !== undefined && admin.role !== '') {
+                displayRole = admin.role.trim();
+            }
+            
+            // If role is empty, log for debugging but don't show N/A (show empty or actual value)
+            if (!displayRole) {
+                console.warn('[DEBUG] Admin has no role:', admin.id, admin.name, 'role value:', admin.role);
+                displayRole = admin.role || ''; // Show actual value from database, even if empty
+            }
             
             console.log(`[DEBUG] Rendering admin ${index + 1}: ID=${admin.id}, Name=${admin.name}, Role=${admin.role}, DisplayRole=${displayRole}`);
             
